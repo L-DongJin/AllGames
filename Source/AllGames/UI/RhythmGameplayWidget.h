@@ -1,0 +1,190 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
+#include "../Notes/RhythmNoteData.h"
+#include "../Scoring/RhythmScoreManager.h"
+#include "RhythmGameplayWidget.generated.h"
+
+class ARhythmConductor;
+class ARhythmJudgementManager;
+class ARhythmNoteSpawner;
+class ARhythmScoreManager;
+enum class ERhythmJudgement : uint8;
+class UCanvasPanel;
+class UImage;
+class UTextBlock;
+class UTexture2D;
+
+UCLASS(Abstract, Blueprintable)
+class ALLGAMES_API URhythmGameplayWidget : public UUserWidget
+{
+	GENERATED_BODY()
+
+public:
+	URhythmGameplayWidget(const FObjectInitializer& ObjectInitializer);
+
+protected:
+	virtual TSharedRef<SWidget> RebuildWidget() override;
+	virtual void NativeConstruct() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
+	TObjectPtr<UTexture2D> BackgroundImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
+	TObjectPtr<UTexture2D> LaneBackgroundImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
+	TObjectPtr<UTexture2D> LaneGlowImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float LaneGlowOpacity = 0.5f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
+	TObjectPtr<UTexture2D> NoteImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
+	TObjectPtr<UTexture2D> JudgementLineImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Layout", meta = (ClampMin = "4.0", ClampMax = "100.0"))
+	float JudgementLineThickness = 24.0f;
+
+	/** Normalized vertical position within the lane area: 0 is top, 1 is bottom. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Layout", meta = (ClampMin = "0.1", ClampMax = "0.98"))
+	float JudgementLineVerticalPosition = 0.85f;
+
+	/** Fraction of the screen width occupied by the complete lane area. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Layout", meta = (ClampMin = "0.2", ClampMax = "1.0"))
+	float LaneAreaScreenWidthFraction = 0.6f;
+
+	/** Normalized point where Lane Glow starts within the lane area. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Layout", meta = (ClampMin = "0.0", ClampMax = "0.95"))
+	float LaneGlowTopPosition = 0.0f;
+
+	/** Positive values leave a gap above the line; negative values overlap it. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Layout", meta = (ClampMin = "-100.0", ClampMax = "300.0"))
+	float LaneGlowBottomOffset = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Layout", meta = (ClampMin = "0.0", ClampMax = "100.0"))
+	float LaneGlowHorizontalPadding = 1.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Key Labels", meta = (ClampMin = "8", ClampMax = "96"))
+	int32 LaneKeyLabelFontSize = 28;
+
+	/** Distance from the bottom edge of the judgement line to the key labels. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Key Labels", meta = (ClampMin = "0.0", ClampMax = "200.0"))
+	float LaneKeyLabelVerticalOffset = 12.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Key Labels")
+	FLinearColor LaneKeyLabelColor = FLinearColor::White;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement")
+	TObjectPtr<UTexture2D> PerfectJudgementImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement")
+	TObjectPtr<UTexture2D> GreatJudgementImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement")
+	TObjectPtr<UTexture2D> GoodJudgementImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement")
+	TObjectPtr<UTexture2D> MissJudgementImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement", meta = (ClampMin = "0.05"))
+	float JudgementDisplaySeconds = 0.6f;
+
+	/** Time used by the pop-in animation whenever a new judgement is received. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement", meta = (ClampMin = "0.05", ClampMax = "1.0"))
+	float JudgementPopAnimationSeconds = 0.18f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement", meta = (ClampMin = "1.0", ClampMax = "3.0"))
+	float JudgementPopStartScale = 1.35f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float JudgementFeedbackVerticalPosition = 0.2f;
+
+	/** Maximum area for judgement art; the source texture aspect ratio is preserved. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement")
+	FVector2D JudgementFeedbackMaxSize = FVector2D(720.0f, 320.0f);
+
+private:
+	UFUNCTION()
+	void HandleNoteSpawned(FRhythmNoteData NoteData);
+
+	UFUNCTION()
+	void HandleTimelineUpdated(float MusicTimeSeconds);
+
+	UFUNCTION()
+	void HandleNoteJudged(FRhythmNoteData NoteData, ERhythmJudgement Judgement, float TimingErrorSeconds);
+
+	UFUNCTION()
+	void HandleLaneGlowInput(int32 LaneIndex, bool bPressed);
+
+	UFUNCTION()
+	void HandleScoreChanged(FRhythmScoreState ScoreState);
+
+	void RefreshScoreText(const FRhythmScoreState& ScoreState);
+	void UpdateJudgementAnimation();
+
+	void BuildWidgetLayout();
+	void RefreshLayout(float MusicTimeSeconds);
+
+	struct FNoteVisual
+	{
+		FRhythmNoteData Data;
+		TObjectPtr<UImage> Image;
+		float SpawnTimeSeconds = 0.0f;
+	};
+
+	UPROPERTY(Transient)
+	TObjectPtr<UCanvasPanel> LaneCanvas;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UImage> JudgementLine;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UImage> JudgementFeedback;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> JudgementHitCountText;
+
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UImage>> LaneImages;
+
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UImage>> LaneGlowImages;
+
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UTextBlock>> LaneKeyLabels;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ScoreText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ComboText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> AccuracyText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<ARhythmNoteSpawner> Spawner;
+
+	UPROPERTY(Transient)
+	TObjectPtr<ARhythmConductor> Conductor;
+
+	UPROPERTY(Transient)
+	TObjectPtr<ARhythmJudgementManager> JudgementManager;
+
+	UPROPERTY(Transient)
+	TObjectPtr<ARhythmScoreManager> ScoreManager;
+
+	TArray<FNoteVisual> NoteVisuals;
+	float JudgementHideWorldTime = 0.0f;
+	float JudgementAnimationStartWorldTime = 0.0f;
+	float NextTimelineDiagnosticTime = 0.0f;
+	int32 CurrentHitStreak = 0;
+	int64 NextNoteVisualId = 0;
+	int32 LaneCount = 9;
+};

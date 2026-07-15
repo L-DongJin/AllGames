@@ -22,4 +22,11 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY(Transient)
+	TObjectPtr<class ARhythmJudgementManager> JudgementManager;
+
+	UPROPERTY(Transient)
+	TObjectPtr<class ARhythmScoreManager> ScoreManager;
 };
