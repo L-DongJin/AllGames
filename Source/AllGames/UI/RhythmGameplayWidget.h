@@ -29,6 +29,7 @@ public:
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual void NativeConstruct() override;
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
 	TObjectPtr<UTexture2D> BackgroundImage;
@@ -125,6 +126,9 @@ private:
 	UFUNCTION()
 	void HandleScoreChanged(FRhythmScoreState ScoreState);
 
+	UFUNCTION()
+	void HandleMusicFinished();
+
 	void RefreshScoreText(const FRhythmScoreState& ScoreState);
 	void UpdateJudgementAnimation();
 
@@ -169,6 +173,30 @@ private:
 	TObjectPtr<UTextBlock> AccuracyText;
 
 	UPROPERTY(Transient)
+	TObjectPtr<UImage> ResultBackground;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ResultTitleText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ResultSummaryText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ResultPerfectText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ResultGreatText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ResultGoodText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ResultMissText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ResultHintText;
+
+	UPROPERTY(Transient)
 	TObjectPtr<ARhythmNoteSpawner> Spawner;
 
 	UPROPERTY(Transient)
@@ -187,4 +215,5 @@ private:
 	int32 CurrentHitStreak = 0;
 	int64 NextNoteVisualId = 0;
 	int32 LaneCount = 9;
+	bool bShowingResults = false;
 };

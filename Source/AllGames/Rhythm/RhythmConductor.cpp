@@ -6,6 +6,7 @@
 #include "HAL/PlatformTime.h"
 #include "Sound/SoundBase.h"
 #include "Sound/SoundWave.h"
+#include "../Core/RhythmGameInstance.h"
 #include "../Data/RhythmSongDataAsset.h"
 
 ARhythmConductor::ARhythmConductor()
@@ -22,6 +23,13 @@ ARhythmConductor::ARhythmConductor()
 void ARhythmConductor::BeginPlay()
 {
 	Super::BeginPlay();
+	if (const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance()))
+	{
+		if (URhythmSongDataAsset* SelectedSong = Settings->GetSelectedSong())
+		{
+			SongData = SelectedSong;
+		}
+	}
 	if (SongData && SongData->Music)
 	{
 		Music = SongData->Music;
@@ -123,4 +131,5 @@ void ARhythmConductor::HandleAudioFinished()
 	LastReturnedMusicTimeSeconds = MusicTimeSeconds;
 	LastTimelineSyncPlatformSeconds = FPlatformTime::Seconds();
 	UE_LOG(LogTemp, Log, TEXT("RhythmConductor music finished at %.3f seconds."), MusicTimeSeconds);
+	OnMusicFinished.Broadcast();
 }

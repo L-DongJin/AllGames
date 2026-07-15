@@ -11,3 +11,4 @@
 # These rules must come after `* text=auto` so binary assets remain non-text.
 *.uasset filter=lfs diff=lfs merge=lfs -text
 *.umap filter=lfs diff=lfs merge=lfs -text
+*.mid binary

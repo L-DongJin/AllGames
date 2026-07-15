@@ -3,6 +3,7 @@
 #include "RhythmJudgementManager.h"
 
 #include "EngineUtils.h"
+#include "../Core/RhythmGameInstance.h"
 #include "../Core/RhythmPlayerController.h"
 #include "../Notes/RhythmNoteSpawner.h"
 #include "../Rhythm/RhythmConductor.h"
@@ -38,6 +39,14 @@ void ARhythmJudgementManager::BeginPlay()
 
 	Spawner->OnNoteSpawned.AddDynamic(this, &ThisClass::HandleNoteSpawned);
 	PlayerController->OnLaneInput.AddDynamic(this, &ThisClass::HandleLaneInput);
+	if (const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance()))
+	{
+		const float WindowScale = Settings->GetJudgementWindowScale();
+		PerfectWindowSeconds *= WindowScale;
+		GreatWindowSeconds *= WindowScale;
+		GoodWindowSeconds *= WindowScale;
+		MissWindowSeconds *= WindowScale;
+	}
 	ensureMsgf(PerfectWindowSeconds <= GreatWindowSeconds
 		&& GreatWindowSeconds <= GoodWindowSeconds
 		&& GoodWindowSeconds <= MissWindowSeconds,

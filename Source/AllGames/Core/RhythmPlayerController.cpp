@@ -8,6 +8,7 @@
 #include "InputMappingContext.h"
 #include "UObject/ConstructorHelpers.h"
 #include "EngineUtils.h"
+#include "RhythmGameInstance.h"
 #include "../Data/RhythmSongDataAsset.h"
 #include "../Rhythm/RhythmConductor.h"
 #include "../UI/RhythmGameplayWidget.h"
@@ -45,16 +46,29 @@ ARhythmPlayerController::ARhythmPlayerController()
 void ARhythmPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	// LobbyMap uses UI-only input. Explicitly restore gameplay focus after map travel so
+	// Enhanced Input receives D/F/Space/J/K immediately when the song starts.
+	FInputModeGameOnly GameplayInputMode;
+	SetInputMode(GameplayInputMode);
+	SetShowMouseCursor(false);
+	FlushPressedKeys();
+
 	ActiveKeyMode = DefaultKeyMode;
-	for (TActorIterator<ARhythmConductor> It(GetWorld()); It; ++It)
+	const URhythmSongDataAsset* ActiveSongData = nullptr;
+	if (const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance()))
 	{
-		if (const URhythmSongDataAsset* SongData = It->GetSongData())
-		{
-			ActiveKeyMode = SongData->KeyMode == ERhythmChartKeyMode::FiveKey
-				? ERhythmKeyMode::FiveKey
-				: ERhythmKeyMode::NineKey;
-		}
+		ActiveSongData = Settings->GetSelectedSong();
+	}
+	for (TActorIterator<ARhythmConductor> It(GetWorld()); !ActiveSongData && It; ++It)
+	{
+		ActiveSongData = It->GetSongData();
 		break;
+	}
+	if (ActiveSongData)
+	{
+		ActiveKeyMode = ActiveSongData->KeyMode == ERhythmChartKeyMode::FiveKey
+			? ERhythmKeyMode::FiveKey
+			: ERhythmKeyMode::NineKey;
 	}
 	ApplyKeyMode(true);
 
@@ -88,14 +102,14 @@ void ARhythmPlayerController::ApplyKeyMode(const bool bClearExistingMappings)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 		{
+			// Always remove both rhythm contexts explicitly. This also protects mode changes and
+			// repeated PIE sessions from retaining the previously active layout.
+			InputSubsystem->RemoveMappingContext(FiveKeyMappingContext);
+			InputSubsystem->RemoveMappingContext(NineKeyMappingContext);
+
 			if (bClearExistingMappings)
 			{
 				InputSubsystem->ClearAllMappings();
-			}
-			else
-			{
-				InputSubsystem->RemoveMappingContext(FiveKeyMappingContext);
-				InputSubsystem->RemoveMappingContext(NineKeyMappingContext);
 			}
 
 			UInputMappingContext* SelectedContext = ActiveKeyMode == ERhythmKeyMode::FiveKey
@@ -105,7 +119,8 @@ void ARhythmPlayerController::ApplyKeyMode(const bool bClearExistingMappings)
 			if (ensureMsgf(SelectedContext, TEXT("Mapping context for the selected rhythm key mode is not assigned.")))
 			{
 				InputSubsystem->AddMappingContext(SelectedContext, 0);
-				UE_LOG(LogTemp, Log, TEXT("Rhythm input mode active: %d keys"), GetActiveLaneCount());
+				UE_LOG(LogTemp, Log, TEXT("Rhythm input mode active: %d keys, context %s"),
+					GetActiveLaneCount(), *SelectedContext->GetPathName());
 			}
 		}
 	}

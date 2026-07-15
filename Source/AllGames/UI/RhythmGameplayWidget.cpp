@@ -8,6 +8,8 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 #include "../Core/RhythmPlayerController.h"
 #include "../Judgement/RhythmJudgementManager.h"
@@ -18,6 +20,7 @@
 URhythmGameplayWidget::URhythmGameplayWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	SetIsFocusable(true);
 	static ConstructorHelpers::FObjectFinder<UTexture2D> PerfectFinder(TEXT("/Game/Textures/T_Judgement_Perfect.T_Judgement_Perfect"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> GreatFinder(TEXT("/Game/Textures/T_Judgement_Great.T_Judgement_Great"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> GoodFinder(TEXT("/Game/Textures/T_Judgement_Good.T_Judgement_Good"));
@@ -68,6 +71,10 @@ void URhythmGameplayWidget::NativeConstruct()
 		Conductor = Spawner->GetConductor();
 		Spawner->OnNoteSpawned.AddDynamic(this, &ThisClass::HandleNoteSpawned);
 		Spawner->OnTimelineUpdated.AddDynamic(this, &ThisClass::HandleTimelineUpdated);
+		if (Conductor)
+		{
+			Conductor->OnMusicFinished.AddUniqueDynamic(this, &ThisClass::HandleMusicFinished);
+		}
 	}
 
 	for (TActorIterator<ARhythmJudgementManager> It(GetWorld()); It; ++It)
@@ -210,6 +217,89 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 	ComboFont.Size = 42;
 	ComboText->SetFont(ComboFont);
 	RefreshScoreText(FRhythmScoreState());
+
+	ResultBackground = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("ResultBackground"));
+	ResultBackground->SetColorAndOpacity(FLinearColor(0.005f, 0.008f, 0.02f, 0.94f));
+	ResultBackground->SetVisibility(ESlateVisibility::Collapsed);
+	if (UCanvasPanelSlot* ResultBackgroundSlot = RootCanvas->AddChildToCanvas(ResultBackground))
+	{
+		ResultBackgroundSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+		ResultBackgroundSlot->SetOffsets(FMargin(0.0f));
+		ResultBackgroundSlot->SetZOrder(100);
+	}
+
+	ResultTitleText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ResultTitleText"));
+	ResultTitleText->SetText(FText::FromString(TEXT("RESULT")));
+	ResultTitleText->SetJustification(ETextJustify::Center);
+	ResultTitleText->SetColorAndOpacity(FSlateColor(FLinearColor(0.35f, 0.9f, 1.0f)));
+	ResultTitleText->SetShadowOffset(FVector2D(4.0f, 4.0f));
+	FSlateFontInfo ResultTitleFont = ResultTitleText->GetFont();
+	ResultTitleFont.Size = 72;
+	ResultTitleText->SetFont(ResultTitleFont);
+	ResultTitleText->SetVisibility(ESlateVisibility::Collapsed);
+	if (UCanvasPanelSlot* ResultTitleSlot = RootCanvas->AddChildToCanvas(ResultTitleText))
+	{
+		ResultTitleSlot->SetAnchors(FAnchors(0.5f, 0.16f));
+		ResultTitleSlot->SetAlignment(FVector2D(0.5f, 0.0f));
+		ResultTitleSlot->SetSize(FVector2D(900.0f, 110.0f));
+		ResultTitleSlot->SetZOrder(101);
+	}
+
+	ResultSummaryText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ResultSummaryText"));
+	ResultSummaryText->SetJustification(ETextJustify::Center);
+	ResultSummaryText->SetColorAndOpacity(FSlateColor(FLinearColor::White));
+	ResultSummaryText->SetShadowOffset(FVector2D(3.0f, 3.0f));
+	FSlateFontInfo ResultSummaryFont = ResultSummaryText->GetFont();
+	ResultSummaryFont.Size = 36;
+	ResultSummaryText->SetFont(ResultSummaryFont);
+	ResultSummaryText->SetVisibility(ESlateVisibility::Collapsed);
+	if (UCanvasPanelSlot* ResultSummarySlot = RootCanvas->AddChildToCanvas(ResultSummaryText))
+	{
+		ResultSummarySlot->SetAnchors(FAnchors(0.5f, 0.30f));
+		ResultSummarySlot->SetAlignment(FVector2D(0.5f, 0.0f));
+		ResultSummarySlot->SetSize(FVector2D(1000.0f, 220.0f));
+		ResultSummarySlot->SetZOrder(101);
+	}
+
+	auto AddResultJudgement = [this, RootCanvas](const TCHAR* Name, const FLinearColor& Color, const float AnchorY)
+	{
+		UTextBlock* Text = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), Name);
+		Text->SetJustification(ETextJustify::Center);
+		Text->SetColorAndOpacity(FSlateColor(Color));
+		Text->SetShadowOffset(FVector2D(3.0f, 3.0f));
+		FSlateFontInfo Font = Text->GetFont();
+		Font.Size = 38;
+		Text->SetFont(Font);
+		Text->SetVisibility(ESlateVisibility::Collapsed);
+		if (UCanvasPanelSlot* Slot = RootCanvas->AddChildToCanvas(Text))
+		{
+			Slot->SetAnchors(FAnchors(0.5f, AnchorY));
+			Slot->SetAlignment(FVector2D(0.5f, 0.0f));
+			Slot->SetSize(FVector2D(800.0f, 65.0f));
+			Slot->SetZOrder(101);
+		}
+		return Text;
+	};
+	ResultPerfectText = AddResultJudgement(TEXT("ResultPerfectText"), FLinearColor(0.25f, 0.85f, 1.0f), 0.52f);
+	ResultGreatText = AddResultJudgement(TEXT("ResultGreatText"), FLinearColor(1.0f, 0.82f, 0.12f), 0.59f);
+	ResultGoodText = AddResultJudgement(TEXT("ResultGoodText"), FLinearColor(0.25f, 1.0f, 0.38f), 0.66f);
+	ResultMissText = AddResultJudgement(TEXT("ResultMissText"), FLinearColor(1.0f, 0.16f, 0.16f), 0.73f);
+
+	ResultHintText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ResultHintText"));
+	ResultHintText->SetText(FText::FromString(TEXT("Enter: Retry    Esc: Lobby")));
+	ResultHintText->SetJustification(ETextJustify::Center);
+	ResultHintText->SetColorAndOpacity(FSlateColor(FLinearColor(0.65f, 0.7f, 0.8f)));
+	FSlateFontInfo ResultHintFont = ResultHintText->GetFont();
+	ResultHintFont.Size = 24;
+	ResultHintText->SetFont(ResultHintFont);
+	ResultHintText->SetVisibility(ESlateVisibility::Collapsed);
+	if (UCanvasPanelSlot* ResultHintSlot = RootCanvas->AddChildToCanvas(ResultHintText))
+	{
+		ResultHintSlot->SetAnchors(FAnchors(0.5f, 0.88f));
+		ResultHintSlot->SetAlignment(FVector2D(0.5f, 0.0f));
+		ResultHintSlot->SetSize(FVector2D(900.0f, 60.0f));
+		ResultHintSlot->SetZOrder(101);
+	}
 }
 
 void URhythmGameplayWidget::HandleNoteSpawned(const FRhythmNoteData NoteData)
@@ -332,6 +422,63 @@ void URhythmGameplayWidget::HandleLaneGlowInput(const int32 LaneIndex, const boo
 void URhythmGameplayWidget::HandleScoreChanged(const FRhythmScoreState ScoreState)
 {
 	RefreshScoreText(ScoreState);
+}
+
+void URhythmGameplayWidget::HandleMusicFinished()
+{
+	if (!ResultBackground || !ResultTitleText || !ResultSummaryText || !ResultPerfectText
+		|| !ResultGreatText || !ResultGoodText || !ResultMissText || !ResultHintText)
+	{
+		return;
+	}
+
+	const FRhythmScoreState FinalState = ScoreManager ? ScoreManager->GetScoreState() : FRhythmScoreState();
+	const int32 TotalNotes = FinalState.PerfectCount + FinalState.GreatCount
+		+ FinalState.GoodCount + FinalState.MissCount;
+	ResultSummaryText->SetText(FText::FromString(FString::Printf(
+		TEXT("SCORE  %010lld\n\nMAX COMBO  %d / %d\nACCURACY  %.2f%%"),
+		FinalState.Score,
+		FinalState.MaxCombo,
+		TotalNotes,
+		FinalState.AccuracyPercent)));
+	ResultPerfectText->SetText(FText::FromString(FString::Printf(TEXT("PERFECT  %d"), FinalState.PerfectCount)));
+	ResultGreatText->SetText(FText::FromString(FString::Printf(TEXT("GREAT  %d"), FinalState.GreatCount)));
+	ResultGoodText->SetText(FText::FromString(FString::Printf(TEXT("GOOD  %d"), FinalState.GoodCount)));
+	ResultMissText->SetText(FText::FromString(FString::Printf(TEXT("MISS  %d"), FinalState.MissCount)));
+
+	ResultBackground->SetVisibility(ESlateVisibility::HitTestInvisible);
+	ResultTitleText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	ResultSummaryText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	ResultPerfectText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	ResultGreatText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	ResultGoodText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	ResultMissText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	ResultHintText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	bShowingResults = true;
+	SetKeyboardFocus();
+	if (JudgementFeedback) JudgementFeedback->SetVisibility(ESlateVisibility::Collapsed);
+	if (JudgementHitCountText) JudgementHitCountText->SetVisibility(ESlateVisibility::Collapsed);
+	UE_LOG(LogTemp, Log, TEXT("Rhythm result displayed: score %lld, max combo %d, accuracy %.2f%%, notes %d"),
+		FinalState.Score, FinalState.MaxCombo, FinalState.AccuracyPercent, TotalNotes);
+}
+
+FReply URhythmGameplayWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (bShowingResults)
+	{
+		if (InKeyEvent.GetKey() == EKeys::Enter)
+		{
+			const FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this, true);
+			UGameplayStatics::OpenLevel(this, FName(*CurrentLevelName));
+			return FReply::Handled();
+		}
+		if (InKeyEvent.GetKey() == EKeys::Escape)
+		{
+			UGameplayStatics::OpenLevel(this, TEXT("LobbyMap"));
+			return FReply::Handled();
+		}
+	}
+	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }
 
 void URhythmGameplayWidget::RefreshScoreText(const FRhythmScoreState& ScoreState)

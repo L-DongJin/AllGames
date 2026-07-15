@@ -11,6 +11,8 @@ class USoundBase;
 class USoundWave;
 class URhythmSongDataAsset;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRhythmMusicFinished);
+
 /** Owns rhythm music playback and exposes its audio-derived timeline. */
 UCLASS(Blueprintable)
 class ALLGAMES_API ARhythmConductor : public AActor
@@ -19,6 +21,9 @@ class ALLGAMES_API ARhythmConductor : public AActor
 
 public:
 	ARhythmConductor();
+
+	UPROPERTY(BlueprintAssignable, Category = "Rhythm|Audio")
+	FOnRhythmMusicFinished OnMusicFinished;
 
 	UFUNCTION(BlueprintCallable, Category = "Rhythm|Audio")
 	void PlayMusic();

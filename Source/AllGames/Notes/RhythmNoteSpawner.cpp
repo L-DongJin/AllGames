@@ -4,6 +4,7 @@
 
 #include "EngineUtils.h"
 #include "RhythmNoteActor.h"
+#include "../Core/RhythmGameInstance.h"
 #include "../Data/RhythmSongDataAsset.h"
 #include "../Rhythm/RhythmConductor.h"
 
@@ -30,6 +31,13 @@ void ARhythmNoteSpawner::BeginPlay()
 	}
 
 	SongData = Conductor->GetSongData();
+	if (const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance()))
+	{
+		if (URhythmSongDataAsset* SelectedSong = Settings->GetSelectedSong())
+		{
+			SongData = SelectedSong;
+		}
+	}
 	if (!ensureMsgf(SongData, TEXT("RhythmNoteSpawner requires SongData on the RhythmConductor.")))
 	{
 		SetActorTickEnabled(false);
@@ -37,12 +45,32 @@ void ARhythmNoteSpawner::BeginPlay()
 	}
 
 	ActiveNotes = SongData->Notes;
+	if (const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance()))
+	{
+		const float Density = Settings->GetNoteDensity();
+		if (Density < 1.0f && ActiveNotes.Num() > 2)
+		{
+			TArray<FRhythmNoteData> FilteredNotes;
+			FilteredNotes.Reserve(FMath::CeilToInt(ActiveNotes.Num() * Density));
+			for (int32 Index = 0; Index < ActiveNotes.Num(); ++Index)
+			{
+				const bool bKeep = Index == 0 || Index == ActiveNotes.Num() - 1
+					|| FMath::FloorToInt((Index + 1) * Density) > FMath::FloorToInt(Index * Density);
+				if (bKeep) FilteredNotes.Add(ActiveNotes[Index]);
+			}
+			ActiveNotes = MoveTemp(FilteredNotes);
+		}
+	}
 	ActiveNotes.Sort([](const FRhythmNoteData& Left, const FRhythmNoteData& Right)
 	{
 		return Left.TargetTimeSeconds < Right.TargetTimeSeconds;
 	});
 	LaneCount = SongData->GetLaneCount();
 	SpawnLeadTimeSeconds = SongData->NoteTravelTimeSeconds;
+	if (const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance()))
+	{
+		SpawnLeadTimeSeconds = Settings->GetTravelTimeSeconds(SpawnLeadTimeSeconds);
+	}
 	UE_LOG(LogTemp, Log, TEXT("Chart ready from %s: %d notes, %d lanes, %.2f second travel."),
 		*SongData->GetName(), ActiveNotes.Num(), LaneCount, SpawnLeadTimeSeconds);
 }
