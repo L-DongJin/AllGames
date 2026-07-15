@@ -24,9 +24,16 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	/** Temporary authoring mode; disable after the first vocal phrase has been captured. */
+	UPROPERTY(EditDefaultsOnly, Category = "Rhythm|Chart Recording")
+	bool bEnableTapChartRecording = true;
+
 	UPROPERTY(Transient)
 	TObjectPtr<class ARhythmJudgementManager> JudgementManager;
 
 	UPROPERTY(Transient)
 	TObjectPtr<class ARhythmScoreManager> ScoreManager;
+
+	UPROPERTY(Transient)
+	TObjectPtr<class ARhythmChartTapRecorder> ChartTapRecorder;
 };

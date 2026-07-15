@@ -80,10 +80,8 @@ void ARhythmNoteSpawner::Tick(const float DeltaSeconds)
 		++NextNoteIndex;
 	}
 
-	if (NextNoteIndex >= ActiveNotes.Num())
-	{
-		SetActorTickEnabled(false);
-	}
+	// Keep broadcasting the music timeline after the final spawn. UI notes still need to travel
+	// through their target time, and judgement feedback still uses this presentation clock.
 }
 
 void ARhythmNoteSpawner::SpawnNote(const FRhythmNoteData& NoteData)

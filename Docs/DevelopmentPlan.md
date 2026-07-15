@@ -149,6 +149,18 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 
 ### 2026-07-16
 
+- Began music-grounded chart authoring for `Choom.wav`: added a repeatable NumPy spectral-flux/tempo/onset analysis script and documented the source as 176.053708 seconds, stereo 48 kHz PCM.
+- Automatic analysis supports a 120 BPM working grid with a 0.0133-second initial offset; created a separate Space-only 10-25 second beat-sync verification chart workflow so timing can be listening-tested before vocal chart authoring.
+- Kept the note spawner ticking after its last spawn; its actor-driven timeline is still required to move the final visible notes and animate judgement feedback, especially in short verification charts.
+- First beat-sync PIE test showed stable early input errors near -147.5 ms while notes felt visually late. Preserved judgement windows, moved the test chart grid earlier from +0.0133 to -0.1342 seconds, regenerated `DA_Choom_BeatSyncTest`, and verified the commandlet with zero errors or warnings.
+- User verified the calibrated beat-sync chart in PIE: natural Space inputs on audible attacks now produce predominantly Perfect judgements. Accepted 120 BPM and -0.1342 seconds as the current Choom timing baseline without widening judgement windows.
+- Added a temporary tap-chart recorder for the first vocal-authoring pass. It captures pressed lanes and conductor time from 25-40 seconds and writes `Saved/ChartRecordings/ChoomTapRecording.csv` when PIE ends, allowing human-heard syllable onsets to become the chart source.
+- Captured 47 human vocal/rhythm taps from 25.2084-39.9775 seconds. The sample contains 13 quarter-note-like and 33 eighth-note-like intervals with a 0.2665-second median; prepared an unquantized Space-only vocal playback-test asset workflow and recorder shutdown to preserve the source capture.
+- Generated and assigned `DA_Choom_VocalTapTest` with all 47 unquantized human-perceived pulse/groove timestamps, disabled the temporary recorder, and completed the commandlet with zero errors or warnings.
+- Prepared a clean 1-80 second perceptual-pulse capture with an empty chart, a separate output CSV, and no visual note prompts so the player's natural musical reference can be analyzed across a longer section without overwriting the first recording.
+- Analyzed the completed 1-80 second capture: 212 taps, dominated by 117 eighth-like and 76 quarter-like intervals. After the 147.5 ms listening calibration, median error to the 120 BPM sixteenth-note grid is 14.8 ms and 80.2% fall within 30 ms. Adopted selective sixteenth-grid groove/syncopation as the player's chart-authoring rule rather than percussion-only onset selection.
+- Prepared a playable Normal 9-key 1-80 second draft transformation: selective 35 ms sixteenth-grid snapping, preservation of expressive outliers, sub-90 ms merge protection, no chords, alternating hand-friendly lanes, and Space phrase accents.
+- Generated and assigned `DA_Choom_HumanGroove_1_80`: all 212 taps became single notes, 181 were snapped, 31 expressive timestamps were preserved, none required merging, tap recording was disabled, and Git LFS handling was verified.
 - User verified that the stage 6 gameplay screen and moving notes display correctly in PIE; marked stage 6 complete.
 - Expanded the intended judgement design from two tiers to four: Perfect, Great, Good, and Miss. Stage 7 remains in progress until Great/Good are implemented and verified.
 - Implemented the four judgement tiers with initial editable windows of 45/90/150/180 ms for Perfect/Great/Good/Miss.

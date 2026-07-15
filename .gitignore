@@ -23,6 +23,10 @@ Build/*/FileOpenOrder/
 *.tmp
 *.log
 
+# Python analysis caches
+__pycache__/
+*.pyc
+
 # Operating-system files
 .DS_Store
 Thumbs.db

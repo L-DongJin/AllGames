@@ -3,6 +3,7 @@
 #include "RhythmGameModeBase.h"
 
 #include "RhythmPlayerController.h"
+#include "../Data/RhythmChartTapRecorder.h"
 #include "../Judgement/RhythmJudgementManager.h"
 #include "../Scoring/RhythmScoreManager.h"
 
@@ -22,4 +23,10 @@ void ARhythmGameModeBase::BeginPlay()
 
 	ScoreManager = GetWorld()->SpawnActor<ARhythmScoreManager>();
 	ensureMsgf(ScoreManager, TEXT("Failed to create RhythmScoreManager."));
+
+	if (bEnableTapChartRecording)
+	{
+		ChartTapRecorder = GetWorld()->SpawnActor<ARhythmChartTapRecorder>();
+		ensureMsgf(ChartTapRecorder, TEXT("Failed to create RhythmChartTapRecorder."));
+	}
 }
