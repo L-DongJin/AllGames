@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "../Notes/RhythmNoteData.h"
 #include "../Scoring/RhythmScoreManager.h"
+#include "../Online/RhythmLeaderboardTypes.h"
 #include "RhythmGameplayWidget.generated.h"
 
 class ARhythmConductor;
@@ -34,6 +35,7 @@ public:
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
@@ -164,6 +166,8 @@ private:
 
 	UFUNCTION()
 	void HandleMusicFinished();
+	void HandleScoreSubmissionCompleted(bool bSuccess, const FString& Message);
+	void HandleAroundPlayerLeaderboardCompleted(bool bSuccess, const FRhythmLeaderboardResult& Result);
 
 	UFUNCTION()
 	void HandleReturnToLobbyClicked();
@@ -257,6 +261,9 @@ private:
 	TObjectPtr<UTextBlock> ResultMissText;
 
 	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ResultLeaderboardText;
+
+	UPROPERTY(Transient)
 	TObjectPtr<UButton> ResultLobbyButton;
 
 	UPROPERTY(Transient)
@@ -298,4 +305,5 @@ private:
 	bool bResultAnimationActive = false;
 	bool bShowingPauseMenu = false;
 	bool bCountdownWasVisible = false;
+	bool bInitialLayoutReady = false;
 };

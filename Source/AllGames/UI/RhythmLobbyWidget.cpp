@@ -13,9 +13,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
 #include "Engine/Texture2D.h"
+#include "Engine/Font.h"
 #include "TimerManager.h"
 #include "../Core/RhythmGameInstance.h"
 #include "../Data/RhythmSongDataAsset.h"
+#include "../Online/RhythmLeaderboardSubsystem.h"
 
 namespace
 {
@@ -42,6 +44,19 @@ TSharedRef<SWidget> URhythmLobbyWidget::RebuildWidget()
 {
 	if (WidgetTree && !WidgetTree->RootWidget) BuildLayout();
 	return Super::RebuildWidget();
+}
+
+void URhythmLobbyWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	if (URhythmLeaderboardSubsystem* Leaderboards = GetGameInstance()
+		? GetGameInstance()->GetSubsystem<URhythmLeaderboardSubsystem>() : nullptr)
+	{
+		Leaderboards->OnTopLeaderboardCompleted.AddUObject(
+			this, &ThisClass::HandleTopLeaderboardCompleted);
+		bLeaderboardDelegatesBound = true;
+		RefreshLeaderboard();
+	}
 }
 
 void URhythmLobbyWidget::BuildLayout()
@@ -117,11 +132,51 @@ void URhythmLobbyWidget::BuildLayout()
 
 	HelpText = MakeText(WidgetTree, TEXT("LobbyHelp"), TEXT("UP/DOWN: SELECT    LEFT/RIGHT: CHANGE    ENTER: START"), 22, FLinearColor(0.55f, 0.62f, 0.75f));
 	AddCentered(HelpText, 0.95f, FVector2D(1250, 42));
+
+	LeaderboardTitleText = MakeText(WidgetTree, TEXT("LeaderboardTitleText"), TEXT("ONLINE TOP 10"),
+		LeaderboardTitleFontSize, LeaderboardTitleColor);
+	if (LeaderboardFont)
+	{
+		FSlateFontInfo Font = LeaderboardTitleText->GetFont();
+		Font.FontObject = LeaderboardFont.Get();
+		LeaderboardTitleText->SetFont(Font);
+	}
+	LeaderboardTitleText->SetJustification(ETextJustify::Left);
+	if (UCanvasPanelSlot* TitleSlot = Root->AddChildToCanvas(LeaderboardTitleText))
+	{
+		TitleSlot->SetAnchors(FAnchors(LeaderboardTitlePosition.X, LeaderboardTitlePosition.Y));
+		TitleSlot->SetAlignment(FVector2D(0.0f, 0.0f));
+		TitleSlot->SetSize(FVector2D(FMath::Max(1.0f, LeaderboardAreaSize.X), 55.0f));
+	}
+
+	LeaderboardText = MakeText(WidgetTree, TEXT("LeaderboardText"), TEXT("불러오는 중..."),
+		LeaderboardEntryFontSize, LeaderboardEntryColor);
+	if (LeaderboardFont)
+	{
+		FSlateFontInfo Font = LeaderboardText->GetFont();
+		Font.FontObject = LeaderboardFont.Get();
+		LeaderboardText->SetFont(Font);
+	}
+	LeaderboardText->SetJustification(ETextJustify::Left);
+	if (UCanvasPanelSlot* LeaderboardSlot = Root->AddChildToCanvas(LeaderboardText))
+	{
+		LeaderboardSlot->SetAnchors(FAnchors(LeaderboardEntriesPosition.X, LeaderboardEntriesPosition.Y));
+		LeaderboardSlot->SetAlignment(FVector2D(0.0f, 0.0f));
+		LeaderboardSlot->SetSize(FVector2D(
+			FMath::Max(1.0f, LeaderboardAreaSize.X),
+			FMath::Max(1.0f, LeaderboardAreaSize.Y)));
+	}
 	RefreshSettings();
 }
 
 void URhythmLobbyWidget::NativeDestruct()
 {
+	if (URhythmLeaderboardSubsystem* Leaderboards = GetGameInstance()
+		? GetGameInstance()->GetSubsystem<URhythmLeaderboardSubsystem>() : nullptr)
+	{
+		Leaderboards->OnTopLeaderboardCompleted.RemoveAll(this);
+	}
+	bLeaderboardDelegatesBound = false;
 	StopSongPreview();
 	Super::NativeDestruct();
 }
@@ -197,6 +252,62 @@ void URhythmLobbyWidget::RefreshSettings()
 		HelpText->SetText(FText::FromString(FString::Printf(TEXT("SELECTED: %s    UP/DOWN: SELECT    LEFT/RIGHT: CHANGE    ENTER: CONFIRM"), RowName)));
 	}
 	RefreshSongPreview();
+	RefreshLeaderboard();
+}
+
+void URhythmLobbyWidget::RefreshLeaderboard()
+{
+	if (!bLeaderboardDelegatesBound || !LeaderboardText)
+	{
+		return;
+	}
+	const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance());
+	const URhythmSongDataAsset* Song = Settings ? Settings->GetSelectedSong() : nullptr;
+	const FString StatisticName = URhythmLeaderboardSubsystem::BuildStatisticName(Song);
+	if (StatisticName.IsEmpty() || StatisticName == RequestedLeaderboardStatistic)
+	{
+		return;
+	}
+	RequestedLeaderboardStatistic = StatisticName;
+	LeaderboardText->SetText(FText::FromString(TEXT("불러오는 중...")));
+	if (URhythmLeaderboardSubsystem* Leaderboards =
+		GetGameInstance()->GetSubsystem<URhythmLeaderboardSubsystem>())
+	{
+		Leaderboards->RequestTopLeaderboard(Song, 10);
+	}
+}
+
+void URhythmLobbyWidget::HandleTopLeaderboardCompleted(
+	const bool bSuccess, const FRhythmLeaderboardResult& Result)
+{
+	if (!LeaderboardText || Result.StatisticName != RequestedLeaderboardStatistic)
+	{
+		// A song may have changed while the previous HTTP request was in flight.
+		// Retry the latest selection now that the subsystem is available again.
+		RequestedLeaderboardStatistic.Reset();
+		RefreshLeaderboard();
+		return;
+	}
+	if (!bSuccess)
+	{
+		LeaderboardText->SetText(FText::FromString(TEXT("랭킹 조회 실패")));
+		return;
+	}
+
+	FString Display;
+	if (Result.Entries.IsEmpty())
+	{
+		Display += TEXT("아직 등록된 기록이 없습니다.");
+	}
+	else
+	{
+		for (const FRhythmLeaderboardEntry& Entry : Result.Entries)
+		{
+			Display += FString::Printf(TEXT("%2d.  %-14s  %d\n"),
+				Entry.Rank, *Entry.DisplayName.Left(14), Entry.Score);
+		}
+	}
+	LeaderboardText->SetText(FText::FromString(Display));
 }
 
 void URhythmLobbyWidget::RefreshSongPreview()

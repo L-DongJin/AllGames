@@ -14,8 +14,11 @@
 #include "TimerManager.h"
 #include "UObject/ConstructorHelpers.h"
 #include "../Core/RhythmPlayerController.h"
+#include "../Core/RhythmGameInstance.h"
+#include "../Core/RhythmAccountSubsystem.h"
 #include "../Judgement/RhythmJudgementManager.h"
 #include "../Notes/RhythmNoteSpawner.h"
+#include "../Online/RhythmLeaderboardSubsystem.h"
 #include "../Rhythm/RhythmConductor.h"
 #include "../Scoring/RhythmScoreManager.h"
 
@@ -52,6 +55,14 @@ TSharedRef<SWidget> URhythmGameplayWidget::RebuildWidget()
 void URhythmGameplayWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	if (URhythmLeaderboardSubsystem* Leaderboards = GetGameInstance()
+		? GetGameInstance()->GetSubsystem<URhythmLeaderboardSubsystem>() : nullptr)
+	{
+		Leaderboards->OnScoreSubmissionCompleted.AddUObject(
+			this, &ThisClass::HandleScoreSubmissionCompleted);
+		Leaderboards->OnAroundPlayerLeaderboardCompleted.AddUObject(
+			this, &ThisClass::HandleAroundPlayerLeaderboardCompleted);
+	}
 
 	if (const ARhythmPlayerController* Controller = Cast<ARhythmPlayerController>(GetOwningPlayer()))
 	{
@@ -119,10 +130,25 @@ void URhythmGameplayWidget::NativeConstruct()
 	UE_LOG(LogTemp, Log, TEXT("Rhythm gameplay WBP ready: %d lanes."), LaneCount);
 }
 
+void URhythmGameplayWidget::NativeDestruct()
+{
+	if (URhythmLeaderboardSubsystem* Leaderboards = GetGameInstance()
+		? GetGameInstance()->GetSubsystem<URhythmLeaderboardSubsystem>() : nullptr)
+	{
+		Leaderboards->OnScoreSubmissionCompleted.RemoveAll(this);
+		Leaderboards->OnAroundPlayerLeaderboardCompleted.RemoveAll(this);
+	}
+	Super::NativeDestruct();
+}
+
 void URhythmGameplayWidget::NativeTick(const FGeometry& MyGeometry, const float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	UpdateResultAnimation();
+	if (!bInitialLayoutReady || (Conductor && Conductor->IsStartCountdownActive()))
+	{
+		RefreshLayout(Conductor ? Conductor->GetMusicTimeSeconds() : 0.0f);
+	}
 	if (!StartCountdownText || !Conductor)
 	{
 		return;
@@ -228,6 +254,7 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 		UImage* Lane = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), *FString::Printf(TEXT("Lane%d"), LaneIndex + 1));
 		Lane->SetColorAndOpacity(LaneIndex % 2 == 0 ? FLinearColor(0.08f, 0.1f, 0.16f, 0.92f) : FLinearColor(0.04f, 0.06f, 0.11f, 0.92f));
 		if (LaneBackgroundImage) Lane->SetBrushFromTexture(LaneBackgroundImage);
+		Lane->SetVisibility(ESlateVisibility::Collapsed);
 		LaneCanvas->AddChildToCanvas(Lane);
 		LaneImages.Add(Lane);
 
@@ -251,6 +278,7 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 		FSlateFontInfo KeyFont = KeyLabel->GetFont();
 		KeyFont.Size = LaneKeyLabelFontSize;
 		KeyLabel->SetFont(KeyFont);
+		KeyLabel->SetVisibility(ESlateVisibility::Collapsed);
 		LaneCanvas->AddChildToCanvas(KeyLabel);
 		LaneKeyLabels.Add(KeyLabel);
 	}
@@ -258,6 +286,7 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 	JudgementLine = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("JudgementLine"));
 	JudgementLine->SetColorAndOpacity(FLinearColor::White);
 	if (JudgementLineImage) JudgementLine->SetBrushFromTexture(JudgementLineImage);
+	JudgementLine->SetVisibility(ESlateVisibility::Collapsed);
 	LaneCanvas->AddChildToCanvas(JudgementLine);
 
 	JudgementFeedback = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("JudgementFeedback"));
@@ -284,6 +313,7 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 		TextBlock->SetColorAndOpacity(FSlateColor(FLinearColor::White));
 		TextBlock->SetShadowOffset(FVector2D(2.0f, 2.0f));
 		TextBlock->SetShadowColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.8f));
+		TextBlock->SetVisibility(ESlateVisibility::Collapsed);
 		RootCanvas->AddChildToCanvas(TextBlock);
 	}
 	FSlateFontInfo ScoreFont = ScoreText->GetFont();
@@ -381,6 +411,23 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 	ResultGreatText = AddResultJudgement(TEXT("ResultGreatText"), FLinearColor(1.0f, 0.82f, 0.12f), 0.59f);
 	ResultGoodText = AddResultJudgement(TEXT("ResultGoodText"), FLinearColor(0.25f, 1.0f, 0.38f), 0.66f);
 	ResultMissText = AddResultJudgement(TEXT("ResultMissText"), FLinearColor(1.0f, 0.16f, 0.16f), 0.73f);
+
+	ResultLeaderboardText = WidgetTree->ConstructWidget<UTextBlock>(
+		UTextBlock::StaticClass(), TEXT("ResultLeaderboardText"));
+	ResultLeaderboardText->SetText(FText::FromString(TEXT("온라인 기록 대기 중")));
+	ResultLeaderboardText->SetJustification(ETextJustify::Center);
+	ResultLeaderboardText->SetColorAndOpacity(FSlateColor(FLinearColor(0.45f, 0.9f, 1.0f)));
+	FSlateFontInfo LeaderboardFont = ResultLeaderboardText->GetFont();
+	LeaderboardFont.Size = 25;
+	ResultLeaderboardText->SetFont(LeaderboardFont);
+	ResultLeaderboardText->SetVisibility(ESlateVisibility::Collapsed);
+	if (UCanvasPanelSlot* LeaderboardSlot = RootCanvas->AddChildToCanvas(ResultLeaderboardText))
+	{
+		LeaderboardSlot->SetAnchors(FAnchors(0.5f, 0.79f));
+		LeaderboardSlot->SetAlignment(FVector2D(0.5f, 0.0f));
+		LeaderboardSlot->SetSize(FVector2D(1000.0f, 55.0f));
+		LeaderboardSlot->SetZOrder(101);
+	}
 
 	ResultLobbyButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("ResultLobbyButton"));
 	UTextBlock* ResultLobbyButtonText = WidgetTree->ConstructWidget<UTextBlock>(
@@ -669,6 +716,19 @@ void URhythmGameplayWidget::HandleMusicFinished()
 	}
 
 	FinalResultState = ScoreManager ? ScoreManager->GetScoreState() : FRhythmScoreState();
+	if (ResultLeaderboardText)
+	{
+		ResultLeaderboardText->SetText(FText::FromString(TEXT("온라인 기록 등록 중...")));
+		ResultLeaderboardText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+	if (const URhythmGameInstance* RhythmGameInstance = Cast<URhythmGameInstance>(GetGameInstance()))
+	{
+		if (URhythmLeaderboardSubsystem* Leaderboards =
+			GetGameInstance()->GetSubsystem<URhythmLeaderboardSubsystem>())
+		{
+			Leaderboards->SubmitScore(RhythmGameInstance->GetSelectedSong(), FinalResultState);
+		}
+	}
 	FinalResultTotalNotes = FinalResultState.PerfectCount + FinalResultState.GreatCount
 		+ FinalResultState.GoodCount + FinalResultState.MissCount;
 	ResultAnimationStartRealTime = GetWorld() ? GetWorld()->GetRealTimeSeconds() : 0.0f;
@@ -700,6 +760,55 @@ void URhythmGameplayWidget::HandleMusicFinished()
 	if (JudgementHitCountText) JudgementHitCountText->SetVisibility(ESlateVisibility::Collapsed);
 	UE_LOG(LogTemp, Log, TEXT("Rhythm result displayed: score %lld, max combo %d, accuracy %.2f%%, notes %d"),
 		FinalResultState.Score, FinalResultState.MaxCombo, FinalResultState.AccuracyPercent, FinalResultTotalNotes);
+}
+
+void URhythmGameplayWidget::HandleScoreSubmissionCompleted(const bool bSuccess, const FString& Message)
+{
+	if (!ResultLeaderboardText || !bShowingResults)
+	{
+		return;
+	}
+	if (!bSuccess)
+	{
+		ResultLeaderboardText->SetText(FText::FromString(Message));
+		ResultLeaderboardText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.35f, 0.35f)));
+		return;
+	}
+
+	ResultLeaderboardText->SetText(FText::FromString(TEXT("현재 순위 확인 중...")));
+	if (const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance()))
+	{
+		if (URhythmLeaderboardSubsystem* Leaderboards =
+			GetGameInstance()->GetSubsystem<URhythmLeaderboardSubsystem>())
+		{
+			Leaderboards->RequestLeaderboardAroundPlayer(Settings->GetSelectedSong(), 9);
+		}
+	}
+}
+
+void URhythmGameplayWidget::HandleAroundPlayerLeaderboardCompleted(
+	const bool bSuccess, const FRhythmLeaderboardResult& Result)
+{
+	if (!ResultLeaderboardText || !bShowingResults)
+	{
+		return;
+	}
+	if (!bSuccess)
+	{
+		ResultLeaderboardText->SetText(FText::FromString(TEXT("순위 조회에 실패했습니다.")));
+		ResultLeaderboardText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.35f, 0.35f)));
+		return;
+	}
+
+	const URhythmAccountSubsystem* Accounts = GetGameInstance()
+		? GetGameInstance()->GetSubsystem<URhythmAccountSubsystem>() : nullptr;
+	const FString PlayerId = Accounts ? Accounts->GetPlayerId() : FString();
+	const FRhythmLeaderboardEntry* PlayerEntry = Result.Entries.FindByPredicate(
+		[&PlayerId](const FRhythmLeaderboardEntry& Entry) { return Entry.PlayerId == PlayerId; });
+	ResultLeaderboardText->SetColorAndOpacity(FSlateColor(FLinearColor(0.45f, 0.9f, 1.0f)));
+	ResultLeaderboardText->SetText(FText::FromString(PlayerEntry
+		? FString::Printf(TEXT("온라인 순위  %d위    개인 최고  %d"), PlayerEntry->Rank, PlayerEntry->Score)
+		: TEXT("등록 완료 · 순위 집계 대기 중")));
 }
 
 void URhythmGameplayWidget::HandleReturnToLobbyClicked()
@@ -876,6 +985,24 @@ void URhythmGameplayWidget::RefreshLayout(const float MusicTime)
 	if (Size.X <= 1.0f || Size.Y <= 1.0f)
 	{
 		return;
+	}
+
+	if (!bInitialLayoutReady)
+	{
+		for (UImage* Lane : LaneImages)
+		{
+			if (Lane) Lane->SetVisibility(ESlateVisibility::HitTestInvisible);
+		}
+		for (UTextBlock* Label : LaneKeyLabels)
+		{
+			if (Label) Label->SetVisibility(ESlateVisibility::HitTestInvisible);
+		}
+		if (JudgementLine) JudgementLine->SetVisibility(ESlateVisibility::HitTestInvisible);
+		for (UTextBlock* TextBlock : { ScoreText.Get(), ComboText.Get(), AccuracyText.Get(), PlayTimeText.Get() })
+		{
+			if (TextBlock) TextBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
+		}
+		bInitialLayoutReady = true;
 	}
 
 	const float LaneWidth = Size.X / static_cast<float>(LaneCount);

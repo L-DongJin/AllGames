@@ -33,6 +33,14 @@ class ALLGAMES_API URhythmSongDataAsset : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 public:
+	/** Stable online identifier shared by every difficulty chart for this song. Never change it after release. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song|Online")
+	FName SongId;
+
+	/** Increment when chart changes make old leaderboard scores no longer comparable. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song|Online", meta = (ClampMin = "1", UIMin = "1"))
+	int32 ChartVersion = 1;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song")
 	FText SongTitle;
 
