@@ -46,6 +46,7 @@ protected:
 
 private:
 	void HandleLaneInput(const FInputActionValue& Value, int32 LaneIndex, bool bPressed);
+	void HandlePauseMenuInput();
 	void ApplyKeyMode(bool bClearExistingMappings);
 
 	UPROPERTY()

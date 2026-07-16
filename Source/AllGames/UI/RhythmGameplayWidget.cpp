@@ -122,6 +122,7 @@ void URhythmGameplayWidget::NativeConstruct()
 void URhythmGameplayWidget::NativeTick(const FGeometry& MyGeometry, const float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+	UpdateResultAnimation();
 	if (!StartCountdownText || !Conductor)
 	{
 		return;
@@ -400,6 +401,60 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 		ResultButtonSlot->SetSize(FVector2D(360.0f, 80.0f));
 		ResultButtonSlot->SetZOrder(101);
 	}
+
+	PauseBackground = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("PauseBackground"));
+	PauseBackground->SetColorAndOpacity(FLinearColor(0.005f, 0.008f, 0.02f, 0.88f));
+	PauseBackground->SetVisibility(ESlateVisibility::Collapsed);
+	if (UCanvasPanelSlot* PauseBackgroundSlot = RootCanvas->AddChildToCanvas(PauseBackground))
+	{
+		PauseBackgroundSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+		PauseBackgroundSlot->SetOffsets(FMargin(0.0f));
+		PauseBackgroundSlot->SetZOrder(110);
+	}
+
+	PauseTitleText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("PauseTitleText"));
+	PauseTitleText->SetText(FText::FromString(TEXT("PAUSED")));
+	PauseTitleText->SetJustification(ETextJustify::Center);
+	PauseTitleText->SetColorAndOpacity(FSlateColor(FLinearColor(0.3f, 0.9f, 1.0f)));
+	FSlateFontInfo PauseTitleFont = PauseTitleText->GetFont();
+	PauseTitleFont.Size = 72;
+	PauseTitleText->SetFont(PauseTitleFont);
+	PauseTitleText->SetVisibility(ESlateVisibility::Collapsed);
+	if (UCanvasPanelSlot* PauseTitleSlot = RootCanvas->AddChildToCanvas(PauseTitleText))
+	{
+		PauseTitleSlot->SetAnchors(FAnchors(0.5f, 0.30f));
+		PauseTitleSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+		PauseTitleSlot->SetSize(FVector2D(700.0f, 110.0f));
+		PauseTitleSlot->SetZOrder(111);
+	}
+
+	auto AddPauseButton = [this, RootCanvas](const TCHAR* Name, const TCHAR* Label, const float AnchorY)
+	{
+		UButton* Button = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), Name);
+		UTextBlock* LabelText = WidgetTree->ConstructWidget<UTextBlock>(
+			UTextBlock::StaticClass(), *FString::Printf(TEXT("%sText"), Name));
+		LabelText->SetText(FText::FromString(Label));
+		LabelText->SetJustification(ETextJustify::Center);
+		LabelText->SetColorAndOpacity(FSlateColor(FLinearColor::White));
+		FSlateFontInfo Font = LabelText->GetFont();
+		Font.Size = 36;
+		LabelText->SetFont(Font);
+		Button->AddChild(LabelText);
+		Button->SetVisibility(ESlateVisibility::Collapsed);
+		if (UCanvasPanelSlot* PauseButtonSlot = RootCanvas->AddChildToCanvas(Button))
+		{
+			PauseButtonSlot->SetAnchors(FAnchors(0.5f, AnchorY));
+			PauseButtonSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+			PauseButtonSlot->SetSize(FVector2D(420.0f, 82.0f));
+			PauseButtonSlot->SetZOrder(111);
+		}
+		return Button;
+	};
+
+	PauseRestartButton = AddPauseButton(TEXT("PauseRestartButton"), TEXT("RESTART"), 0.48f);
+	PauseRestartButton->OnClicked.AddDynamic(this, &ThisClass::HandleRestartClicked);
+	PauseLobbyButton = AddPauseButton(TEXT("PauseLobbyButton"), TEXT("LOBBY"), 0.60f);
+	PauseLobbyButton->OnClicked.AddDynamic(this, &ThisClass::HandlePauseLobbyClicked);
 }
 
 void URhythmGameplayWidget::HandleNoteSpawned(const FRhythmNoteData NoteData)
@@ -613,19 +668,16 @@ void URhythmGameplayWidget::HandleMusicFinished()
 		return;
 	}
 
-	const FRhythmScoreState FinalState = ScoreManager ? ScoreManager->GetScoreState() : FRhythmScoreState();
-	const int32 TotalNotes = FinalState.PerfectCount + FinalState.GreatCount
-		+ FinalState.GoodCount + FinalState.MissCount;
-	ResultSummaryText->SetText(FText::FromString(FString::Printf(
-		TEXT("SCORE  %010lld\n\nMAX COMBO  %d / %d\nACCURACY  %.2f%%"),
-		FinalState.Score,
-		FinalState.MaxCombo,
-		TotalNotes,
-		FinalState.AccuracyPercent)));
-	ResultPerfectText->SetText(FText::FromString(FString::Printf(TEXT("PERFECT  %d"), FinalState.PerfectCount)));
-	ResultGreatText->SetText(FText::FromString(FString::Printf(TEXT("GREAT  %d"), FinalState.GreatCount)));
-	ResultGoodText->SetText(FText::FromString(FString::Printf(TEXT("GOOD  %d"), FinalState.GoodCount)));
-	ResultMissText->SetText(FText::FromString(FString::Printf(TEXT("MISS  %d"), FinalState.MissCount)));
+	FinalResultState = ScoreManager ? ScoreManager->GetScoreState() : FRhythmScoreState();
+	FinalResultTotalNotes = FinalResultState.PerfectCount + FinalResultState.GreatCount
+		+ FinalResultState.GoodCount + FinalResultState.MissCount;
+	ResultAnimationStartRealTime = GetWorld() ? GetWorld()->GetRealTimeSeconds() : 0.0f;
+	bResultAnimationActive = true;
+	ResultSummaryText->SetText(FText::FromString(TEXT("SCORE  0000000000\n\nMAX COMBO  0 / 0\nACCURACY  0.00%")));
+	ResultPerfectText->SetText(FText::FromString(TEXT("PERFECT  0")));
+	ResultGreatText->SetText(FText::FromString(TEXT("GREAT  0")));
+	ResultGoodText->SetText(FText::FromString(TEXT("GOOD  0")));
+	ResultMissText->SetText(FText::FromString(TEXT("MISS  0")));
 
 	ResultBackground->SetVisibility(ESlateVisibility::HitTestInvisible);
 	ResultTitleText->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -634,7 +686,7 @@ void URhythmGameplayWidget::HandleMusicFinished()
 	ResultGreatText->SetVisibility(ESlateVisibility::HitTestInvisible);
 	ResultGoodText->SetVisibility(ESlateVisibility::HitTestInvisible);
 	ResultMissText->SetVisibility(ESlateVisibility::HitTestInvisible);
-	ResultLobbyButton->SetVisibility(ESlateVisibility::Visible);
+	ResultLobbyButton->SetVisibility(ESlateVisibility::Collapsed);
 	bShowingResults = true;
 	if (APlayerController* PlayerController = GetOwningPlayer())
 	{
@@ -647,13 +699,80 @@ void URhythmGameplayWidget::HandleMusicFinished()
 	if (JudgementFeedback) JudgementFeedback->SetVisibility(ESlateVisibility::Collapsed);
 	if (JudgementHitCountText) JudgementHitCountText->SetVisibility(ESlateVisibility::Collapsed);
 	UE_LOG(LogTemp, Log, TEXT("Rhythm result displayed: score %lld, max combo %d, accuracy %.2f%%, notes %d"),
-		FinalState.Score, FinalState.MaxCombo, FinalState.AccuracyPercent, TotalNotes);
+		FinalResultState.Score, FinalResultState.MaxCombo, FinalResultState.AccuracyPercent, FinalResultTotalNotes);
 }
 
 void URhythmGameplayWidget::HandleReturnToLobbyClicked()
 {
 	if (APlayerController* PlayerController = GetOwningPlayer())
 	{
+		PlayerController->SetShowMouseCursor(false);
+	}
+	UGameplayStatics::OpenLevel(this, TEXT("LobbyMap"));
+}
+
+void URhythmGameplayWidget::TogglePauseMenu()
+{
+	if (!bShowingResults)
+	{
+		SetPauseMenuVisible(!bShowingPauseMenu);
+	}
+}
+
+void URhythmGameplayWidget::SetPauseMenuVisible(const bool bVisible)
+{
+	if (!PauseBackground || !PauseTitleText || !PauseRestartButton || !PauseLobbyButton)
+	{
+		return;
+	}
+
+	bShowingPauseMenu = bVisible;
+	PauseBackground->SetVisibility(bVisible ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+	PauseTitleText->SetVisibility(bVisible ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+	PauseRestartButton->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	PauseLobbyButton->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+
+	if (Conductor)
+	{
+		Conductor->SetMusicPaused(bVisible);
+	}
+
+	if (APlayerController* PlayerController = GetOwningPlayer())
+	{
+		PlayerController->SetPause(bVisible);
+		PlayerController->SetShowMouseCursor(bVisible);
+		if (bVisible)
+		{
+			FInputModeGameAndUI InputMode;
+			InputMode.SetWidgetToFocus(TakeWidget());
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			PlayerController->SetInputMode(InputMode);
+		}
+		else
+		{
+			FInputModeGameOnly InputMode;
+			PlayerController->SetInputMode(InputMode);
+			PlayerController->FlushPressedKeys();
+		}
+	}
+}
+
+void URhythmGameplayWidget::HandleRestartClicked()
+{
+	if (APlayerController* PlayerController = GetOwningPlayer())
+	{
+		PlayerController->SetPause(false);
+		PlayerController->SetShowMouseCursor(false);
+	}
+	const FName CurrentLevelName(*UGameplayStatics::GetCurrentLevelName(this, true));
+	UGameplayStatics::OpenLevel(this, CurrentLevelName);
+}
+
+void URhythmGameplayWidget::HandlePauseLobbyClicked()
+{
+	if (APlayerController* PlayerController = GetOwningPlayer())
+	{
+		PlayerController->SetPause(false);
 		PlayerController->SetShowMouseCursor(false);
 	}
 	UGameplayStatics::OpenLevel(this, TEXT("LobbyMap"));
@@ -672,6 +791,51 @@ void URhythmGameplayWidget::RefreshScoreText(const FRhythmScoreState& ScoreState
 	if (AccuracyText)
 	{
 		AccuracyText->SetText(FText::FromString(FString::Printf(TEXT("ACCURACY  %.2f%%"), ScoreState.AccuracyPercent)));
+	}
+}
+
+void URhythmGameplayWidget::UpdateResultAnimation()
+{
+	if (!bResultAnimationActive || !GetWorld() || !ResultSummaryText || !ResultPerfectText
+		|| !ResultGreatText || !ResultGoodText || !ResultMissText)
+	{
+		return;
+	}
+
+	const float LinearAlpha = FMath::Clamp(
+		(GetWorld()->GetRealTimeSeconds() - ResultAnimationStartRealTime)
+			/ FMath::Max(ResultCountUpDuration, 0.01f),
+		0.0f,
+		1.0f);
+	// Fast initial climb followed by a satisfying settle on the exact final value.
+	const float CountAlpha = 1.0f - FMath::Pow(1.0f - LinearAlpha, 3.0f);
+	const int64 AnimatedScore = FMath::RoundToInt64(static_cast<double>(FinalResultState.Score) * CountAlpha);
+	const int32 AnimatedMaxCombo = FMath::RoundToInt(static_cast<float>(FinalResultState.MaxCombo) * CountAlpha);
+	const int32 AnimatedTotalNotes = FMath::RoundToInt(static_cast<float>(FinalResultTotalNotes) * CountAlpha);
+	const float AnimatedAccuracy = FinalResultState.AccuracyPercent * CountAlpha;
+
+	ResultSummaryText->SetText(FText::FromString(FString::Printf(
+		TEXT("SCORE  %010lld\n\nMAX COMBO  %d / %d\nACCURACY  %.2f%%"),
+		AnimatedScore,
+		AnimatedMaxCombo,
+		AnimatedTotalNotes,
+		AnimatedAccuracy)));
+	ResultPerfectText->SetText(FText::FromString(FString::Printf(
+		TEXT("PERFECT  %d"), FMath::RoundToInt(FinalResultState.PerfectCount * CountAlpha))));
+	ResultGreatText->SetText(FText::FromString(FString::Printf(
+		TEXT("GREAT  %d"), FMath::RoundToInt(FinalResultState.GreatCount * CountAlpha))));
+	ResultGoodText->SetText(FText::FromString(FString::Printf(
+		TEXT("GOOD  %d"), FMath::RoundToInt(FinalResultState.GoodCount * CountAlpha))));
+	ResultMissText->SetText(FText::FromString(FString::Printf(
+		TEXT("MISS  %d"), FMath::RoundToInt(FinalResultState.MissCount * CountAlpha))));
+
+	if (LinearAlpha >= 1.0f)
+	{
+		bResultAnimationActive = false;
+		if (ResultLobbyButton)
+		{
+			ResultLobbyButton->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 }
 

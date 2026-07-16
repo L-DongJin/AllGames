@@ -33,12 +33,16 @@ def main():
     require(len(songs) == 44, "Catalog must contain 44 production charts")
 
     by_name = {song.get_name(): song for song in songs if song}
+    level_summaries = []
     for prefix, expected_difficulties in EXPECTED.items():
         counts = []
         for difficulty_index, difficulty_name in enumerate(DIFFICULTIES):
             asset_name = "DA_{}_{}_5Key".format(prefix, difficulty_name)
             chart = by_name.get(asset_name)
             require(chart is not None, "Missing chart {}".format(asset_name))
+            require(chart.get_editor_property("title_image") is not None, "Missing title image in {}".format(asset_name))
+            level = chart.get_editor_property("chart_level")
+            require(1 <= level <= 24, "Invalid chart level in {}".format(asset_name))
             notes = chart.get_editor_property("notes")
             expected_notes, expected_holds = expected_difficulties[difficulty_index]
             require(len(notes) == expected_notes, "Unexpected note count in {}".format(asset_name))
@@ -67,9 +71,12 @@ def main():
                     "Hold overload in {} at {:.3f}".format(asset_name, times[index]),
                 )
             counts.append(len(notes))
+            level_summaries.append("{}:{}".format(asset_name, level))
         require(counts == sorted(counts) and len(set(counts)) == 4, "Difficulty density failed for {}".format(prefix))
 
-    unreal.log("RHYTHM REBALANCE VALIDATION PASSED: 44 charts, CANON-D preserved")
+    unreal.log("RHYTHM REBALANCE VALIDATION PASSED: 44 charts, CANON-D preserved, levels {}".format(
+        ", ".join(level_summaries)
+    ))
 
 
 main()

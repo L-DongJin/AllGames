@@ -130,6 +130,11 @@ void ARhythmPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
+	FInputKeyBinding PauseBinding(FInputChord(EKeys::Escape), IE_Pressed);
+	PauseBinding.bExecuteWhenPaused = true;
+	PauseBinding.KeyDelegate.GetDelegateForManualSet().BindUObject(this, &ThisClass::HandlePauseMenuInput);
+	InputComponent->KeyBindings.Add(MoveTemp(PauseBinding));
+
 	UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(InputComponent);
 	for (int32 LaneIndex = 0; LaneIndex < LaneActions.Num(); ++LaneIndex)
 	{
@@ -139,6 +144,14 @@ void ARhythmPlayerController::SetupInputComponent()
 			EnhancedInput->BindAction(LaneActions[LaneIndex], ETriggerEvent::Completed, this, &ThisClass::HandleLaneInput, LaneIndex, false);
 			EnhancedInput->BindAction(LaneActions[LaneIndex], ETriggerEvent::Canceled, this, &ThisClass::HandleLaneInput, LaneIndex, false);
 		}
+	}
+}
+
+void ARhythmPlayerController::HandlePauseMenuInput()
+{
+	if (GameplayWidget)
+	{
+		GameplayWidget->TogglePauseMenu();
 	}
 }
 

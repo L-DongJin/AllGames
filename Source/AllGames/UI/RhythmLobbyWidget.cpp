@@ -12,6 +12,7 @@
 #include "InputCoreTypes.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
+#include "Engine/Texture2D.h"
 #include "TimerManager.h"
 #include "../Core/RhythmGameInstance.h"
 #include "../Data/RhythmSongDataAsset.h"
@@ -48,7 +49,15 @@ void URhythmLobbyWidget::BuildLayout()
 	UCanvasPanel* Root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("LobbyRoot"));
 	WidgetTree->RootWidget = Root;
 	UImage* Background = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("LobbyBackground"));
-	Background->SetColorAndOpacity(FLinearColor(0.008f, 0.015f, 0.045f, 1.0f));
+	if (LobbyBackgroundImage)
+	{
+		Background->SetBrushFromTexture(LobbyBackgroundImage, true);
+		Background->SetColorAndOpacity(LobbyBackgroundTint);
+	}
+	else
+	{
+		Background->SetColorAndOpacity(FLinearColor(0.008f, 0.015f, 0.045f, 1.0f));
+	}
 	auto* BackgroundSlot = Root->AddChildToCanvas(Background);
 	BackgroundSlot->SetAnchors(FAnchors(0, 0, 1, 1));
 	BackgroundSlot->SetOffsets(FMargin(0));
@@ -63,15 +72,26 @@ void URhythmLobbyWidget::BuildLayout()
 
 	AddCentered(MakeText(WidgetTree, TEXT("LobbyTitle"), TEXT("RHYTHM SELECT"), 74, FLinearColor(0.25f, 0.85f, 1.0f)), 0.10f, FVector2D(1000, 110));
 	AddCentered(MakeText(WidgetTree, TEXT("LobbySubtitle"), TEXT("SELECT SONG AND PLAY SETTINGS"), 24, FLinearColor(0.65f, 0.7f, 0.85f)), 0.18f, FVector2D(900, 50));
-	AddCentered(MakeText(WidgetTree, TEXT("SongLabel"), TEXT("SONG"), 30, FLinearColor::White), 0.27f, FVector2D(420, 50));
+	const FVector2D SongImageSize(
+		FMath::Max(1.0f, SongImageWidth),
+		FMath::Max(1.0f, SongImageHeight));
+	PreviousSongTitleImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("PreviousSongTitleImage"));
+	PreviousSongTitleImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
+	AddCentered(PreviousSongTitleImage, 0.34f, SongImageSize);
+	SongTitleImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("SongTitleImage"));
+	SongTitleImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.72f));
+	AddCentered(SongTitleImage, 0.34f, SongImageSize);
+	AddCentered(MakeText(WidgetTree, TEXT("SongLabel"), TEXT("SONG"), 30, FLinearColor::White), 0.22f, FVector2D(420, 50));
 	SongValueText = MakeText(WidgetTree, TEXT("SongValue"), TEXT("CHOOM"), 38, FLinearColor(0.25f, 0.85f, 1.0f));
-	AddCentered(SongValueText, 0.32f, FVector2D(600, 60));
-	AddCentered(MakeText(WidgetTree, TEXT("DifficultyLabel"), TEXT("DIFFICULTY"), 30, FLinearColor::White), 0.40f, FVector2D(420, 50));
+	AddCentered(SongValueText, 0.465f, FVector2D(700, 60));
+	AddCentered(MakeText(WidgetTree, TEXT("DifficultyLabel"), TEXT("DIFFICULTY"), 30, FLinearColor::White), 0.56f, FVector2D(420, 50));
 	DifficultyValueText = MakeText(WidgetTree, TEXT("DifficultyValue"), TEXT("NORMAL"), 42, FLinearColor(1.0f, 0.8f, 0.2f));
-	AddCentered(DifficultyValueText, 0.45f, FVector2D(420, 60));
-	AddCentered(MakeText(WidgetTree, TEXT("SpeedLabel"), TEXT("NOTE SPEED"), 30, FLinearColor::White), 0.53f, FVector2D(420, 50));
+	AddCentered(DifficultyValueText, 0.605f, FVector2D(420, 60));
+	ChartLevelText = MakeText(WidgetTree, TEXT("ChartLevelValue"), TEXT("LEVEL 1"), 34, FLinearColor(1.0f, 0.35f, 0.55f));
+	AddCentered(ChartLevelText, 0.65f, FVector2D(420, 52));
+	AddCentered(MakeText(WidgetTree, TEXT("SpeedLabel"), TEXT("NOTE SPEED"), 30, FLinearColor::White), 0.705f, FVector2D(420, 50));
 	SpeedValueText = MakeText(WidgetTree, TEXT("SpeedValue"), TEXT("1x"), 42, FLinearColor(0.35f, 1.0f, 0.65f));
-	AddCentered(SpeedValueText, 0.58f, FVector2D(420, 60));
+	AddCentered(SpeedValueText, 0.75f, FVector2D(420, 60));
 
 	auto AddArrowButton = [this, Root](const TCHAR* Name, const TCHAR* Label, float X, float Y)
 	{
@@ -83,20 +103,20 @@ void URhythmLobbyWidget::BuildLayout()
 		Slot->SetSize(FVector2D(74, 64));
 		return Button;
 	};
-	AddArrowButton(TEXT("PreviousSongButton"), TEXT("<"), 0.30f, 0.32f)->OnClicked.AddDynamic(this, &ThisClass::PreviousSong);
-	AddArrowButton(TEXT("NextSongButton"), TEXT(">"), 0.70f, 0.32f)->OnClicked.AddDynamic(this, &ThisClass::NextSong);
-	AddArrowButton(TEXT("PreviousDifficultyButton"), TEXT("<"), 0.34f, 0.45f)->OnClicked.AddDynamic(this, &ThisClass::PreviousDifficulty);
-	AddArrowButton(TEXT("NextDifficultyButton"), TEXT(">"), 0.66f, 0.45f)->OnClicked.AddDynamic(this, &ThisClass::NextDifficulty);
-	AddArrowButton(TEXT("DecreaseSpeedButton"), TEXT("<"), 0.34f, 0.58f)->OnClicked.AddDynamic(this, &ThisClass::DecreaseSpeed);
-	AddArrowButton(TEXT("IncreaseSpeedButton"), TEXT(">"), 0.66f, 0.58f)->OnClicked.AddDynamic(this, &ThisClass::IncreaseSpeed);
+	AddArrowButton(TEXT("PreviousSongButton"), TEXT("<"), 0.25f, 0.34f)->OnClicked.AddDynamic(this, &ThisClass::PreviousSong);
+	AddArrowButton(TEXT("NextSongButton"), TEXT(">"), 0.75f, 0.34f)->OnClicked.AddDynamic(this, &ThisClass::NextSong);
+	AddArrowButton(TEXT("PreviousDifficultyButton"), TEXT("<"), 0.34f, 0.605f)->OnClicked.AddDynamic(this, &ThisClass::PreviousDifficulty);
+	AddArrowButton(TEXT("NextDifficultyButton"), TEXT(">"), 0.66f, 0.605f)->OnClicked.AddDynamic(this, &ThisClass::NextDifficulty);
+	AddArrowButton(TEXT("DecreaseSpeedButton"), TEXT("<"), 0.34f, 0.75f)->OnClicked.AddDynamic(this, &ThisClass::DecreaseSpeed);
+	AddArrowButton(TEXT("IncreaseSpeedButton"), TEXT(">"), 0.66f, 0.75f)->OnClicked.AddDynamic(this, &ThisClass::IncreaseSpeed);
 
 	UButton* StartButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("StartButton"));
 	StartButton->AddChild(MakeText(WidgetTree, TEXT("StartButtonText"), TEXT("START"), 42, FLinearColor::White));
 	StartButton->OnClicked.AddDynamic(this, &ThisClass::HandleStartClicked);
-	AddCentered(StartButton, 0.72f, FVector2D(440, 84));
+	AddCentered(StartButton, 0.85f, FVector2D(440, 78));
 
 	HelpText = MakeText(WidgetTree, TEXT("LobbyHelp"), TEXT("UP/DOWN: SELECT    LEFT/RIGHT: CHANGE    ENTER: START"), 22, FLinearColor(0.55f, 0.62f, 0.75f));
-	AddCentered(HelpText, 0.87f, FVector2D(1250, 50));
+	AddCentered(HelpText, 0.95f, FVector2D(1250, 42));
 	RefreshSettings();
 }
 
@@ -104,6 +124,26 @@ void URhythmLobbyWidget::NativeDestruct()
 {
 	StopSongPreview();
 	Super::NativeDestruct();
+}
+
+void URhythmLobbyWidget::NativeTick(const FGeometry& MyGeometry, const float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (!bTitleTransitionActive || !SongTitleImage || !PreviousSongTitleImage)
+	{
+		return;
+	}
+	TitleTransitionElapsed += InDeltaTime;
+	const float Alpha = FMath::Clamp(TitleTransitionElapsed / FMath::Max(TitleTransitionDuration, 0.01f), 0.0f, 1.0f);
+	const float SmoothAlpha = FMath::InterpEaseInOut(0.0f, 1.0f, Alpha, 2.0f);
+	SongTitleImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.72f * SmoothAlpha));
+	PreviousSongTitleImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.72f * (1.0f - SmoothAlpha)));
+	SongTitleImage->SetRenderScale(FVector2D(FMath::Lerp(0.96f, 1.0f, SmoothAlpha)));
+	if (Alpha >= 1.0f)
+	{
+		bTitleTransitionActive = false;
+		PreviousSongTitleImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
+	}
 }
 
 FReply URhythmLobbyWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -123,8 +163,33 @@ void URhythmLobbyWidget::RefreshSettings()
 	{
 		if (SongValueText) SongValueText->SetText(Settings->GetSelectedSongDisplayName());
 		if (DifficultyValueText) DifficultyValueText->SetText(Settings->GetDifficultyDisplayName());
-		if (SpeedValueText) SpeedValueText->SetText(FText::FromString(
-			FString::Printf(TEXT("%dx"), FMath::RoundToInt(Settings->GetScrollSpeed()))));
+		if (const URhythmSongDataAsset* Song = Settings->GetSelectedSong())
+		{
+			if (ChartLevelText)
+			{
+				ChartLevelText->SetText(FText::FromString(FString::Printf(TEXT("LEVEL %02d"), Song->ChartLevel)));
+			}
+			if (SongTitleImage && Song->TitleImage != DisplayedTitleTexture)
+			{
+				if (DisplayedTitleTexture && PreviousSongTitleImage)
+				{
+					PreviousSongTitleImage->SetBrushFromTexture(DisplayedTitleTexture, true);
+				}
+				DisplayedTitleTexture = Song->TitleImage;
+				SongTitleImage->SetBrushFromTexture(DisplayedTitleTexture, true);
+				TitleTransitionElapsed = 0.0f;
+				bTitleTransitionActive = DisplayedTitleTexture != nullptr;
+				SongTitleImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, bTitleTransitionActive ? 0.0f : 0.72f));
+			}
+		}
+		if (SpeedValueText)
+		{
+			const float Speed = Settings->GetScrollSpeed();
+			SpeedValueText->SetText(FText::FromString(
+				FMath::IsNearlyEqual(Speed, FMath::RoundToFloat(Speed))
+					? FString::Printf(TEXT("%.0fx"), Speed)
+					: FString::Printf(TEXT("%.1fx"), Speed)));
+		}
 	}
 	if (HelpText)
 	{

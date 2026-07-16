@@ -41,7 +41,7 @@ private:
 	UPROPERTY()
 	ERhythmDifficulty SelectedDifficulty = ERhythmDifficulty::Normal;
 
-	/** One of the four visual scroll multipliers: 1x, 2x, 3x, or 4x. */
+	/** One of the supported visual scroll multipliers from 1x through 4x. */
 	UPROPERTY()
 	float ScrollSpeed = 1.0f;
 };

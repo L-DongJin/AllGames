@@ -86,6 +86,7 @@ void ARhythmConductor::PlayMusic()
 	PlaybackStartPlatformSeconds = FPlatformTime::Seconds();
 	LastTimelineSyncPlatformSeconds = PlaybackStartPlatformSeconds;
 	MusicComponent->Play();
+	bMusicPaused = false;
 	UE_LOG(LogTemp, Log, TEXT("RhythmConductor started music: %s"), *Music->GetName());
 }
 
@@ -101,12 +102,38 @@ void ARhythmConductor::StopMusic()
 	LastReturnedMusicTimeSeconds = 0.0f;
 	PlaybackStartPlatformSeconds = FPlatformTime::Seconds();
 	LastTimelineSyncPlatformSeconds = FPlatformTime::Seconds();
+	bMusicPaused = false;
 	UE_LOG(LogTemp, Log, TEXT("RhythmConductor stopped music."));
+}
+
+void ARhythmConductor::SetMusicPaused(const bool bPaused)
+{
+	if (!MusicComponent || bMusicPaused == bPaused)
+	{
+		return;
+	}
+
+	if (bPaused)
+	{
+		MusicTimeSeconds = GetMusicTimeSeconds();
+		LastReturnedMusicTimeSeconds = MusicTimeSeconds;
+		MusicComponent->SetPaused(true);
+		bMusicPaused = true;
+	}
+	else
+	{
+		LastTimelineSyncPlatformSeconds = FPlatformTime::Seconds();
+		MusicComponent->SetPaused(false);
+		bMusicPaused = false;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("RhythmConductor music %s at %.3f seconds."),
+		bPaused ? TEXT("paused") : TEXT("resumed"), MusicTimeSeconds);
 }
 
 float ARhythmConductor::GetMusicTimeSeconds() const
 {
-	if (!IsMusicPlaying())
+	if (!IsMusicPlaying() || bMusicPaused)
 	{
 		return MusicTimeSeconds;
 	}
@@ -140,7 +167,7 @@ bool ARhythmConductor::IsMusicPlaying() const
 float ARhythmConductor::GetStartCountdownSecondsRemaining() const
 {
 	return bStartCountdownActive
-		? FMath::Max(0.0, CountdownEndPlatformSeconds - FPlatformTime::Seconds())
+		? FMath::Max(0.0f, GetWorldTimerManager().GetTimerRemaining(StartCountdownTimerHandle))
 		: 0.0f;
 }
 

@@ -101,6 +101,17 @@ void URhythmGameInstance::ChangeDifficulty(const int32 Direction)
 
 void URhythmGameInstance::ChangeScrollSpeed(const int32 Direction)
 {
-	const int32 CurrentSpeed = FMath::Clamp(FMath::RoundToInt(ScrollSpeed), 1, 4);
-	ScrollSpeed = static_cast<float>((CurrentSpeed - 1 + Direction + 4) % 4 + 1);
+	static constexpr float SpeedOptions[] = { 1.0f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f };
+	constexpr int32 SpeedOptionCount = UE_ARRAY_COUNT(SpeedOptions);
+	int32 CurrentIndex = 0;
+	for (int32 Index = 1; Index < SpeedOptionCount; ++Index)
+	{
+		if (FMath::Abs(SpeedOptions[Index] - ScrollSpeed)
+			< FMath::Abs(SpeedOptions[CurrentIndex] - ScrollSpeed))
+		{
+			CurrentIndex = Index;
+		}
+	}
+	const int32 NewIndex = (CurrentIndex + Direction + SpeedOptionCount) % SpeedOptionCount;
+	ScrollSpeed = SpeedOptions[NewIndex];
 }

@@ -28,6 +28,9 @@ class ALLGAMES_API URhythmGameplayWidget : public UUserWidget
 public:
 	URhythmGameplayWidget(const FObjectInitializer& ObjectInitializer);
 
+	/** Opens or closes the in-game restart/lobby pause menu. */
+	void TogglePauseMenu();
+
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual void NativeConstruct() override;
@@ -136,6 +139,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement")
 	FVector2D JudgementFeedbackMaxSize = FVector2D(620.0f, 270.0f);
 
+	/** Duration of the animated score count-up on the result screen. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Result", meta = (ClampMin = "0.2", ClampMax = "5.0"))
+	float ResultCountUpDuration = 1.8f;
+
 private:
 	UFUNCTION()
 	void HandleNoteSpawned(FRhythmNoteData NoteData);
@@ -161,8 +168,16 @@ private:
 	UFUNCTION()
 	void HandleReturnToLobbyClicked();
 
+	UFUNCTION()
+	void HandleRestartClicked();
+
+	UFUNCTION()
+	void HandlePauseLobbyClicked();
+
+	void SetPauseMenuVisible(bool bVisible);
 	void RefreshScoreText(const FRhythmScoreState& ScoreState);
 	void UpdateJudgementAnimation();
+	void UpdateResultAnimation();
 
 	void BuildWidgetLayout();
 	void RefreshLayout(float MusicTimeSeconds);
@@ -245,6 +260,18 @@ private:
 	TObjectPtr<UButton> ResultLobbyButton;
 
 	UPROPERTY(Transient)
+	TObjectPtr<UImage> PauseBackground;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> PauseTitleText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> PauseRestartButton;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> PauseLobbyButton;
+
+	UPROPERTY(Transient)
 	TObjectPtr<ARhythmNoteSpawner> Spawner;
 
 	UPROPERTY(Transient)
@@ -260,10 +287,15 @@ private:
 	TArray<FTimedEffectVisual> LongNoteEffects;
 	float JudgementHideWorldTime = 0.0f;
 	float JudgementAnimationStartWorldTime = 0.0f;
+	float ResultAnimationStartRealTime = 0.0f;
 	float NextTimelineDiagnosticTime = 0.0f;
+	FRhythmScoreState FinalResultState;
+	int32 FinalResultTotalNotes = 0;
 	int32 CurrentHitStreak = 0;
 	int64 NextNoteVisualId = 0;
 	int32 LaneCount = 9;
 	bool bShowingResults = false;
+	bool bResultAnimationActive = false;
+	bool bShowingPauseMenu = false;
 	bool bCountdownWasVisible = false;
 };

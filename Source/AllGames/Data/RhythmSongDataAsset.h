@@ -8,6 +8,7 @@
 #include "RhythmSongDataAsset.generated.h"
 
 class USoundBase;
+class UTexture2D;
 
 UENUM(BlueprintType)
 enum class ERhythmChartKeyMode : uint8
@@ -38,6 +39,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song")
 	TObjectPtr<USoundBase> Music;
 
+	/** Artwork displayed in the song-selection lobby. Aspect ratio is normalized by the lobby layout. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song")
+	TObjectPtr<UTexture2D> TitleImage;
+
 	/**
 	 * Lobby preview start time in seconds.
 	 * A negative value automatically selects a representative section near the middle of the song.
@@ -65,6 +70,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Chart")
 	ERhythmDifficulty Difficulty = ERhythmDifficulty::Normal;
+
+	/** Shared chart difficulty rating. Uses one catalog-wide scale from 1 to 24. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Chart", meta = (ClampMin = "1", ClampMax = "24", UIMin = "1", UIMax = "24"))
+	int32 ChartLevel = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Chart", meta = (ClampMin = "0.1"))
 	float NoteTravelTimeSeconds = 2.0f;

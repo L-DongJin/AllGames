@@ -14,9 +14,13 @@ class ALLGAMES_API ARhythmLobbyPlayerController : public APlayerController
 	GENERATED_BODY()
 
 protected:
+	ARhythmLobbyPlayerController();
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Rhythm|UI")
+	TSoftClassPtr<URhythmLobbyWidget> LobbyWidgetClass;
+
 	UPROPERTY(Transient)
 	TObjectPtr<URhythmLobbyWidget> LobbyWidget;
 };

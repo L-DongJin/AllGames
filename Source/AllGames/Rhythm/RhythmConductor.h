@@ -35,6 +35,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Rhythm|Audio")
 	void StopMusic();
 
+	/** Pauses or resumes both audible playback and the music-derived gameplay clock. */
+	UFUNCTION(BlueprintCallable, Category = "Rhythm|Audio")
+	void SetMusicPaused(bool bPaused);
+
 	/** Current audio playback position in seconds. */
 	UFUNCTION(BlueprintPure, Category = "Rhythm|Timing")
 	float GetMusicTimeSeconds() const;
@@ -107,4 +111,5 @@ private:
 	double CountdownEndPlatformSeconds = 0.0;
 	bool bStartCountdownActive = false;
 	bool bWaitingForGameplayCountdown = false;
+	bool bMusicPaused = false;
 };
