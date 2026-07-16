@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "RhythmLobbyPlayerController.h"
+#include "RhythmAccountSubsystem.h"
+#include "../UI/RhythmLoginWidget.h"
 #include "../UI/RhythmLobbyWidget.h"
 
 ARhythmLobbyPlayerController::ARhythmLobbyPlayerController()
@@ -14,6 +16,41 @@ void ARhythmLobbyPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	if (!IsLocalController()) return;
+	if (const URhythmAccountSubsystem* Accounts = GetGameInstance()->GetSubsystem<URhythmAccountSubsystem>();
+		Accounts && Accounts->IsLoggedIn())
+	{
+		ShowLobby();
+	}
+	else
+	{
+		ShowLogin();
+	}
+}
+
+void ARhythmLobbyPlayerController::ShowLogin()
+{
+	LoginWidget = CreateWidget<URhythmLoginWidget>(this, URhythmLoginWidget::StaticClass());
+	if (!LoginWidget)
+	{
+		return;
+	}
+	LoginWidget->OnLoginAccepted.AddUObject(this, &ThisClass::ShowLobby);
+	LoginWidget->AddToViewport();
+	LoginWidget->SetKeyboardFocus();
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(LoginWidget->TakeWidget());
+	SetInputMode(InputMode);
+	SetShowMouseCursor(true);
+}
+
+void ARhythmLobbyPlayerController::ShowLobby()
+{
+	if (LoginWidget)
+	{
+		LoginWidget->RemoveFromParent();
+		LoginWidget = nullptr;
+	}
+
 	UClass* WidgetClass = LobbyWidgetClass.LoadSynchronous();
 	LobbyWidget = CreateWidget<URhythmLobbyWidget>(
 		this,

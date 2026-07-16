@@ -7,6 +7,7 @@
 #include "RhythmLobbyPlayerController.generated.h"
 
 class URhythmLobbyWidget;
+class URhythmLoginWidget;
 
 UCLASS()
 class ALLGAMES_API ARhythmLobbyPlayerController : public APlayerController
@@ -18,6 +19,12 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	void ShowLogin();
+	void ShowLobby();
+
+	UPROPERTY(Transient)
+	TObjectPtr<URhythmLoginWidget> LoginWidget;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Rhythm|UI")
 	TSoftClassPtr<URhythmLobbyWidget> LobbyWidgetClass;
 
