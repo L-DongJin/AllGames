@@ -3,6 +3,7 @@
 #include "RhythmGameplayWidget.h"
 
 #include "Blueprint/WidgetTree.h"
+#include "Components/Button.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
@@ -10,6 +11,7 @@
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "TimerManager.h"
 #include "UObject/ConstructorHelpers.h"
 #include "../Core/RhythmPlayerController.h"
 #include "../Judgement/RhythmJudgementManager.h"
@@ -85,6 +87,7 @@ void URhythmGameplayWidget::NativeConstruct()
 	if (JudgementManager)
 	{
 		JudgementManager->OnNoteJudged.AddDynamic(this, &ThisClass::HandleNoteJudged);
+		JudgementManager->OnLongNoteStateChanged.AddDynamic(this, &ThisClass::HandleLongNoteStateChanged);
 	}
 
 	for (TActorIterator<ARhythmScoreManager> It(GetWorld()); It; ++It)
@@ -98,7 +101,57 @@ void URhythmGameplayWidget::NativeConstruct()
 		RefreshScoreText(ScoreManager->GetScoreState());
 	}
 
+	// NativeConstruct runs as the widget is added to the viewport, before Slate is guaranteed to
+	// have painted the lane screen once. Defer the countdown by one game-thread tick so the player
+	// sees the actual gameplay layout before 3, 2, 1, GO begins.
+	if (Conductor)
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(
+			FTimerDelegate::CreateWeakLambda(this, [this]()
+			{
+				if (Conductor)
+				{
+					Conductor->StartGameplayCountdown();
+				}
+			}));
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("Rhythm gameplay WBP ready: %d lanes."), LaneCount);
+}
+
+void URhythmGameplayWidget::NativeTick(const FGeometry& MyGeometry, const float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (!StartCountdownText || !Conductor)
+	{
+		return;
+	}
+
+	if (Conductor->IsStartCountdownActive())
+	{
+		const int32 Count = FMath::Max(1, FMath::CeilToInt(Conductor->GetStartCountdownSecondsRemaining()));
+		StartCountdownText->SetText(FText::AsNumber(Count));
+		StartCountdownText->SetVisibility(ESlateVisibility::HitTestInvisible);
+		bCountdownWasVisible = true;
+	}
+	else if (bCountdownWasVisible)
+	{
+		StartCountdownText->SetText(FText::FromString(TEXT("GO!")));
+		StartCountdownText->SetVisibility(ESlateVisibility::HitTestInvisible);
+		bCountdownWasVisible = false;
+		FTimerHandle HideCountdownHandle;
+		GetWorld()->GetTimerManager().SetTimer(
+			HideCountdownHandle,
+			FTimerDelegate::CreateWeakLambda(this, [this]()
+			{
+				if (StartCountdownText)
+				{
+					StartCountdownText->SetVisibility(ESlateVisibility::Collapsed);
+				}
+			}),
+			0.45f,
+			false);
+	}
 }
 
 void URhythmGameplayWidget::HandleTimelineUpdated(const float MusicTimeSeconds)
@@ -114,6 +167,28 @@ void URhythmGameplayWidget::HandleTimelineUpdated(const float MusicTimeSeconds)
 		}
 	}
 	RefreshLayout(MusicTimeSeconds);
+	if (PlayTimeText && Conductor)
+	{
+		const int32 CurrentTotalSeconds = FMath::Max(0, FMath::FloorToInt(MusicTimeSeconds));
+		PlayTimeText->SetText(FText::FromString(FString::Printf(
+			TEXT("TIME  %d:%02d"),
+			CurrentTotalSeconds / 60,
+			CurrentTotalSeconds % 60)));
+	}
+	if (GetWorld())
+	{
+		for (int32 Index = LongNoteEffects.Num() - 1; Index >= 0; --Index)
+		{
+			if (GetWorld()->GetTimeSeconds() >= LongNoteEffects[Index].HideWorldTime)
+			{
+				if (LongNoteEffects[Index].Image)
+				{
+					LongNoteEffects[Index].Image->RemoveFromParent();
+				}
+				LongNoteEffects.RemoveAt(Index);
+			}
+		}
+	}
 
 	if (MusicTimeSeconds >= NextTimelineDiagnosticTime)
 	{
@@ -194,7 +269,7 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 	JudgementHitCountText->SetShadowOffset(FVector2D(3.0f, 3.0f));
 	JudgementHitCountText->SetShadowColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.9f));
 	FSlateFontInfo HitCountFont = JudgementHitCountText->GetFont();
-	HitCountFont.Size = 44;
+	HitCountFont.Size = 36;
 	JudgementHitCountText->SetFont(HitCountFont);
 	JudgementHitCountText->SetVisibility(ESlateVisibility::Collapsed);
 	RootCanvas->AddChildToCanvas(JudgementHitCountText);
@@ -202,7 +277,8 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 	ScoreText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ScoreText"));
 	ComboText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ComboText"));
 	AccuracyText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("AccuracyText"));
-	for (UTextBlock* TextBlock : { ScoreText.Get(), ComboText.Get(), AccuracyText.Get() })
+	PlayTimeText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("PlayTimeText"));
+	for (UTextBlock* TextBlock : { ScoreText.Get(), ComboText.Get(), AccuracyText.Get(), PlayTimeText.Get() })
 	{
 		TextBlock->SetColorAndOpacity(FSlateColor(FLinearColor::White));
 		TextBlock->SetShadowOffset(FVector2D(2.0f, 2.0f));
@@ -213,10 +289,30 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 	ScoreFont.Size = 30;
 	ScoreText->SetFont(ScoreFont);
 	AccuracyText->SetFont(ScoreFont);
+	PlayTimeText->SetFont(ScoreFont);
+	PlayTimeText->SetText(FText::FromString(TEXT("TIME  0:00")));
 	FSlateFontInfo ComboFont = ComboText->GetFont();
 	ComboFont.Size = 42;
 	ComboText->SetFont(ComboFont);
 	RefreshScoreText(FRhythmScoreState());
+
+	StartCountdownText = WidgetTree->ConstructWidget<UTextBlock>(
+		UTextBlock::StaticClass(), TEXT("StartCountdownText"));
+	StartCountdownText->SetJustification(ETextJustify::Center);
+	StartCountdownText->SetColorAndOpacity(FSlateColor(FLinearColor(0.25f, 0.9f, 1.0f)));
+	StartCountdownText->SetShadowOffset(FVector2D(5.0f, 5.0f));
+	StartCountdownText->SetShadowColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.95f));
+	FSlateFontInfo CountdownFont = StartCountdownText->GetFont();
+	CountdownFont.Size = 128;
+	StartCountdownText->SetFont(CountdownFont);
+	StartCountdownText->SetVisibility(ESlateVisibility::Collapsed);
+	if (UCanvasPanelSlot* CountdownSlot = RootCanvas->AddChildToCanvas(StartCountdownText))
+	{
+		CountdownSlot->SetAnchors(FAnchors(0.5f, 0.42f));
+		CountdownSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+		CountdownSlot->SetSize(FVector2D(700.0f, 220.0f));
+		CountdownSlot->SetZOrder(90);
+	}
 
 	ResultBackground = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("ResultBackground"));
 	ResultBackground->SetColorAndOpacity(FLinearColor(0.005f, 0.008f, 0.02f, 0.94f));
@@ -285,20 +381,24 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 	ResultGoodText = AddResultJudgement(TEXT("ResultGoodText"), FLinearColor(0.25f, 1.0f, 0.38f), 0.66f);
 	ResultMissText = AddResultJudgement(TEXT("ResultMissText"), FLinearColor(1.0f, 0.16f, 0.16f), 0.73f);
 
-	ResultHintText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ResultHintText"));
-	ResultHintText->SetText(FText::FromString(TEXT("Enter: Retry    Esc: Lobby")));
-	ResultHintText->SetJustification(ETextJustify::Center);
-	ResultHintText->SetColorAndOpacity(FSlateColor(FLinearColor(0.65f, 0.7f, 0.8f)));
-	FSlateFontInfo ResultHintFont = ResultHintText->GetFont();
-	ResultHintFont.Size = 24;
-	ResultHintText->SetFont(ResultHintFont);
-	ResultHintText->SetVisibility(ESlateVisibility::Collapsed);
-	if (UCanvasPanelSlot* ResultHintSlot = RootCanvas->AddChildToCanvas(ResultHintText))
+	ResultLobbyButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("ResultLobbyButton"));
+	UTextBlock* ResultLobbyButtonText = WidgetTree->ConstructWidget<UTextBlock>(
+		UTextBlock::StaticClass(), TEXT("ResultLobbyButtonText"));
+	ResultLobbyButtonText->SetText(FText::FromString(TEXT("LOBBY")));
+	ResultLobbyButtonText->SetJustification(ETextJustify::Center);
+	ResultLobbyButtonText->SetColorAndOpacity(FSlateColor(FLinearColor::White));
+	FSlateFontInfo ResultButtonFont = ResultLobbyButtonText->GetFont();
+	ResultButtonFont.Size = 34;
+	ResultLobbyButtonText->SetFont(ResultButtonFont);
+	ResultLobbyButton->AddChild(ResultLobbyButtonText);
+	ResultLobbyButton->OnClicked.AddDynamic(this, &ThisClass::HandleReturnToLobbyClicked);
+	ResultLobbyButton->SetVisibility(ESlateVisibility::Collapsed);
+	if (UCanvasPanelSlot* ResultButtonSlot = RootCanvas->AddChildToCanvas(ResultLobbyButton))
 	{
-		ResultHintSlot->SetAnchors(FAnchors(0.5f, 0.88f));
-		ResultHintSlot->SetAlignment(FVector2D(0.5f, 0.0f));
-		ResultHintSlot->SetSize(FVector2D(900.0f, 60.0f));
-		ResultHintSlot->SetZOrder(101);
+		ResultButtonSlot->SetAnchors(FAnchors(0.5f, 0.86f));
+		ResultButtonSlot->SetAlignment(FVector2D(0.5f, 0.0f));
+		ResultButtonSlot->SetSize(FVector2D(360.0f, 80.0f));
+		ResultButtonSlot->SetZOrder(101);
 	}
 }
 
@@ -320,18 +420,95 @@ void URhythmGameplayWidget::HandleNoteSpawned(const FRhythmNoteData NoteData)
 	UImage* Note = WidgetTree->ConstructWidget<UImage>(
 		UImage::StaticClass(), *FString::Printf(TEXT("Note_%lld_Lane_%d"), NoteVisualId, NoteData.LaneIndex));
 	Note->SetColorAndOpacity(FLinearColor::MakeFromHSV8(static_cast<uint8>(NoteData.LaneIndex * 24), 190, 255));
-	if (NoteImage) Note->SetBrushFromTexture(NoteImage);
+	if (NoteData.IsLongNote() && LongNoteHeadImage) Note->SetBrushFromTexture(LongNoteHeadImage);
+	else if (NoteImage) Note->SetBrushFromTexture(NoteImage);
 	LaneCanvas->AddChildToCanvas(Note);
 
 	FNoteVisual& Visual = NoteVisuals.AddDefaulted_GetRef();
 	Visual.Data = NoteData;
-	Visual.Image = Note;
+	Visual.HeadImage = Note;
+	if (NoteData.IsLongNote())
+	{
+		Visual.BodyImage = WidgetTree->ConstructWidget<UImage>(
+			UImage::StaticClass(), *FString::Printf(TEXT("LongBody_%lld"), NoteVisualId));
+		Visual.BodyImage->SetColorAndOpacity(FLinearColor::MakeFromHSV8(
+			static_cast<uint8>(NoteData.LaneIndex * 24), 150, 220));
+		if (LongNoteBodyImage) Visual.BodyImage->SetBrushFromTexture(LongNoteBodyImage);
+		LaneCanvas->AddChildToCanvas(Visual.BodyImage);
+
+		Visual.TailImage = WidgetTree->ConstructWidget<UImage>(
+			UImage::StaticClass(), *FString::Printf(TEXT("LongTail_%lld"), NoteVisualId));
+		Visual.TailImage->SetColorAndOpacity(FLinearColor::MakeFromHSV8(
+			static_cast<uint8>(NoteData.LaneIndex * 24), 190, 255));
+		if (LongNoteTailImage) Visual.TailImage->SetBrushFromTexture(LongNoteTailImage);
+		LaneCanvas->AddChildToCanvas(Visual.TailImage);
+
+		Visual.HoldGlowImage = WidgetTree->ConstructWidget<UImage>(
+			UImage::StaticClass(), *FString::Printf(TEXT("LongHoldGlow_%lld"), NoteVisualId));
+		Visual.HoldGlowImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.85f));
+		if (LongNoteHoldGlowImage) Visual.HoldGlowImage->SetBrushFromTexture(LongNoteHoldGlowImage);
+		Visual.HoldGlowImage->SetVisibility(ESlateVisibility::Collapsed);
+		LaneCanvas->AddChildToCanvas(Visual.HoldGlowImage);
+	}
 	Visual.SpawnTimeSeconds = NoteData.TargetTimeSeconds - (Spawner ? Spawner->GetSpawnLeadTimeSeconds() : 2.0f);
 	// OnTimelineUpdated is broadcast before newly due notes are spawned. Position this note now so it
 	// cannot flash for one frame at the canvas default position in the upper-left corner.
 	const float CurrentMusicTime = Conductor ? Conductor->GetMusicTimeSeconds() : Visual.SpawnTimeSeconds;
 	RefreshLayout(CurrentMusicTime);
-	UE_LOG(LogTemp, Log, TEXT("Created UI note: lane %d, target %.2f"), NoteData.LaneIndex + 1, NoteData.TargetTimeSeconds);
+	UE_LOG(LogTemp, Log, TEXT("Created UI %s note: lane %d, target %.2f, duration %.2f"),
+		NoteData.IsLongNote() ? TEXT("long") : TEXT("tap"),
+		NoteData.LaneIndex + 1, NoteData.TargetTimeSeconds, NoteData.DurationSeconds);
+}
+
+void URhythmGameplayWidget::HandleLongNoteStateChanged(
+	const FRhythmNoteData NoteData, const ERhythmLongNoteState State)
+{
+	for (FNoteVisual& Visual : NoteVisuals)
+	{
+		if (Visual.Data.LaneIndex == NoteData.LaneIndex
+			&& FMath::IsNearlyEqual(Visual.Data.TargetTimeSeconds, NoteData.TargetTimeSeconds))
+		{
+			Visual.bHolding = State == ERhythmLongNoteState::Started;
+			if (Visual.HoldGlowImage)
+			{
+				Visual.HoldGlowImage->SetVisibility(
+					State == ERhythmLongNoteState::Started
+						? ESlateVisibility::HitTestInvisible
+						: ESlateVisibility::Collapsed);
+			}
+			break;
+		}
+	}
+
+	if (State == ERhythmLongNoteState::Started || !LaneCanvas || !GetWorld())
+	{
+		return;
+	}
+
+	UTexture2D* EffectTexture = State == ERhythmLongNoteState::Completed
+		? LongNoteCompleteEffectImage
+		: LongNoteBreakEffectImage;
+	UImage* Effect = WidgetTree->ConstructWidget<UImage>(
+		UImage::StaticClass(), *FString::Printf(TEXT("LongEffect_%lld"), NextNoteVisualId++));
+	Effect->SetColorAndOpacity(State == ERhythmLongNoteState::Completed
+		? FLinearColor(0.25f, 0.95f, 1.0f, 0.95f)
+		: FLinearColor(1.0f, 0.08f, 0.08f, 0.95f));
+	if (EffectTexture) Effect->SetBrushFromTexture(EffectTexture);
+	LaneCanvas->AddChildToCanvas(Effect);
+	if (UCanvasPanelSlot* EffectSlot = Cast<UCanvasPanelSlot>(Effect->Slot))
+	{
+		const FVector2D Size = LaneCanvas->GetCachedGeometry().GetLocalSize();
+		const float LaneWidth = Size.X / FMath::Max(LaneCount, 1);
+		const float EffectSize = FMath::Min(LaneWidth * 1.25f, 180.0f);
+		EffectSlot->SetPosition(FVector2D(
+			NoteData.LaneIndex * LaneWidth + (LaneWidth - EffectSize) * 0.5f,
+			Size.Y * JudgementLineVerticalPosition - EffectSize * 0.5f));
+		EffectSlot->SetSize(FVector2D(EffectSize));
+		EffectSlot->SetZOrder(8);
+	}
+	FTimedEffectVisual& TimedEffect = LongNoteEffects.AddDefaulted_GetRef();
+	TimedEffect.Image = Effect;
+	TimedEffect.HideWorldTime = GetWorld()->GetTimeSeconds() + LongNoteEffectDisplaySeconds;
 }
 
 void URhythmGameplayWidget::HandleNoteJudged(
@@ -386,10 +563,14 @@ void URhythmGameplayWidget::HandleNoteJudged(
 		if (Visual.Data.LaneIndex == NoteData.LaneIndex
 			&& FMath::IsNearlyEqual(Visual.Data.TargetTimeSeconds, NoteData.TargetTimeSeconds))
 		{
-			if (Visual.Image)
+			for (UImage* Image : {
+				Visual.HeadImage.Get(), Visual.BodyImage.Get(), Visual.TailImage.Get(), Visual.HoldGlowImage.Get() })
 			{
-				Visual.Image->SetVisibility(ESlateVisibility::Collapsed);
-				Visual.Image->RemoveFromParent();
+				if (Image)
+				{
+					Image->SetVisibility(ESlateVisibility::Collapsed);
+					Image->RemoveFromParent();
+				}
 			}
 			NoteVisuals.RemoveAt(Index);
 			bRemovedVisual = true;
@@ -427,7 +608,7 @@ void URhythmGameplayWidget::HandleScoreChanged(const FRhythmScoreState ScoreStat
 void URhythmGameplayWidget::HandleMusicFinished()
 {
 	if (!ResultBackground || !ResultTitleText || !ResultSummaryText || !ResultPerfectText
-		|| !ResultGreatText || !ResultGoodText || !ResultMissText || !ResultHintText)
+		|| !ResultGreatText || !ResultGoodText || !ResultMissText || !ResultLobbyButton)
 	{
 		return;
 	}
@@ -453,32 +634,29 @@ void URhythmGameplayWidget::HandleMusicFinished()
 	ResultGreatText->SetVisibility(ESlateVisibility::HitTestInvisible);
 	ResultGoodText->SetVisibility(ESlateVisibility::HitTestInvisible);
 	ResultMissText->SetVisibility(ESlateVisibility::HitTestInvisible);
-	ResultHintText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	ResultLobbyButton->SetVisibility(ESlateVisibility::Visible);
 	bShowingResults = true;
-	SetKeyboardFocus();
+	if (APlayerController* PlayerController = GetOwningPlayer())
+	{
+		FInputModeUIOnly InputMode;
+		InputMode.SetWidgetToFocus(TakeWidget());
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->SetShowMouseCursor(true);
+	}
 	if (JudgementFeedback) JudgementFeedback->SetVisibility(ESlateVisibility::Collapsed);
 	if (JudgementHitCountText) JudgementHitCountText->SetVisibility(ESlateVisibility::Collapsed);
 	UE_LOG(LogTemp, Log, TEXT("Rhythm result displayed: score %lld, max combo %d, accuracy %.2f%%, notes %d"),
 		FinalState.Score, FinalState.MaxCombo, FinalState.AccuracyPercent, TotalNotes);
 }
 
-FReply URhythmGameplayWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+void URhythmGameplayWidget::HandleReturnToLobbyClicked()
 {
-	if (bShowingResults)
+	if (APlayerController* PlayerController = GetOwningPlayer())
 	{
-		if (InKeyEvent.GetKey() == EKeys::Enter)
-		{
-			const FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this, true);
-			UGameplayStatics::OpenLevel(this, FName(*CurrentLevelName));
-			return FReply::Handled();
-		}
-		if (InKeyEvent.GetKey() == EKeys::Escape)
-		{
-			UGameplayStatics::OpenLevel(this, TEXT("LobbyMap"));
-			return FReply::Handled();
-		}
+		PlayerController->SetShowMouseCursor(false);
 	}
-	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+	UGameplayStatics::OpenLevel(this, TEXT("LobbyMap"));
 }
 
 void URhythmGameplayWidget::RefreshScoreText(const FRhythmScoreState& ScoreState)
@@ -609,8 +787,8 @@ void URhythmGameplayWidget::RefreshLayout(const float MusicTime)
 		{
 			CountSlot->SetAnchors(FAnchors(0.5f, JudgementFeedbackVerticalPosition));
 			CountSlot->SetAlignment(FVector2D(0.5f, 0.0f));
-			CountSlot->SetPosition(FVector2D(0.0f, JudgementFeedbackMaxSize.Y * 0.38f));
-			CountSlot->SetSize(FVector2D(360.0f, 70.0f));
+			CountSlot->SetPosition(FVector2D(0.0f, JudgementFeedbackMaxSize.Y * 0.34f));
+			CountSlot->SetSize(FVector2D(320.0f, 58.0f));
 			CountSlot->SetZOrder(11);
 		}
 	}
@@ -624,6 +802,7 @@ void URhythmGameplayWidget::RefreshLayout(const float MusicTime)
 		{ ScoreText.Get(), 40.0f, FVector2D(520.0f, 50.0f) },
 		{ ComboText.Get(), 90.0f, FVector2D(520.0f, 70.0f) },
 		{ AccuracyText.Get(), 155.0f, FVector2D(520.0f, 50.0f) },
+		{ PlayTimeText.Get(), 200.0f, FVector2D(520.0f, 50.0f) },
 	};
 	for (const FScoreLayout& Layout : ScoreLayouts)
 	{
@@ -643,18 +822,50 @@ void URhythmGameplayWidget::RefreshLayout(const float MusicTime)
 	for (FNoteVisual& Visual : NoteVisuals)
 	{
 		const float TravelDuration = Visual.Data.TargetTimeSeconds - Visual.SpawnTimeSeconds;
-		const float Progress = TravelDuration > 0.0f
-			? FMath::Clamp((MusicTime - Visual.SpawnTimeSeconds) / TravelDuration, 0.0f, 1.25f)
-			: 1.0f;
-		if (UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(Visual.Image->Slot))
+		const float PixelsPerSecond = TravelDuration > 0.0f
+			? (JudgementY - SpawnY) / TravelDuration
+			: 0.0f;
+		const float UnclampedHeadY = JudgementY - (Visual.Data.TargetTimeSeconds - MusicTime) * PixelsPerSecond;
+		const float HeadY = Visual.bHolding ? JudgementY : UnclampedHeadY;
+		if (UCanvasPanelSlot* CanvasSlot = Visual.HeadImage
+			? Cast<UCanvasPanelSlot>(Visual.HeadImage->Slot) : nullptr)
 		{
-			CanvasSlot->SetPosition(FVector2D(Visual.Data.LaneIndex * LaneWidth + 6.0f, SpawnY - 12.0f));
-			CanvasSlot->SetSize(FVector2D(LaneWidth - 12.0f, 24.0f));
-			Visual.Image->SetRenderTranslation(FVector2D(
-				0.0f,
-				FMath::Lerp(SpawnY, JudgementY, Progress) - SpawnY));
-			// Runtime-generated moving images must invalidate their cached paint/layout state.
-			Visual.Image->InvalidateLayoutAndVolatility();
+			CanvasSlot->SetPosition(FVector2D(
+				Visual.Data.LaneIndex * LaneWidth + 6.0f, HeadY - LongNoteHeadHeight * 0.5f));
+			CanvasSlot->SetSize(FVector2D(LaneWidth - 12.0f, LongNoteHeadHeight));
+			CanvasSlot->SetZOrder(6);
+			Visual.HeadImage->InvalidateLayoutAndVolatility();
+		}
+		if (Visual.Data.IsLongNote())
+		{
+			const float TailY = JudgementY - (Visual.Data.GetEndTimeSeconds() - MusicTime) * PixelsPerSecond;
+			const float TopY = FMath::Min(HeadY, TailY);
+			const float BottomY = FMath::Max(HeadY, TailY);
+			if (UCanvasPanelSlot* BodySlot = Visual.BodyImage
+				? Cast<UCanvasPanelSlot>(Visual.BodyImage->Slot) : nullptr)
+			{
+				BodySlot->SetPosition(FVector2D(Visual.Data.LaneIndex * LaneWidth + LaneWidth * 0.2f, TopY));
+				BodySlot->SetSize(FVector2D(LaneWidth * 0.6f, FMath::Max(BottomY - TopY, 2.0f)));
+				BodySlot->SetZOrder(4);
+			}
+			if (UCanvasPanelSlot* TailSlot = Visual.TailImage
+				? Cast<UCanvasPanelSlot>(Visual.TailImage->Slot) : nullptr)
+			{
+				TailSlot->SetPosition(FVector2D(
+					Visual.Data.LaneIndex * LaneWidth + 6.0f, TailY - LongNoteHeadHeight * 0.5f));
+				TailSlot->SetSize(FVector2D(LaneWidth - 12.0f, LongNoteHeadHeight));
+				TailSlot->SetZOrder(5);
+			}
+			if (UCanvasPanelSlot* GlowSlot = Visual.HoldGlowImage
+				? Cast<UCanvasPanelSlot>(Visual.HoldGlowImage->Slot) : nullptr)
+			{
+				GlowSlot->SetPosition(FVector2D(
+					Visual.Data.LaneIndex * LaneWidth, JudgementY - LaneWidth * 0.5f));
+				GlowSlot->SetSize(FVector2D(LaneWidth));
+				GlowSlot->SetZOrder(7);
+			}
+			if (Visual.BodyImage) Visual.BodyImage->InvalidateLayoutAndVolatility();
+			if (Visual.TailImage) Visual.TailImage->InvalidateLayoutAndVolatility();
 		}
 	}
 }

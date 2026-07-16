@@ -1,6 +1,6 @@
 # AllGames Rhythm Game Development Plan
 
-Last updated: 2026-07-16
+Last updated: 2026-07-17
 
 ## Goal
 
@@ -9,11 +9,11 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 ## Current status
 
 - Prototype progress: stages 1-10 complete; stage 11 implemented and awaiting full-song PIE verification.
-- Current stage: three-song motif-aware catalog awaiting PIE listening verification for Lemonade and It'sMe.
+- Current stage: eleven-song, forty-four-chart catalog with automatic QA reports, awaiting prioritized PIE listening verification.
 - Next stage after user verification: tune any remaining per-song alignment or motif-selection errors, then formalize the repeatable song-import workflow.
 - Default map: `/Game/Maps/LobbyMap`; it starts `/Game/Maps/FiveKeyMap` after settings are confirmed.
 - Preserved 9-key test map: `/Game/Maps/TestMap`.
-- Playable songs: `/Game/Audio/Music/Choom`, `/Game/Audio/Music/Lemonade`, and `/Game/Audio/Music/It_sMe`.
+- Playable catalog: Choom, Lemonade, It'sMe, CHASE-ME, CANON-D, Drama, 만찬가, LoveAttack, 갑자기, HeavySerenade, and RUDE!; every song has Easy/Normal/Hard/Expert 5-key charts.
 - Test song format: stereo, 48 kHz, 16-bit PCM WAV, approximately 176.054 seconds.
 - Default input mode follows SongData; FiveKeyMap selects 5-key.
 - Latest successful full build: `AllGamesEditor Win64 Development` on 2026-07-16.
@@ -106,6 +106,8 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 ### Lobby and play settings
 
 - `LobbyMap` uses its own lightweight lobby GameMode/PlayerController and contains no gameplay Conductor or NoteSpawner.
+- The selected song plays a looping lobby preview. Each Song Data Asset exposes preview start time, duration, and volume; a negative start time automatically selects a centered section of the track.
+- Changing songs immediately switches the preview, while changing difficulty or note speed keeps the current preview playing.
 - `URhythmGameInstance` preserves difficulty and visual note-speed settings across map travel.
 - `/Game/Data/DA_RhythmSongCatalog` is the editor-managed source for lobby song selection. Adding a future Song Data Asset to this catalog makes it selectable without changing lobby code.
 - Note speed changes only travel duration; target music timestamps and judgement timing remain unchanged.
@@ -174,6 +176,7 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - After restarting, verify that 9-key mode logs lanes 1-9 for `A/S/D/F/Space/J/K/L/Semicolon`.
 - Verify that Semicolon triggers lane 9 without opening Debug Camera help after the `DefaultInput.ini` change.
 - The playback-percent timing callback is appropriate for the current Windows PC target. Device latency calibration remains a later task.
+- `BUG-002` tracks CHASE-ME's initial 49-second timeline jump. The first audio-percent callback could report a stale non-zero position while audible playback started at zero, advancing the HUD/chart and causing an apparent 3:07 cutoff; the fix rejects implausible initial callbacks and awaits manual PIE verification.
 
 ## Work log
 
@@ -213,6 +216,43 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Generalized the motif-aware generator to derive each song's WAV duration and shared MIDI/audio alignment and to emit per-song metadata. Lemonade measured a +0.1760-second acoustic alignment and generates 337/520/605/881 notes through 185.6 seconds; It'sMe measured -0.0780 seconds and generates 208/359/426/566 notes through 136.4 seconds.
 - Created `DA_Lemonade_{Easy,Normal,Hard,Expert}_5Key` and `DA_ItsMe_{Easy,Normal,Hard,Expert}_5Key`, then expanded `DA_RhythmSongCatalog` to 12 charts grouped as Choom, Lemonade, and It'sMe. Lobby song selection can now cycle the three unique music assets while difficulty resolves the matching chart.
 - Extended automated lobby validation to all 12 assets, exact note/lane counts, ordered unique times, increasing difficulty density, full-song tail coverage, Choom hook regressions, and map setup. The Unreal commandlet completed with zero errors and warnings.
+- Added long-note gameplay support. `FRhythmNoteData` now stores duration; tap notes remain backward-compatible at zero. The judgement manager tracks head timing, held state, early release, tail completion, and an editable release grace, while scoring receives one final Perfect/Great/Good/Miss result per hold.
+- Added runtime-generated long-note Head/Body/Tail presentation, held-key glow, complete/break effects, and Blueprint-assignable texture slots. Functional colored fallbacks remain available until final UI textures are imported.
+- Extended MIDI parsing to pair Note On/Off events and preserve source duration. The difficulty generator now converts only clearly sustained Vocal/Other events into non-overlapping holds, using thresholds of 1.0/0.8/0.65/0.55 seconds for Easy/Normal/Hard/Expert and a three-second cap.
+- Regenerated all 12 production charts with conservative hold counts: Choom `[1,1,1,4]`, Lemonade `[1,1,4,8]`, and It'sMe `[0,1,1,2]`. Full `AllGamesEditor` builds succeeded after the reflected data and UI changes; automated asset and runtime PIE verification remain.
+- Rebased difficulty after playtesting: the former Normal is now Easy, former Hard is Normal, and former Expert is Hard. A new Expert profile uses tighter onset gaps, lower velocity thresholds, more accompaniment fills, and up to 12 preserved motif hits while retaining single-note timestamps.
+- New chart totals are Choom `[488,576,715,815]`, Lemonade `[520,605,881,1104]`, and It'sMe `[359,426,566,669]` for Easy/Normal/Hard/Expert. Corresponding hold counts are `[1,1,4,9]`, `[1,4,8,13]`, and `[1,1,2,5]`.
+- Replaced fractional note-speed selection with exactly four looping visual speeds: `1x`, `2x`, `3x`, and `4x`. Speed changes travel/spawn lead time only and never changes music or target timestamps.
+- Simplified result navigation to mouse-only interaction. Song completion enables the cursor and UI-only input, removes Enter retry and Escape navigation, and displays one `LOBBY` button that returns to LobbyMap.
+- Added song-selection preview playback to the lobby. Song Data Assets can select a highlight with `PreviewStartTimeSeconds`, `PreviewDurationSeconds`, and `PreviewVolume`; unconfigured songs automatically preview a 15-second middle section and loop it until selection changes or gameplay starts.
+- Added an audio-stem chart-authoring alternative for songs without MIDI. CHASE-ME uses four exactly aligned 187.5012-second WAV stems (vocals, drums, bass, and remaining music); spectral-onset analysis produces Easy/Normal/Hard/Expert drafts while runtime uses only the imported CHASE-ME master SoundWave.
+- Created and cataloged `DA_CHASEME_{Easy,Normal,Hard,Expert}_5Key` with 583/791/1146/1513 notes after initial-travel correction. The separated WAV files stay outside Content as authoring sources, preventing four redundant full-length runtime audio imports.
+- Added a three-second gameplay preparation countdown. The Conductor delays the authoritative audio start while the gameplay UI displays `3`, `2`, `1`, and `GO!`; note spawning and judgement remain inactive until audio playback begins.
+- Investigated a reported late-song CHASE-ME note gap. The runtime SoundWave and source stems both last 187.501 seconds, and generated charts retain notes through 186-187 seconds with no empty late section. Song completion now logs spawned/total note counts and reports an error if playback finishes before every chart note is spawned, allowing a future PIE reproduction to distinguish spawning from UI presentation.
+- Added the current play time as `TIME  m:ss` beneath gameplay accuracy so late-song visual issues can be reported against an exact music timestamp. The display remains at `0:00` during the preparation countdown and follows the authoritative music timeline after `GO!`. CHASE-ME Hard analysis confirms continuous late-chart density (roughly 29-36 notes per five seconds after 90 seconds) and no data gap longer than 0.5 seconds before the ending tail.
+- Corrected CHASE-ME's abrupt first-note appearance. Audio-stem charts now discard candidates before 2.25 seconds so every first note has at least the two-second base travel time to enter from the lane top after `GO!`; Hard and Expert no longer create partially progressed notes in the middle of the screen.
+- Corrected the earlier CHASE-ME 3:07 diagnosis: the four supplied stems and Unreal master are all 187.501 seconds, so there is no source-length mismatch. Opened `BUG-002-ChaseMeEndOfSongCutoff.md`; the final Hard note is at 186.9787 seconds, just before the integer HUD first displays 3:07, leaving only a 0.522-second audio tail. Restored the duration-clamped Conductor timeline and retained the issue for manual end-of-song presentation verification.
+- User identified the decisive `BUG-002` reproduction: audible CHASE-ME starts at the beginning while the gameplay clock starts around 0:49. The Conductor had accepted an invalid first `OnAudioPlaybackPercent` value as absolute time, explaining the mid-screen opening notes and why the chart ended with roughly 49 seconds of audio remaining. Added a playback-start clock and reject any initial callback more than 0.5 seconds from plausible elapsed time.
+- Moved countdown ownership to the visible gameplay flow: the Conductor now waits after map BeginPlay, and `URhythmGameplayWidget::NativeConstruct()` starts the 3-second countdown only after the lane/note screen has been created and added to the viewport.
+- Deferred countdown start by one game-thread tick after `WBP_RhythmGameplay` enters the viewport, ensuring Slate paints the lane/note UI before `3, 2, 1, GO!` begins instead of making the countdown appear to belong to the preceding screen.
+- Rebalanced the production chart pipeline around vocal and drum attacks. Bass/Other/FX events now fill only clear gaps with difficulty-scaled caps, and only vocal phrases can become MIDI hooks. Long notes are capped at 2.25 seconds, spaced apart, and permit at most 0/1/2/3 extra taps on Easy/Normal/Hard/Expert; conflicting ornamental taps are removed. Regenerated and updated all production charts except the intentionally preserved CANON-D set.
+- Raised judgement feedback from normalized Y 0.20 to 0.16, reduced its maximum area from 720x320 to 620x270, and reduced/raised the accompanying HIT counter for a less dominant upper-screen presentation. Blueprint appearance properties remain editable for later tuning.
+- Added CANON-D from separated 120 BPM Vocal/Drums/Bass/Other MIDI sources and the existing 198.856-second master SoundWave. The reusable multitrack alignment/motif pipeline generated Easy/Normal/Hard/Expert 5-key charts with 403/495/927/1182 notes, 2/3/7/15 long notes, and coverage through 196.925 seconds.
+- Created `DA_CanonD_{Easy,Normal,Hard,Expert}_5Key`, configured a 55-second lobby preview, expanded the catalog to five songs and twenty charts, and added dedicated plus full-catalog validators. Existing songs and comparison assets remain intact.
+- Relaxed long-note release timing after playtesting: releasing up to 180 ms before the tail now completes the hold instead of the previous 80 ms. Earlier releases still break the note, and the shared `LongNoteReleaseGraceSeconds` remains editor-adjustable up to 350 ms.
+- Added Drama and 만찬가 as complete four-difficulty 5-key song groups. Drama uses aligned Vocal/Drums/Bass/FX WAV authoring stems and generates 543/864/1246/1834 notes through 213.3 seconds; 만찬가 uses Vocal/Drums/Bass/Other MIDI aligned to its master WAV and generates 565/655/1040/1253 notes through 216.6 seconds.
+- Created `DA_Drama_{Easy,Normal,Hard,Expert}_5Key` and `DA_Bansanka_{Easy,Normal,Hard,Expert}_5Key`, linked the existing `에스파-Drama` and `tuki-만찬가` SoundWaves, configured lobby previews, and expanded `DA_RhythmSongCatalog` to seven songs and twenty-eight charts.
+- Added dedicated Drama/만찬가 validation and expanded full lobby validation. Both Unreal commandlets completed with zero errors and warnings; all new Data Assets and the catalog resolve to Git LFS. Manual PIE listening verification remains for musical feel, sync, previews, and late-song coverage.
+- Added LoveAttack and 갑자기 as complete four-difficulty 5-key song groups. LoveAttack uses aligned Vocal/Drums/Bass/FX WAV stems and generates 594/786/1095/1457 notes through 179.4 seconds; 갑자기 uses Vocal/Drums/Bass/Other MIDI aligned to its master WAV and generates 523/592/857/1052 notes through 193.6 seconds.
+- Created `DA_LoveAttack_{Easy,Normal,Hard,Expert}_5Key` and `DA_Suddenly_{Easy,Normal,Hard,Expert}_5Key`, linked the existing `리센느-LoveAttack` and `아이오아이-갑자기` SoundWaves, configured lobby previews, and expanded the catalog to nine songs and thirty-six charts.
+- Added dedicated LoveAttack/갑자기 validation and expanded the full lobby validator. Both Unreal commandlets completed with zero errors and warnings, and all eight new Data Assets resolve to Git LFS. Manual PIE listening verification remains.
+- Added a reusable automatic chart quality analyzer to both WAV-stem and multitrack-MIDI generation. Each generation now emits JSON and Markdown reports covering audio-onset match, median timing distance, density outliers, active-but-sparse windows, longest gaps, lane balance, long-note overlap, and prioritized five-second listening windows while excluding the intentional opening preparation region.
+- Added HeavySerenade and RUDE! from aligned Vocal/Drums/Bass/FX WAV stems. HeavySerenade generates 471/752/1063/1539 notes through 178.1 seconds; RUDE! generates 524/858/1177/1731 notes through 195.5 seconds.
+- Created `DA_HeavySerenade_{Easy,Normal,Hard,Expert}_5Key` and `DA_Rude_{Easy,Normal,Hard,Expert}_5Key`, linked their existing SoundWaves, configured lobby previews, and expanded the catalog to eleven songs and forty-four charts.
+- HeavySerenade automatic onset match is 86.9-98.9%; priority Expert listening windows are 0:15-0:20, 2:05-2:15, and 2:55-2:59. RUDE! onset match is 92.1-100%; its main priority window is 0:45-0:50.
+- Dedicated HeavySerenade/RUDE and full 11-song Unreal validations completed with zero errors and warnings; all eight new Data Assets resolve to Git LFS. Manual testing can focus on the generated priority windows before any full-song release pass.
+- Backfilled automatic quality reports for all nine earlier production songs without regenerating or modifying their chart assets. The catalog now has onset-match metrics and prioritized listening windows for all eleven songs and forty-four difficulty charts.
+- Added `GenerateAllChartQualitySummary.py` and generated `Docs/Analysis/AllSongsChartQualitySummary.{json,md}`. Current minimum per-song match priority begins with HeavySerenade 86.9%, LoveAttack 87.1%, and Drama 88.3%; CHASE-ME and RUDE remain `GOOD` at a 92.1% minimum. `CAUTION` can also reflect lane imbalance, so it is treated as a review priority rather than an automatic failure.
 - Began music-grounded chart authoring for `Choom.wav`: added a repeatable NumPy spectral-flux/tempo/onset analysis script and documented the source as 176.053708 seconds, stereo 48 kHz PCM.
 - Automatic analysis supports a 120 BPM working grid with a 0.0133-second initial offset; created a separate Space-only 10-25 second beat-sync verification chart workflow so timing can be listening-tested before vocal chart authoring.
 - Kept the note spawner ticking after its last spawn; its actor-driven timeline is still required to move the final visible notes and animate judgement feedback, especially in short verification charts.

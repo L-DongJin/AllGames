@@ -1,12 +1,37 @@
 # Rhythm Chart Authoring Pipeline
 
-Last updated: 2026-07-16
+Last updated: 2026-07-17
 
 ## Purpose
 
 This document records how AllGames moved from hand-written test notes to the current reusable, motif-aware multitrack MIDI pipeline. It is the reference for adding songs and for understanding why a generated chart contains a note.
 
 The runtime never parses MIDI. MIDI and WAV files are authoring inputs; the final game reads ordered `FRhythmNoteData` entries from `URhythmSongDataAsset` assets.
+
+### Aligned audio-stem alternative
+
+Songs without usable MIDI can be authored from aligned separated WAV stems. Vocal, drum,
+bass, and remaining-music stems must have the same sample rate, start point, and duration.
+`GenerateAudioStemDifficultyCharts.py` detects per-stem spectral attacks, merges competing
+events by time and strength, assigns readable 5-key lane patterns, and emits four difficulty
+CSVs. The separated stems remain external authoring files; Unreal imports only the master mix
+for runtime playback.
+
+This method follows the actual rendered sound more directly than MIDI, but source separation
+can leak instruments between stems. Generated charts therefore remain a first-pass draft and
+require listening tests, especially for vocal sustains and dense Expert passages.
+
+CANON-D uses the established multitrack MIDI path rather than audio-stem onset generation.
+Its Vocal/Drums/Bass/Other MIDI sources share 120 BPM and extend to approximately 197 seconds;
+the 198.856-second master WAV supplies acoustic alignment. The dense Other transcription is
+filtered by the reusable difficulty profiles instead of being copied directly into gameplay.
+
+Drama, LoveAttack, 만찬가, and 갑자기 verify that both production paths can coexist in the same catalog. Drama uses
+four aligned Vocal/Drums/Bass/FX WAV stems; `FX` supplies the remaining-music role and only the
+existing `/Game/Audio/Music/에스파-Drama` master is used at runtime. LoveAttack follows the same
+aligned-stem process. 만찬가 and 갑자기 use separated Vocal/Drums/Bass/Other MIDI plus their master
+WAV files for acoustic alignment. Neither the source stems
+nor authoring MIDI files need to be imported into Unreal or cooked into the distributed game.
 
 ## Evolution of the chart baseline
 
@@ -73,14 +98,14 @@ The current generator detects motifs before ordinary density reduction:
 
 Overlapping candidates are grouped and scored by peak velocity, average velocity, phrase length, and musical role. One clear representative phrase owns the local window for Easy through Hard, preventing unrelated leakage from muddying it. Expert retains the motif and may also keep valid surrounding attacks.
 
-Difficulty preserves progressively more of the same detected phrase:
+Difficulty preserves progressively more of the same detected phrase. After playtesting, the former Normal/Hard/Expert profiles became the new Easy/Normal/Hard baseline; Expert now uses a separate denser profile:
 
 | Difficulty | Motif detail | General intent |
 | --- | ---: | --- |
-| Easy | up to 2 representative hits | readable outline and major accents |
-| Normal | up to 4 hits | recognizable vocal/groove phrase |
-| Hard | up to 6 hits | subdivisions and fills |
-| Expert | up to 8 hits plus valid surrounding attacks | dense original articulation |
+| Easy | up to 4 hits | former Normal; recognizable vocal/groove phrase |
+| Normal | up to 6 hits | former Hard; subdivisions and fills |
+| Hard | up to 8 hits plus surrounding attacks | former Expert |
+| Expert | up to 12 hits with tighter event filters | fastest available articulation and fills |
 
 No lyric word, onomatopoeia, or production timestamp is embedded in the generator. Choom's known listening points around 47-48, 53, 73-74, 89-90, 117, and 123 seconds exist only as regression tests proving that general motif rules did not erase those phrases.
 
@@ -113,15 +138,62 @@ Authoring MIDIs are stored under `SourceAssets/MIDI/<Song>/Stems/`. They are nor
 9. assigns balanced 5-key lanes without requiring simultaneous input;
 10. writes four CSV candidates and one metadata JSON containing alignment and counts.
 
+The MIDI parser also pairs Note On and Note Off events. Clearly sustained Vocal/Other notes may become hold notes. The duration threshold is conservative and difficulty-dependent (Easy 1.0 s, Normal 0.8 s, Hard 0.65 s, Expert 0.55 s), durations are capped at 3 seconds, and a hold is shortened or rejected if it would overlap the next note on the same lane.
+
 ### Unreal asset creation
 
 Editor Python scripts convert CSV rows to four `URhythmSongDataAsset` assets. Each asset stores the same music but a different `ERhythmDifficulty`, ordered note array, 5-key mode, BPM, measured metadata offset, and base travel time.
 
-`DA_RhythmSongCatalog` contains difficulty groups for each unique music asset. The lobby cycles unique songs, and the selected difficulty resolves the matching chart for that music. As of 2026-07-16 the production catalog contains:
+`DA_RhythmSongCatalog` contains difficulty groups for each unique music asset. The lobby cycles unique songs, and the selected difficulty resolves the matching chart for that music. As of 2026-07-17 the production catalog contains eleven songs and forty-four charts:
 
-- Choom: 322 / 488 / 576 / 715 notes;
-- Lemonade: 337 / 520 / 605 / 881 notes;
-- It'sMe: 208 / 359 / 426 / 566 notes.
+- Choom: 488 / 576 / 715 / 815 notes;
+- Lemonade: 520 / 605 / 881 / 1104 notes;
+- It'sMe: 359 / 426 / 566 / 669 notes.
+- CHASE-ME: 583 / 791 / 1146 / 1513 notes;
+- CANON-D: 403 / 495 / 927 / 1182 notes;
+- Drama: 543 / 864 / 1246 / 1834 notes from aligned audio stems;
+- 만찬가: 565 / 655 / 1040 / 1253 notes from multitrack MIDI.
+- LoveAttack: 594 / 786 / 1095 / 1457 notes from aligned audio stems;
+- 갑자기: 523 / 592 / 857 / 1052 notes from multitrack MIDI.
+- HeavySerenade: 471 / 752 / 1063 / 1539 notes from aligned audio stems;
+- RUDE!: 524 / 858 / 1177 / 1731 notes from aligned audio stems.
+
+### Automatic quality report
+
+Both production generators now call `GenerateChartQualityReport.py` after writing their four
+CSVs. The report compares every note against spectral attacks in the master WAV or combined
+aligned stems and writes `<Song>_quality_report.json` plus `<Song>_quality_report.md`.
+
+The report records note density, longest gaps, five-lane balance, long-note overlaps, audio-onset
+match percentage, median onset distance, and up to six prioritized five-second listening windows
+per difficulty. A window is raised when active audio is under-charted, density is an outlier, or
+notes have weak proximity to detected attacks. The intentional countdown/initial-travel region is
+excluded from sparse-section warnings.
+
+`GOOD`, `CAUTION`, and `REVIEW` are risk levels, not claims that a chart is fun or release-ready.
+
+## Vocal/drum priority and hold playability
+
+- Production charts now treat vocal articulation and drum attacks as the primary playable rhythm.
+- Bass and accompaniment/FX may only fill clear gaps and are capped to a small difficulty-scaled
+  share; they no longer create independent hook streams.
+- MIDI hooks are derived from the vocal lead. Bass and Other tracks can support a selected attack
+  but cannot become a competing phrase by themselves.
+- Long notes are created only from sustained vocal evidence. Their duration is capped at 2.25
+  seconds, successive holds are separated by difficulty-scaled minimum intervals, and a hold may
+  contain at most 0/1/2/3 additional taps on Easy/Normal/Hard/Expert.
+- When a clear hold conflicts with excess ornamental taps, the ornamental taps are removed instead
+  of forcing the player to hold one key while executing an unreadable stream.
+- CANON-D is intentionally exempt from this rebalance because its accompaniment-led pattern is part
+  of the accepted chart identity.
+They reduce full-song manual testing to short exception review; representative release songs still
+need at least one complete human playtest.
+
+`GenerateAllChartQualitySummary.py` discovers every per-song JSON report and produces
+`Docs/Analysis/AllSongsChartQualitySummary.{json,md}`. It ranks listening priority by worst status,
+minimum difficulty match, and suspicious-window count. A `CAUTION` result may come from intentional
+lane emphasis as well as timing risk, so the ranked five-second windows and underlying reasons
+should be reviewed before changing a chart.
 
 ### Verification
 
@@ -135,6 +207,7 @@ Automated checks require:
 - correct song title, music reference, difficulty, and catalog order;
 - Git LFS attributes for all Unreal binary assets;
 - known regression hooks for a song when listening references exist.
+- automatic quality reports with zero long-note overlaps and prioritized listening windows.
 
 Automated analysis cannot fully decide which phrase a human remembers most. Every newly added song still needs one PIE listening pass, but the expected human work is exception review—reporting an omitted or awkward region—not manually describing or tapping the whole song.
 
@@ -143,6 +216,5 @@ Automated analysis cannot fully decide which phrase a human remembers most. Ever
 - AI stem transcription can omit an audible hit or create cross-stem leakage.
 - The current motif detector understands onset shape, repetition, strength, and role, but not lyric meaning or musical form labels such as chorus and bridge.
 - The 147.5 ms listening calibration and 45 ms advance were accepted on the current device; a future player calibration screen should make device latency user-specific.
-- Long notes, chords, and simultaneous inputs are intentionally excluded from the current 5-key charts.
+- Chords and simultaneous inputs remain excluded. Long notes are supported and generated conservatively from real MIDI duration, but their musical selection still requires PIE listening verification.
 - A future editor tool should display generated motifs over a waveform and allow local accept/reject edits without regenerating the whole song.
-

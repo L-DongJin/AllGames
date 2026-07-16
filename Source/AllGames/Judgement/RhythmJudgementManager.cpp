@@ -54,6 +54,8 @@ void ARhythmJudgementManager::BeginPlay()
 	UE_LOG(LogTemp, Log, TEXT("Rhythm judgement ready: Perfect %.0f / Great %.0f / Good %.0f / Miss %.0f ms."),
 		PerfectWindowSeconds * 1000.0f, GreatWindowSeconds * 1000.0f,
 		GoodWindowSeconds * 1000.0f, MissWindowSeconds * 1000.0f);
+	UE_LOG(LogTemp, Log, TEXT("Long-note release grace: %.0f ms before tail."),
+		LongNoteReleaseGraceSeconds * 1000.0f);
 }
 
 void ARhythmJudgementManager::Tick(const float DeltaSeconds)
@@ -69,8 +71,25 @@ void ARhythmJudgementManager::Tick(const float DeltaSeconds)
 	for (int32 Index = 0; Index < PendingNotes.Num(); ++Index)
 	{
 		FPendingRhythmNote& Note = PendingNotes[Index];
-		if (!Note.bJudged && MusicTime > Note.Data.TargetTimeSeconds + MissWindowSeconds)
+		if (Note.bJudged)
 		{
+			continue;
+		}
+
+		if (Note.Data.IsLongNote() && Note.bHeadHit)
+		{
+			if (Note.bHolding && MusicTime >= Note.Data.GetEndTimeSeconds())
+			{
+				OnLongNoteStateChanged.Broadcast(Note.Data, ERhythmLongNoteState::Completed);
+				JudgeNote(Index, Note.HeadJudgement, Note.HeadTimingErrorSeconds);
+			}
+		}
+		else if (MusicTime > Note.Data.TargetTimeSeconds + MissWindowSeconds)
+		{
+			if (Note.Data.IsLongNote())
+			{
+				OnLongNoteStateChanged.Broadcast(Note.Data, ERhythmLongNoteState::Broken);
+			}
 			JudgeNote(Index, ERhythmJudgement::Miss, MusicTime - Note.Data.TargetTimeSeconds);
 		}
 	}
@@ -84,12 +103,35 @@ void ARhythmJudgementManager::HandleNoteSpawned(const FRhythmNoteData NoteData)
 
 void ARhythmJudgementManager::HandleLaneInput(const int32 LaneIndex, const bool bPressed)
 {
-	if (!bPressed || !Conductor || !Conductor->IsMusicPlaying())
+	if (!Conductor || !Conductor->IsMusicPlaying())
 	{
 		return;
 	}
 
 	const float MusicTime = Conductor->GetMusicTimeSeconds();
+	if (!bPressed)
+	{
+		for (int32 Index = 0; Index < PendingNotes.Num(); ++Index)
+		{
+			FPendingRhythmNote& Note = PendingNotes[Index];
+			if (!Note.bJudged && Note.Data.IsLongNote() && Note.bHeadHit
+				&& Note.bHolding && Note.Data.LaneIndex == LaneIndex)
+			{
+				if (MusicTime + LongNoteReleaseGraceSeconds >= Note.Data.GetEndTimeSeconds())
+				{
+					OnLongNoteStateChanged.Broadcast(Note.Data, ERhythmLongNoteState::Completed);
+					JudgeNote(Index, Note.HeadJudgement, Note.HeadTimingErrorSeconds);
+				}
+				else
+				{
+					BreakLongNote(Index, MusicTime);
+				}
+				return;
+			}
+		}
+		return;
+	}
+
 	int32 ClosestIndex = INDEX_NONE;
 	float ClosestAbsoluteError = TNumericLimits<float>::Max();
 	float ClosestSignedError = 0.0f;
@@ -123,8 +165,35 @@ void ARhythmJudgementManager::HandleLaneInput(const int32 LaneIndex, const bool 
 		{
 			Judgement = ERhythmJudgement::Great;
 		}
-		JudgeNote(ClosestIndex, Judgement, ClosestSignedError);
+		FPendingRhythmNote& Note = PendingNotes[ClosestIndex];
+		if (Note.Data.IsLongNote())
+		{
+			Note.bHeadHit = true;
+			Note.bHolding = true;
+			Note.HeadJudgement = Judgement;
+			Note.HeadTimingErrorSeconds = ClosestSignedError;
+			OnLongNoteStateChanged.Broadcast(Note.Data, ERhythmLongNoteState::Started);
+			UE_LOG(LogTemp, Log, TEXT("Long note started: lane %d, target %.3f, end %.3f, error %+.1f ms"),
+				Note.Data.LaneIndex + 1, Note.Data.TargetTimeSeconds, Note.Data.GetEndTimeSeconds(),
+				ClosestSignedError * 1000.0f);
+		}
+		else
+		{
+			JudgeNote(ClosestIndex, Judgement, ClosestSignedError);
+		}
 	}
+}
+
+void ARhythmJudgementManager::BreakLongNote(const int32 PendingNoteIndex, const float MusicTimeSeconds)
+{
+	if (!PendingNotes.IsValidIndex(PendingNoteIndex) || PendingNotes[PendingNoteIndex].bJudged)
+	{
+		return;
+	}
+
+	const FRhythmNoteData NoteData = PendingNotes[PendingNoteIndex].Data;
+	OnLongNoteStateChanged.Broadcast(NoteData, ERhythmLongNoteState::Broken);
+	JudgeNote(PendingNoteIndex, ERhythmJudgement::Miss, MusicTimeSeconds - NoteData.GetEndTimeSeconds());
 }
 
 void ARhythmJudgementManager::JudgeNote(
@@ -148,9 +217,10 @@ void ARhythmJudgementManager::JudgeNote(
 	case ERhythmJudgement::Miss: break;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("%s: lane %d, target %.3f, error %+.1f ms"),
+	UE_LOG(LogTemp, Log, TEXT("%s: lane %d, target %.3f%s, error %+.1f ms"),
 		JudgementName,
 		Note.Data.LaneIndex + 1,
 		Note.Data.TargetTimeSeconds,
+		Note.Data.IsLongNote() ? *FString::Printf(TEXT(", hold %.3fs"), Note.Data.DurationSeconds) : TEXT(""),
 		TimingErrorSeconds * 1000.0f);
 }

@@ -17,6 +17,7 @@ from GenerateMultiTrackMidiFiveKeyChart import (
     nearest_index,
     refine_to_earlier_audio_attacks,
 )
+from GenerateChartQualityReport import generate_report
 
 
 PLAYTEST_ADVANCE_SECONDS = 0.045
@@ -37,18 +38,26 @@ class Profile:
     final_gap: float
     hook_max_notes: int
     hook_min_score: float
+    long_note_min_duration: float
+    supplemental_ratio: float
+    hold_max_taps: int
+    hold_min_interval: float
 
 
 PROFILES = {
-    "Easy": Profile(0.32, 55, 0.35, 45, 0.60, 65, 0.80, 78, 0.70, 0.90, 0.18, 2, 145.0),
-    "Normal": Profile(0.19, 50, 0.20, 40, 0.35, 60, 0.40, 70, 0.45, 0.55, 0.09, 4, 137.0),
-    "Hard": Profile(0.14, 42, 0.16, 36, 0.24, 52, 0.28, 62, 0.24, 0.32, 0.075, 6, 130.0),
-    "Expert": Profile(0.09, 32, 0.10, 30, 0.14, 42, 0.14, 50, 0.10, 0.14, 0.06, 8, 125.0),
+    # The previous Normal/Hard/Expert profiles become the new Easy/Normal/Hard baseline.
+    "Easy": Profile(0.19, 50, 0.20, 40, 0.35, 60, 0.40, 70, 0.45, 0.55, 0.09, 4, 137.0, 0.80, 0.03, 0, 30.0),
+    "Normal": Profile(0.14, 42, 0.16, 36, 0.24, 52, 0.28, 62, 0.24, 0.32, 0.075, 6, 130.0, 0.65, 0.05, 1, 22.0),
+    "Hard": Profile(0.09, 32, 0.10, 30, 0.14, 42, 0.14, 50, 0.10, 0.14, 0.06, 8, 125.0, 0.55, 0.08, 2, 16.0),
+    # Expert preserves faster articulation and more uncovered accompaniment than the former Expert.
+    "Expert": Profile(0.055, 20, 0.06, 20, 0.085, 30, 0.085, 38, 0.04, 0.06, 0.045, 12, 110.0, 0.45, 0.12, 3, 12.0),
 }
 
 
-HOOK_ROLES = ("vocal", "bass", "other")
-HOOK_ROLE_WEIGHT = {"vocal": 1.15, "bass": 1.0, "other": 1.05}
+# Memorable playable phrases should come from what the player actually hears as the lead.
+# Bass/Other remain optional gap-filling material and must not become independent hook streams.
+HOOK_ROLES = ("vocal",)
+HOOK_ROLE_WEIGHT = {"vocal": 1.15}
 
 
 def detect_role_bursts(events: list[dict], role: str) -> list[dict]:
@@ -171,8 +180,8 @@ def merge_profile(raw: dict[str, list[dict]], profile: Profile, hook_clusters: l
             for cluster in selected_clusters
         )
 
-    # Easy through Hard prioritize a clean readable motif. Expert preserves the motif too,
-    # but may layer valid surrounding attacks to create its genuinely higher density.
+    # Easy through Normal prioritize a clean readable motif. Hard and Expert preserve the motif
+    # while layering valid surrounding attacks; Expert uses substantially tighter source filters.
     if profile.hook_max_notes < 8:
         for role in reduced:
             reduced[role] = [event for event in reduced[role] if not inside_hook(event)]
@@ -188,19 +197,33 @@ def merge_profile(raw: dict[str, list[dict]], profile: Profile, hook_clusters: l
         elif not has_nearby(sorted(output, key=lambda item: item["midi_time"]), event["midi_time"], profile.final_gap):
             output.append(event)
 
+    supplemental = []
     for event in reduced["bass"]:
-        if not has_nearby(vocals, event["midi_time"], profile.bass_vocal_radius) \
-                and not has_nearby(sorted(output, key=lambda item: item["midi_time"]), event["midi_time"], profile.final_gap):
-            output.append(event)
+        if not has_nearby(vocals, event["midi_time"], profile.bass_vocal_radius):
+            supplemental.append(event)
 
     for event in reduced["other"]:
         index, distance = nearest_index(vocals, event["midi_time"])
         if distance <= 0.06 and event["chord_size"] >= 2:
             vocals[index]["supports"].add("other")
             vocals[index]["support_strength"] = max(vocals[index]["support_strength"], event["velocity"])
-        elif not has_nearby(vocals, event["midi_time"], profile.other_vocal_radius) \
-                and not has_nearby(sorted(output, key=lambda item: item["midi_time"]), event["midi_time"], profile.final_gap):
+        elif not has_nearby(vocals, event["midi_time"], profile.other_vocal_radius):
+            supplemental.append(event)
+
+    # Bass and accompaniment are allowed only as sparse punctuation in gaps left by vocals/drums.
+    # Prefer the strongest candidates and cap their share so they cannot create a noisy second chart.
+    supplement_limit = round(len(output) * profile.supplemental_ratio)
+    for event in sorted(
+        supplemental,
+        key=lambda item: (item["velocity"] + item.get("chord_size", 1) * 8),
+        reverse=True,
+    ):
+        if supplement_limit <= 0:
+            break
+        ordered_output = sorted(output, key=lambda item: item["midi_time"])
+        if not has_nearby(ordered_output, event["midi_time"], max(profile.final_gap, 0.12)):
             output.append(event)
+            supplement_limit -= 1
     output.extend(hook_events)
     return sorted(output, key=lambda event: event["midi_time"]), selected_clusters
 
@@ -221,14 +244,57 @@ def separate_close_events(events: list[dict], minimum_gap: float) -> list[dict]:
     return output
 
 
+def assign_long_note_durations(events: list[dict], profile: Profile) -> None:
+    """Keep clear vocal sustains and limit extra taps while either hand is occupied."""
+    for event in events:
+        source_duration = event.get("duration", 0.0)
+        event["duration_seconds"] = (
+            min(source_duration, 2.25)
+            if event["role"] == "vocal" and source_duration >= profile.long_note_min_duration
+            else 0.0
+        )
+    last_hold_time = float("-inf")
+    for event in events:
+        if event["duration_seconds"] <= 0.0:
+            continue
+        if event["target_time"] - last_hold_time < profile.hold_min_interval:
+            event["duration_seconds"] = 0.0
+        else:
+            last_hold_time = event["target_time"]
+    remove_ids = set()
+    for index, event in enumerate(events):
+        if event["duration_seconds"] <= 0.0:
+            continue
+        end_time = event["target_time"] + event["duration_seconds"]
+        taps_during_hold = [
+            later for later in events[index + 1:]
+            if later["target_time"] < end_time and later["duration_seconds"] <= 0.0
+        ]
+        for extra in taps_during_hold[profile.hold_max_taps:]:
+            remove_ids.add(id(extra))
+    if remove_ids:
+        events[:] = [event for event in events if id(event) not in remove_ids]
+    next_time_by_lane = {}
+    for event in reversed(events):
+        next_time = next_time_by_lane.get(event["lane"])
+        if event["duration_seconds"] > 0.0 and next_time is not None:
+            event["duration_seconds"] = min(
+                event["duration_seconds"], max(0.0, next_time - event["target_time"] - 0.12)
+            )
+            if event["duration_seconds"] < 0.35:
+                event["duration_seconds"] = 0.0
+        next_time_by_lane[event["lane"]] = event["target_time"]
+
+
 def write_chart(path: Path, events: list[dict]) -> None:
-    fields = ["target_time_seconds", "lane_index", "role", "supports", "hook_id", "midi_time_seconds", "audio_refinement_seconds", "pitch", "velocity", "chord_size"]
+    fields = ["target_time_seconds", "duration_seconds", "lane_index", "role", "supports", "hook_id", "midi_time_seconds", "audio_refinement_seconds", "pitch", "velocity", "chord_size"]
     with path.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
         for event in events:
             writer.writerow({
                 "target_time_seconds": f"{event['target_time']:.4f}",
+                "duration_seconds": f"{event.get('duration_seconds', 0.0):.4f}",
                 "lane_index": event["lane"],
                 "role": event["role"],
                 "supports": "+".join(sorted(event["supports"])),
@@ -276,18 +342,20 @@ def main() -> None:
         events = [event for event in events if args.start_time <= event["target_time"] <= chart_end_time]
         events = separate_close_events(events, profile.final_gap)
         assign_lanes(events)
+        assign_long_note_durations(events, profile)
         output = args.output_dir / f"{args.song_name}_{difficulty}_5Key.csv"
         write_chart(output, events)
         roles = {role: sum(event["role"] == role for event in events) for role in raw}
         lanes = [sum(event["lane"] == lane for event in events) for lane in range(5)]
         late = [sum(start <= event["target_time"] < start + 10 for event in events) for start in range(140, 180, 10)]
         hook_notes = sum(event.get("is_hook", False) for event in events)
+        long_notes = sum(event.get("duration_seconds", 0.0) > 0.0 for event in events)
         summaries[difficulty] = {
             "notes": len(events), "lanes": lanes, "hooks": len(selected_hooks),
-            "hook_notes": hook_notes, "first_time": events[0]["target_time"],
+            "hook_notes": hook_notes, "long_notes": long_notes, "first_time": events[0]["target_time"],
             "last_time": events[-1]["target_time"],
         }
-        print(difficulty, "notes", len(events), "hooks", len(selected_hooks), "hook notes", hook_notes, "roles", roles, "lanes", lanes, "140s+ bins", late, "range", round(events[0]["target_time"], 3), round(events[-1]["target_time"], 3))
+        print(difficulty, "notes", len(events), "long notes", long_notes, "hooks", len(selected_hooks), "hook notes", hook_notes, "roles", roles, "lanes", lanes, "140s+ bins", late, "range", round(events[0]["target_time"], 3), round(events[-1]["target_time"], 3))
 
     metadata = {
         "song_name": args.song_name,
@@ -302,6 +370,15 @@ def main() -> None:
     (args.output_dir / f"{args.song_name}_metadata.json").write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+    report = generate_report(args.output_dir, args.song_name, [args.wav], "master WAV")
+    print("Quality report", {
+        difficulty: {
+            "status": data["status"],
+            "match": data["audio_onset_match_percent"],
+            "review_windows": [window["label"] for window in data["recommended_listening_windows"]],
+        }
+        for difficulty, data in report["difficulties"].items()
+    })
 
 
 if __name__ == "__main__":

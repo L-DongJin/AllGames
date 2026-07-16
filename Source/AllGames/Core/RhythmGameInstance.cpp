@@ -101,5 +101,6 @@ void URhythmGameInstance::ChangeDifficulty(const int32 Direction)
 
 void URhythmGameInstance::ChangeScrollSpeed(const int32 Direction)
 {
-	ScrollSpeed = FMath::Clamp(ScrollSpeed + static_cast<float>(Direction) * 0.25f, 0.75f, 2.0f);
+	const int32 CurrentSpeed = FMath::Clamp(FMath::RoundToInt(ScrollSpeed), 1, 4);
+	ScrollSpeed = static_cast<float>((CurrentSpeed - 1 + Direction + 4) % 4 + 1);
 }

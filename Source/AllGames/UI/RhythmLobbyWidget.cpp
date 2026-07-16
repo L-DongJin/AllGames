@@ -3,6 +3,7 @@
 #include "RhythmLobbyWidget.h"
 
 #include "Blueprint/WidgetTree.h"
+#include "Components/AudioComponent.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
@@ -10,7 +11,10 @@
 #include "Components/TextBlock.h"
 #include "InputCoreTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
+#include "TimerManager.h"
 #include "../Core/RhythmGameInstance.h"
+#include "../Data/RhythmSongDataAsset.h"
 
 namespace
 {
@@ -66,7 +70,7 @@ void URhythmLobbyWidget::BuildLayout()
 	DifficultyValueText = MakeText(WidgetTree, TEXT("DifficultyValue"), TEXT("NORMAL"), 42, FLinearColor(1.0f, 0.8f, 0.2f));
 	AddCentered(DifficultyValueText, 0.45f, FVector2D(420, 60));
 	AddCentered(MakeText(WidgetTree, TEXT("SpeedLabel"), TEXT("NOTE SPEED"), 30, FLinearColor::White), 0.53f, FVector2D(420, 50));
-	SpeedValueText = MakeText(WidgetTree, TEXT("SpeedValue"), TEXT("1.00x"), 42, FLinearColor(0.35f, 1.0f, 0.65f));
+	SpeedValueText = MakeText(WidgetTree, TEXT("SpeedValue"), TEXT("1x"), 42, FLinearColor(0.35f, 1.0f, 0.65f));
 	AddCentered(SpeedValueText, 0.58f, FVector2D(420, 60));
 
 	auto AddArrowButton = [this, Root](const TCHAR* Name, const TCHAR* Label, float X, float Y)
@@ -96,6 +100,12 @@ void URhythmLobbyWidget::BuildLayout()
 	RefreshSettings();
 }
 
+void URhythmLobbyWidget::NativeDestruct()
+{
+	StopSongPreview();
+	Super::NativeDestruct();
+}
+
 FReply URhythmLobbyWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	const FKey Key = InKeyEvent.GetKey();
@@ -113,17 +123,109 @@ void URhythmLobbyWidget::RefreshSettings()
 	{
 		if (SongValueText) SongValueText->SetText(Settings->GetSelectedSongDisplayName());
 		if (DifficultyValueText) DifficultyValueText->SetText(Settings->GetDifficultyDisplayName());
-		if (SpeedValueText) SpeedValueText->SetText(FText::FromString(FString::Printf(TEXT("%.2fx"), Settings->GetScrollSpeed())));
+		if (SpeedValueText) SpeedValueText->SetText(FText::FromString(
+			FString::Printf(TEXT("%dx"), FMath::RoundToInt(Settings->GetScrollSpeed()))));
 	}
 	if (HelpText)
 	{
 		const TCHAR* RowName = SelectedRow == 0 ? TEXT("SONG") : SelectedRow == 1 ? TEXT("DIFFICULTY") : SelectedRow == 2 ? TEXT("NOTE SPEED") : TEXT("START");
 		HelpText->SetText(FText::FromString(FString::Printf(TEXT("SELECTED: %s    UP/DOWN: SELECT    LEFT/RIGHT: CHANGE    ENTER: CONFIRM"), RowName)));
 	}
+	RefreshSongPreview();
+}
+
+void URhythmLobbyWidget::RefreshSongPreview()
+{
+	const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance());
+	const URhythmSongDataAsset* Song = Settings ? Settings->GetSelectedSong() : nullptr;
+	if (!Song || !Song->Music)
+	{
+		StopSongPreview();
+		return;
+	}
+
+	if (PreviewMusic == Song->Music && PreviewAudioComponent && PreviewAudioComponent->IsPlaying())
+	{
+		return;
+	}
+
+	StopSongPreview();
+	PreviewMusic = Song->Music;
+
+	const float MusicDuration = FMath::Max(0.0f, Song->Music->GetDuration());
+	PreviewDurationSeconds = FMath::Clamp(
+		Song->PreviewDurationSeconds,
+		3.0f,
+		FMath::Max(3.0f, MusicDuration));
+	const float LatestStartTime = FMath::Max(0.0f, MusicDuration - PreviewDurationSeconds);
+	PreviewStartTimeSeconds = Song->PreviewStartTimeSeconds >= 0.0f
+		? FMath::Clamp(Song->PreviewStartTimeSeconds, 0.0f, LatestStartTime)
+		: LatestStartTime * 0.5f;
+
+	PreviewAudioComponent = UGameplayStatics::CreateSound2D(
+		this,
+		Song->Music,
+		Song->PreviewVolume,
+		1.0f,
+		PreviewStartTimeSeconds,
+		nullptr,
+		false,
+		false);
+	if (!PreviewAudioComponent)
+	{
+		PreviewMusic = nullptr;
+		return;
+	}
+
+	PreviewAudioComponent->FadeIn(0.35f, Song->PreviewVolume, PreviewStartTimeSeconds);
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimer(
+			PreviewLoopTimerHandle,
+			this,
+			&ThisClass::RestartSongPreview,
+			PreviewDurationSeconds,
+			false);
+	}
+}
+
+void URhythmLobbyWidget::StopSongPreview()
+{
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(PreviewLoopTimerHandle);
+	}
+	if (PreviewAudioComponent)
+	{
+		PreviewAudioComponent->Stop();
+		PreviewAudioComponent = nullptr;
+	}
+	PreviewMusic = nullptr;
+}
+
+void URhythmLobbyWidget::RestartSongPreview()
+{
+	if (!PreviewAudioComponent)
+	{
+		RefreshSongPreview();
+		return;
+	}
+
+	PreviewAudioComponent->Play(PreviewStartTimeSeconds);
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimer(
+			PreviewLoopTimerHandle,
+			this,
+			&ThisClass::RestartSongPreview,
+			PreviewDurationSeconds,
+			false);
+	}
 }
 
 void URhythmLobbyWidget::StartGame()
 {
+	StopSongPreview();
 	UGameplayStatics::OpenLevel(this, TEXT("FiveKeyMap"));
 }
 

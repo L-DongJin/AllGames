@@ -29,6 +29,7 @@ void ARhythmNoteSpawner::BeginPlay()
 		SetActorTickEnabled(false);
 		return;
 	}
+	Conductor->OnMusicFinished.AddUniqueDynamic(this, &ThisClass::HandleMusicFinished);
 
 	SongData = Conductor->GetSongData();
 	if (const URhythmGameInstance* Settings = Cast<URhythmGameInstance>(GetGameInstance()))
@@ -126,12 +127,28 @@ void ARhythmNoteSpawner::SpawnNote(const FRhythmNoteData& NoteData)
 	}
 
 	OnNoteSpawned.Broadcast(NoteData);
-	UE_LOG(LogTemp, Log, TEXT("Spawned note: lane %d, target %.2f, music %.3f"),
-		NoteData.LaneIndex + 1, NoteData.TargetTimeSeconds, Conductor->GetMusicTimeSeconds());
+	UE_LOG(LogTemp, Log, TEXT("Spawned %s note: lane %d, target %.2f, duration %.2f, music %.3f"),
+		NoteData.IsLongNote() ? TEXT("long") : TEXT("tap"),
+		NoteData.LaneIndex + 1, NoteData.TargetTimeSeconds, NoteData.DurationSeconds,
+		Conductor->GetMusicTimeSeconds());
 }
 
 FVector ARhythmNoteSpawner::GetLaneSpawnLocation(const int32 LaneIndex) const
 {
 	const float CenteredLane = static_cast<float>(LaneIndex) - (static_cast<float>(LaneCount) - 1.0f) * 0.5f;
 	return SpawnCenter + FVector(0.0, CenteredLane * LaneSpacing, 0.0);
+}
+
+void ARhythmNoteSpawner::HandleMusicFinished()
+{
+	UE_LOG(LogTemp, Log, TEXT("Rhythm chart finished: spawned %d / %d notes, last target %.3f, music duration %.3f."),
+		NextNoteIndex,
+		ActiveNotes.Num(),
+		ActiveNotes.IsEmpty() ? 0.0f : ActiveNotes.Last().TargetTimeSeconds,
+		Conductor ? Conductor->GetMusicDurationSeconds() : 0.0f);
+	if (NextNoteIndex != ActiveNotes.Num())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Rhythm chart ended before all notes spawned: next index %d / %d."),
+			NextNoteIndex, ActiveNotes.Num());
+	}
 }

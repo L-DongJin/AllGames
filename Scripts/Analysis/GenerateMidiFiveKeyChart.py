@@ -23,6 +23,7 @@ class MidiNote:
     time: float
     pitch: int
     velocity: int
+    duration: float = 0.0
 
 
 def read_vlq(data: bytes, index: int) -> tuple[int, int]:
@@ -41,7 +42,7 @@ def parse_midi(path: Path) -> tuple[list[MidiNote], int, list[tuple[int, int]]]:
         raise ValueError("Not a standard MIDI file")
     _, track_count, ticks_per_quarter = struct.unpack(">HHH", data[8:14])
     position = 8 + struct.unpack(">I", data[4:8])[0]
-    raw_notes: list[tuple[int, int, int]] = []
+    raw_notes: list[tuple[int, int, int, int]] = []
     tempos = [(0, 500_000)]
 
     for _ in range(track_count):
@@ -52,6 +53,7 @@ def parse_midi(path: Path) -> tuple[list[MidiNote], int, list[tuple[int, int]]]:
         position += 8 + length
         index = tick = 0
         running_status = None
+        active_notes: dict[tuple[int, int], list[tuple[int, int]]] = defaultdict(list)
         while index < len(track):
             delta, index = read_vlq(track, index)
             tick += delta
@@ -84,8 +86,14 @@ def parse_midi(path: Path) -> tuple[list[MidiNote], int, list[tuple[int, int]]]:
                 else:
                     values = [track[index], track[index + 1]]
                     index += 2
+                channel = status & 0x0F
                 if message_type == 0x90 and values[1] > 0:
-                    raw_notes.append((tick, values[0], values[1]))
+                    active_notes[(channel, values[0])].append((tick, values[1]))
+                elif message_type == 0x80 or (message_type == 0x90 and values[1] == 0):
+                    key = (channel, values[0])
+                    if active_notes[key]:
+                        start_tick, velocity = active_notes[key].pop(0)
+                        raw_notes.append((start_tick, tick, values[0], velocity))
 
     tempos = sorted(set(tempos))
 
@@ -101,7 +109,16 @@ def parse_midi(path: Path) -> tuple[list[MidiNote], int, list[tuple[int, int]]]:
             tempo = new_tempo
         return seconds + (target_tick - previous_tick) * tempo / 1_000_000 / ticks_per_quarter
 
-    notes = [MidiNote(tick, tick_to_seconds(tick), pitch, velocity) for tick, pitch, velocity in raw_notes]
+    notes = [
+        MidiNote(
+            start_tick,
+            tick_to_seconds(start_tick),
+            pitch,
+            velocity,
+            max(0.0, tick_to_seconds(end_tick) - tick_to_seconds(start_tick)),
+        )
+        for start_tick, end_tick, pitch, velocity in raw_notes
+    ]
     return notes, ticks_per_quarter, tempos
 
 
@@ -119,6 +136,7 @@ def collapse_onsets(notes: list[MidiNote]) -> list[dict]:
             "chord_size": len(chord),
             "low_pitch": min(note.pitch for note in chord),
             "high_pitch": max(note.pitch for note in chord),
+            "duration": representative.duration,
         })
     return events
 

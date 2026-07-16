@@ -33,6 +33,7 @@ def create_chart(name, difficulty, music):
         note = unreal.RhythmNoteData()
         note.set_editor_property("lane_index", int(row["lane_index"]))
         note.set_editor_property("target_time_seconds", float(row["target_time_seconds"]))
+        note.set_editor_property("duration_seconds", float(row.get("duration_seconds", 0.0) or 0.0))
         notes.append(note)
     asset.set_editor_property("song_title", "Choom")
     asset.set_editor_property("music", music)

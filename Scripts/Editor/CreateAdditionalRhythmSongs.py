@@ -64,6 +64,7 @@ def create_chart(config, difficulty_name, difficulty, music, metadata):
         note = unreal.RhythmNoteData()
         note.set_editor_property("lane_index", int(row["lane_index"]))
         note.set_editor_property("target_time_seconds", float(row["target_time_seconds"]))
+        note.set_editor_property("duration_seconds", float(row.get("duration_seconds", 0.0) or 0.0))
         notes.append(note)
     asset.set_editor_property("song_title", config["title"])
     asset.set_editor_property("music", music)
@@ -83,12 +84,6 @@ def main():
         raise RuntimeError("Rhythm song catalog is missing")
 
     charts = []
-    for difficulty_name, _ in DIFFICULTIES:
-        chart = unreal.load_asset("/Game/Data/DA_Choom_{}_5Key".format(difficulty_name))
-        if chart is None:
-            raise RuntimeError("A production Choom difficulty chart is missing")
-        charts.append(chart)
-
     summaries = []
     for config in SONGS:
         music = unreal.load_asset(config["music"])
@@ -102,7 +97,12 @@ def main():
             counts.append(len(chart.get_editor_property("notes")))
         summaries.append("{}={}".format(config["title"], counts))
 
-    catalog.set_editor_property("songs", charts)
+    generated_prefixes = ("DA_Lemonade_", "DA_ItsMe_")
+    existing = [
+        chart for chart in catalog.get_editor_property("songs")
+        if chart and not chart.get_name().startswith(generated_prefixes)
+    ]
+    catalog.set_editor_property("songs", existing + charts)
     unreal.EditorAssetLibrary.save_loaded_asset(catalog, only_if_is_dirty=False)
     unreal.log("ADDITIONAL RHYTHM SONGS READY: {}".format(", ".join(summaries)))
 

@@ -28,6 +28,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Rhythm|Audio")
 	void PlayMusic();
 
+	/** Starts the preparation countdown once the gameplay note UI is fully visible. */
+	UFUNCTION(BlueprintCallable, Category = "Rhythm|Timing")
+	void StartGameplayCountdown();
+
 	UFUNCTION(BlueprintCallable, Category = "Rhythm|Audio")
 	void StopMusic();
 
@@ -44,6 +48,12 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Rhythm|Audio")
 	bool IsMusicPlaying() const;
+
+	UFUNCTION(BlueprintPure, Category = "Rhythm|Timing")
+	bool IsStartCountdownActive() const { return bStartCountdownActive; }
+
+	UFUNCTION(BlueprintPure, Category = "Rhythm|Timing")
+	float GetStartCountdownSecondsRemaining() const;
 
 	UFUNCTION(BlueprintPure, Category = "Rhythm|Data")
 	URhythmSongDataAsset* GetSongData() const { return SongData; }
@@ -63,7 +73,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rhythm|Audio")
 	bool bAutoPlayOnBeginPlay = true;
 
+	/** Preparation time before music, note spawning, and judgement begin. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rhythm|Timing", meta = (ClampMin = "0.0", ClampMax = "10.0"))
+	float StartCountdownSeconds = 3.0f;
+
 private:
+	void BeginMusicAfterCountdown();
+
 	UFUNCTION()
 	void HandleAudioPlaybackPercent(const USoundWave* PlayingSoundWave, float PlaybackPercent);
 
@@ -79,6 +95,16 @@ private:
 	/** The first callback establishes the audio clock; later delayed callbacks may never rewind it. */
 	bool bHasReceivedAudioTimelineSync = false;
 
+	/** Platform-clock instant when the current playback was requested. */
+	double PlaybackStartPlatformSeconds = 0.0;
+
+	bool bLoggedInvalidInitialTimelineCallback = false;
+
 	/** Final guard against float rounding or delayed callbacks returning a decreasing public time. */
 	mutable float LastReturnedMusicTimeSeconds = 0.0f;
+
+	FTimerHandle StartCountdownTimerHandle;
+	double CountdownEndPlatformSeconds = 0.0;
+	bool bStartCountdownActive = false;
+	bool bWaitingForGameplayCountdown = false;
 };

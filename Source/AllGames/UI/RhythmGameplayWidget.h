@@ -14,9 +14,11 @@ class ARhythmNoteSpawner;
 class ARhythmScoreManager;
 enum class ERhythmJudgement : uint8;
 class UCanvasPanel;
+class UButton;
 class UImage;
 class UTextBlock;
 class UTexture2D;
+enum class ERhythmLongNoteState : uint8;
 
 UCLASS(Abstract, Blueprintable)
 class ALLGAMES_API URhythmGameplayWidget : public UUserWidget
@@ -29,7 +31,7 @@ public:
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual void NativeConstruct() override;
-	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
 	TObjectPtr<UTexture2D> BackgroundImage;
@@ -45,6 +47,30 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
 	TObjectPtr<UTexture2D> NoteImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Long Note")
+	TObjectPtr<UTexture2D> LongNoteHeadImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Long Note")
+	TObjectPtr<UTexture2D> LongNoteBodyImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Long Note")
+	TObjectPtr<UTexture2D> LongNoteTailImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Long Note")
+	TObjectPtr<UTexture2D> LongNoteHoldGlowImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Long Note")
+	TObjectPtr<UTexture2D> LongNoteCompleteEffectImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Long Note")
+	TObjectPtr<UTexture2D> LongNoteBreakEffectImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Long Note", meta = (ClampMin = "4.0", ClampMax = "100.0"))
+	float LongNoteHeadHeight = 28.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Long Note", meta = (ClampMin = "0.05", ClampMax = "2.0"))
+	float LongNoteEffectDisplaySeconds = 0.35f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance")
 	TObjectPtr<UTexture2D> JudgementLineImage;
@@ -104,11 +130,11 @@ protected:
 	float JudgementPopStartScale = 1.35f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement", meta = (ClampMin = "0.0", ClampMax = "1.0"))
-	float JudgementFeedbackVerticalPosition = 0.2f;
+	float JudgementFeedbackVerticalPosition = 0.16f;
 
 	/** Maximum area for judgement art; the source texture aspect ratio is preserved. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement")
-	FVector2D JudgementFeedbackMaxSize = FVector2D(720.0f, 320.0f);
+	FVector2D JudgementFeedbackMaxSize = FVector2D(620.0f, 270.0f);
 
 private:
 	UFUNCTION()
@@ -121,6 +147,9 @@ private:
 	void HandleNoteJudged(FRhythmNoteData NoteData, ERhythmJudgement Judgement, float TimingErrorSeconds);
 
 	UFUNCTION()
+	void HandleLongNoteStateChanged(FRhythmNoteData NoteData, ERhythmLongNoteState State);
+
+	UFUNCTION()
 	void HandleLaneGlowInput(int32 LaneIndex, bool bPressed);
 
 	UFUNCTION()
@@ -128,6 +157,9 @@ private:
 
 	UFUNCTION()
 	void HandleMusicFinished();
+
+	UFUNCTION()
+	void HandleReturnToLobbyClicked();
 
 	void RefreshScoreText(const FRhythmScoreState& ScoreState);
 	void UpdateJudgementAnimation();
@@ -138,8 +170,18 @@ private:
 	struct FNoteVisual
 	{
 		FRhythmNoteData Data;
-		TObjectPtr<UImage> Image;
+		TObjectPtr<UImage> HeadImage;
+		TObjectPtr<UImage> BodyImage;
+		TObjectPtr<UImage> TailImage;
+		TObjectPtr<UImage> HoldGlowImage;
 		float SpawnTimeSeconds = 0.0f;
+		bool bHolding = false;
+	};
+
+	struct FTimedEffectVisual
+	{
+		TObjectPtr<UImage> Image;
+		float HideWorldTime = 0.0f;
 	};
 
 	UPROPERTY(Transient)
@@ -173,6 +215,12 @@ private:
 	TObjectPtr<UTextBlock> AccuracyText;
 
 	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> PlayTimeText;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> StartCountdownText;
+
+	UPROPERTY(Transient)
 	TObjectPtr<UImage> ResultBackground;
 
 	UPROPERTY(Transient)
@@ -194,7 +242,7 @@ private:
 	TObjectPtr<UTextBlock> ResultMissText;
 
 	UPROPERTY(Transient)
-	TObjectPtr<UTextBlock> ResultHintText;
+	TObjectPtr<UButton> ResultLobbyButton;
 
 	UPROPERTY(Transient)
 	TObjectPtr<ARhythmNoteSpawner> Spawner;
@@ -209,6 +257,7 @@ private:
 	TObjectPtr<ARhythmScoreManager> ScoreManager;
 
 	TArray<FNoteVisual> NoteVisuals;
+	TArray<FTimedEffectVisual> LongNoteEffects;
 	float JudgementHideWorldTime = 0.0f;
 	float JudgementAnimationStartWorldTime = 0.0f;
 	float NextTimelineDiagnosticTime = 0.0f;
@@ -216,4 +265,5 @@ private:
 	int64 NextNoteVisualId = 0;
 	int32 LaneCount = 9;
 	bool bShowingResults = false;
+	bool bCountdownWasVisible = false;
 };

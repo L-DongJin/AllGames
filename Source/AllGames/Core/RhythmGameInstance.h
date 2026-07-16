@@ -41,7 +41,7 @@ private:
 	UPROPERTY()
 	ERhythmDifficulty SelectedDifficulty = ERhythmDifficulty::Normal;
 
-	/** Visual scroll multiplier. This never changes music time or note target time. */
+	/** One of the four visual scroll multipliers: 1x, 2x, 3x, or 4x. */
 	UPROPERTY()
 	float ScrollSpeed = 1.0f;
 };

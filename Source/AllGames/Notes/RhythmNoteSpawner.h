@@ -40,6 +40,9 @@ private:
 	void SpawnNote(const FRhythmNoteData& NoteData);
 	FVector GetLaneSpawnLocation(int32 LaneIndex) const;
 
+	UFUNCTION()
+	void HandleMusicFinished();
+
 	UPROPERTY(EditAnywhere, Category = "Rhythm|Notes")
 	TSubclassOf<ARhythmNoteActor> NoteClass;
 

@@ -38,6 +38,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song")
 	TObjectPtr<USoundBase> Music;
 
+	/**
+	 * Lobby preview start time in seconds.
+	 * A negative value automatically selects a representative section near the middle of the song.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song|Preview", meta = (ClampMin = "-1.0", UIMin = "-1.0"))
+	float PreviewStartTimeSeconds = -1.0f;
+
+	/** Length of the looping lobby preview. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song|Preview", meta = (ClampMin = "3.0", UIMin = "3.0"))
+	float PreviewDurationSeconds = 15.0f;
+
+	/** Preview-only volume multiplier. Gameplay music volume is unaffected. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song|Preview", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float PreviewVolume = 0.65f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Timing", meta = (ClampMin = "1.0"))
 	float BPM = 120.0f;
 

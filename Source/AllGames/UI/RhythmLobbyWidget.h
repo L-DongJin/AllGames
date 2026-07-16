@@ -7,6 +7,8 @@
 #include "RhythmLobbyWidget.generated.h"
 
 class UButton;
+class UAudioComponent;
+class USoundBase;
 class UTextBlock;
 
 /** Functional pre-play lobby. Visuals can later move into a Blueprint child without changing settings logic. */
@@ -21,10 +23,14 @@ public:
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual void NativeDestruct() override;
 
 private:
 	void BuildLayout();
 	void RefreshSettings();
+	void RefreshSongPreview();
+	void StopSongPreview();
+	void RestartSongPreview();
 	void StartGame();
 
 	UFUNCTION() void PreviousDifficulty();
@@ -39,5 +45,10 @@ private:
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> DifficultyValueText;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> SpeedValueText;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> HelpText;
+	UPROPERTY(Transient) TObjectPtr<UAudioComponent> PreviewAudioComponent;
+	UPROPERTY(Transient) TObjectPtr<USoundBase> PreviewMusic;
+	FTimerHandle PreviewLoopTimerHandle;
+	float PreviewStartTimeSeconds = 0.0f;
+	float PreviewDurationSeconds = 15.0f;
 	int32 SelectedRow = 0;
 };

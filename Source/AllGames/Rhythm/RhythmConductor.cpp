@@ -6,6 +6,7 @@
 #include "HAL/PlatformTime.h"
 #include "Sound/SoundBase.h"
 #include "Sound/SoundWave.h"
+#include "TimerManager.h"
 #include "../Core/RhythmGameInstance.h"
 #include "../Data/RhythmSongDataAsset.h"
 
@@ -37,8 +38,34 @@ void ARhythmConductor::BeginPlay()
 
 	if (bAutoPlayOnBeginPlay)
 	{
-		PlayMusic();
+		bWaitingForGameplayCountdown = true;
 	}
+}
+
+void ARhythmConductor::StartGameplayCountdown()
+{
+	if (!bWaitingForGameplayCountdown || bStartCountdownActive || IsMusicPlaying())
+	{
+		return;
+	}
+
+	bWaitingForGameplayCountdown = false;
+	if (StartCountdownSeconds <= 0.0f)
+	{
+		PlayMusic();
+		return;
+	}
+
+	bStartCountdownActive = true;
+	CountdownEndPlatformSeconds = FPlatformTime::Seconds() + StartCountdownSeconds;
+	GetWorldTimerManager().SetTimer(
+		StartCountdownTimerHandle,
+		this,
+		&ThisClass::BeginMusicAfterCountdown,
+		StartCountdownSeconds,
+		false);
+	UE_LOG(LogTemp, Log, TEXT("Rhythm start countdown after gameplay UI ready: %.1f seconds."),
+		StartCountdownSeconds);
 }
 
 void ARhythmConductor::PlayMusic()
@@ -48,21 +75,31 @@ void ARhythmConductor::PlayMusic()
 		return;
 	}
 
+	GetWorldTimerManager().ClearTimer(StartCountdownTimerHandle);
+	bWaitingForGameplayCountdown = false;
+	bStartCountdownActive = false;
 	MusicComponent->SetSound(Music);
 	MusicTimeSeconds = 0.0f;
 	bHasReceivedAudioTimelineSync = false;
+	bLoggedInvalidInitialTimelineCallback = false;
 	LastReturnedMusicTimeSeconds = 0.0f;
-	LastTimelineSyncPlatformSeconds = FPlatformTime::Seconds();
+	PlaybackStartPlatformSeconds = FPlatformTime::Seconds();
+	LastTimelineSyncPlatformSeconds = PlaybackStartPlatformSeconds;
 	MusicComponent->Play();
 	UE_LOG(LogTemp, Log, TEXT("RhythmConductor started music: %s"), *Music->GetName());
 }
 
 void ARhythmConductor::StopMusic()
 {
+	GetWorldTimerManager().ClearTimer(StartCountdownTimerHandle);
+	bWaitingForGameplayCountdown = false;
+	bStartCountdownActive = false;
 	MusicComponent->Stop();
 	MusicTimeSeconds = 0.0f;
 	bHasReceivedAudioTimelineSync = false;
+	bLoggedInvalidInitialTimelineCallback = false;
 	LastReturnedMusicTimeSeconds = 0.0f;
+	PlaybackStartPlatformSeconds = FPlatformTime::Seconds();
 	LastTimelineSyncPlatformSeconds = FPlatformTime::Seconds();
 	UE_LOG(LogTemp, Log, TEXT("RhythmConductor stopped music."));
 }
@@ -100,6 +137,19 @@ bool ARhythmConductor::IsMusicPlaying() const
 	return MusicComponent && MusicComponent->IsPlaying();
 }
 
+float ARhythmConductor::GetStartCountdownSecondsRemaining() const
+{
+	return bStartCountdownActive
+		? FMath::Max(0.0, CountdownEndPlatformSeconds - FPlatformTime::Seconds())
+		: 0.0f;
+}
+
+void ARhythmConductor::BeginMusicAfterCountdown()
+{
+	bStartCountdownActive = false;
+	PlayMusic();
+}
+
 void ARhythmConductor::HandleAudioPlaybackPercent(const USoundWave* PlayingSoundWave, const float PlaybackPercent)
 {
 	if (!PlayingSoundWave)
@@ -108,11 +158,29 @@ void ARhythmConductor::HandleAudioPlaybackPercent(const USoundWave* PlayingSound
 	}
 
 	const float CallbackMusicTime = FMath::Clamp(PlaybackPercent, 0.0f, 1.0f) * PlayingSoundWave->Duration;
+	const float ExpectedPlaybackTime = static_cast<float>(FMath::Max(
+		0.0,
+		FPlatformTime::Seconds() - PlaybackStartPlatformSeconds));
 	if (!bHasReceivedAudioTimelineSync)
 	{
-		// Establish the real audio position once. This occurs before the playable chart begins.
+		// Some compressed SoundWaves can report a stale/non-zero playback percentage on their
+		// first callback even though audible playback began at zero. Never let that callback
+		// jump the gameplay timeline tens of seconds ahead.
+		constexpr float InitialCallbackToleranceSeconds = 0.5f;
+		if (FMath::Abs(CallbackMusicTime - ExpectedPlaybackTime) > InitialCallbackToleranceSeconds)
+		{
+			if (!bLoggedInvalidInitialTimelineCallback)
+			{
+				UE_LOG(LogTemp, Error,
+					TEXT("Rejected invalid initial audio timeline callback: callback %.3f, expected %.3f, percent %.4f."),
+					CallbackMusicTime, ExpectedPlaybackTime, PlaybackPercent);
+				bLoggedInvalidInitialTimelineCallback = true;
+			}
+			return;
+		}
+
 		MusicTimeSeconds = CallbackMusicTime;
-		LastReturnedMusicTimeSeconds = CallbackMusicTime;
+		LastReturnedMusicTimeSeconds = FMath::Max(LastReturnedMusicTimeSeconds, CallbackMusicTime);
 		bHasReceivedAudioTimelineSync = true;
 	}
 	else

@@ -1,0 +1,678 @@
+{
+  "song_count": 11,
+  "difficulty_count": 44,
+  "songs": [
+    {
+      "song_name": "HeavySerenade",
+      "worst_status": "caution",
+      "minimum_match_percent": 86.9,
+      "average_match_percent": 92.9,
+      "difficulty_matches": {
+        "Easy": 98.9,
+        "Normal": 96.0,
+        "Hard": 89.8,
+        "Expert": 86.9
+      },
+      "caution_count": 2,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Expert",
+          "label": "0:15-0:20",
+          "score": 2.075,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 47.2
+        },
+        {
+          "difficulty": "Easy",
+          "label": "1:20-1:25",
+          "score": 1.872,
+          "reasons": [
+            "unusually high note density"
+          ],
+          "match_percent": 94.7
+        },
+        {
+          "difficulty": "Expert",
+          "label": "2:55-2:59",
+          "score": 1.665,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 53.6
+        },
+        {
+          "difficulty": "Expert",
+          "label": "2:05-2:10",
+          "score": 1.59,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 53.2
+        },
+        {
+          "difficulty": "Expert",
+          "label": "2:10-2:15",
+          "score": 1.301,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 59.0
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\HeavySerenadeAudioStemDifficulties\\HeavySerenade_quality_report.json"
+    },
+    {
+      "song_name": "LoveAttack",
+      "worst_status": "caution",
+      "minimum_match_percent": 87.1,
+      "average_match_percent": 93.5,
+      "difficulty_matches": {
+        "Easy": 99.3,
+        "Normal": 96.4,
+        "Hard": 91.0,
+        "Expert": 87.1
+      },
+      "caution_count": 1,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Easy",
+          "label": "0:25-0:30",
+          "score": 3.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Expert",
+          "label": "2:55-3:00",
+          "score": 2.787,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 39.5
+        },
+        {
+          "difficulty": "Easy",
+          "label": "0:05-0:10",
+          "score": 2.531,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Hard",
+          "label": "1:45-1:50",
+          "score": 1.945,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Hard",
+          "label": "2:55-3:00",
+          "score": 1.734,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 52.2
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\LoveAttackAudioStemDifficulties\\LoveAttack_quality_report.json"
+    },
+    {
+      "song_name": "Drama",
+      "worst_status": "caution",
+      "minimum_match_percent": 88.3,
+      "average_match_percent": 92.7,
+      "difficulty_matches": {
+        "Easy": 97.4,
+        "Normal": 95.1,
+        "Hard": 89.8,
+        "Expert": 88.3
+      },
+      "caution_count": 1,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Expert",
+          "label": "0:50-0:55",
+          "score": 1.872,
+          "reasons": [
+            "unusually high note density"
+          ],
+          "match_percent": 82.4
+        },
+        {
+          "difficulty": "Expert",
+          "label": "2:30-2:35",
+          "score": 1.552,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 55.8
+        },
+        {
+          "difficulty": "Expert",
+          "label": "1:15-1:20",
+          "score": 1.423,
+          "reasons": [
+            "unusually high note density"
+          ],
+          "match_percent": 96.0
+        },
+        {
+          "difficulty": "Hard",
+          "label": "2:30-2:35",
+          "score": 1.287,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 59.3
+        },
+        {
+          "difficulty": "Hard",
+          "label": "2:25-2:30",
+          "score": 0.669,
+          "reasons": [
+            "low audio-onset match"
+          ],
+          "match_percent": 58.6
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\DramaAudioStemDifficulties\\Drama_quality_report.json"
+    },
+    {
+      "song_name": "Bansanka",
+      "worst_status": "caution",
+      "minimum_match_percent": 96.3,
+      "average_match_percent": 97.2,
+      "difficulty_matches": {
+        "Easy": 96.3,
+        "Normal": 96.8,
+        "Hard": 97.6,
+        "Expert": 97.9
+      },
+      "caution_count": 1,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Easy",
+          "label": "3:35-3:39",
+          "score": 5.6,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 0.0
+        },
+        {
+          "difficulty": "Normal",
+          "label": "3:35-3:39",
+          "score": 5.6,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 0.0
+        },
+        {
+          "difficulty": "Hard",
+          "label": "3:35-3:39",
+          "score": 5.6,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 0.0
+        },
+        {
+          "difficulty": "Expert",
+          "label": "3:35-3:39",
+          "score": 5.6,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 0.0
+        },
+        {
+          "difficulty": "Expert",
+          "label": "1:30-1:35",
+          "score": 1.742,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\BansankaDifficulties\\Bansanka_quality_report.json"
+    },
+    {
+      "song_name": "Choom",
+      "worst_status": "caution",
+      "minimum_match_percent": 98.8,
+      "average_match_percent": 99.0,
+      "difficulty_matches": {
+        "Easy": 99.0,
+        "Normal": 98.8,
+        "Hard": 99.0,
+        "Expert": 99.0
+      },
+      "caution_count": 4,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Easy",
+          "label": "1:20-1:25",
+          "score": 2.404,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Normal",
+          "label": "1:20-1:25",
+          "score": 2.336,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Expert",
+          "label": "1:20-1:25",
+          "score": 2.291,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Easy",
+          "label": "1:35-1:40",
+          "score": 2.267,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\ChoomDifficulties\\Choom_quality_report.json"
+    },
+    {
+      "song_name": "ItsMe",
+      "worst_status": "caution",
+      "minimum_match_percent": 99.3,
+      "average_match_percent": 99.5,
+      "difficulty_matches": {
+        "Easy": 99.4,
+        "Normal": 99.5,
+        "Hard": 99.6,
+        "Expert": 99.3
+      },
+      "caution_count": 4,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Expert",
+          "label": "2:15-2:17",
+          "score": 5.6,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 0.0
+        },
+        {
+          "difficulty": "Normal",
+          "label": "0:05-0:10",
+          "score": 3.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Easy",
+          "label": "0:05-0:10",
+          "score": 2.532,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Easy",
+          "label": "2:15-2:17",
+          "score": 2.0,
+          "reasons": [
+            "large median onset distance"
+          ],
+          "match_percent": 0.0
+        },
+        {
+          "difficulty": "Normal",
+          "label": "2:15-2:17",
+          "score": 2.0,
+          "reasons": [
+            "large median onset distance"
+          ],
+          "match_percent": 0.0
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\ItsMeDifficulties\\ItsMe_quality_report.json"
+    },
+    {
+      "song_name": "CanonD",
+      "worst_status": "caution",
+      "minimum_match_percent": 99.5,
+      "average_match_percent": 99.7,
+      "difficulty_matches": {
+        "Easy": 99.5,
+        "Normal": 99.6,
+        "Hard": 99.8,
+        "Expert": 99.8
+      },
+      "caution_count": 1,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Easy",
+          "label": "0:45-0:50",
+          "score": 3.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Easy",
+          "label": "1:55-2:00",
+          "score": 3.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Easy",
+          "label": "2:00-2:05",
+          "score": 3.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Normal",
+          "label": "2:00-2:05",
+          "score": 3.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Hard",
+          "label": "0:45-0:50",
+          "score": 3.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\CanonDDifficulties\\CanonD_quality_report.json"
+    },
+    {
+      "song_name": "Suddenly",
+      "worst_status": "caution",
+      "minimum_match_percent": 99.5,
+      "average_match_percent": 99.6,
+      "difficulty_matches": {
+        "Easy": 99.6,
+        "Normal": 99.7,
+        "Hard": 99.6,
+        "Expert": 99.5
+      },
+      "caution_count": 3,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Expert",
+          "label": "0:20-0:25",
+          "score": 1.89,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Easy",
+          "label": "2:00-2:05",
+          "score": 1.797,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Easy",
+          "label": "1:25-1:30",
+          "score": 1.535,
+          "reasons": [
+            "unusually high note density"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Normal",
+          "label": "1:25-1:30",
+          "score": 1.063,
+          "reasons": [
+            "unusually high note density"
+          ],
+          "match_percent": 100.0
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\SuddenlyDifficulties\\Suddenly_quality_report.json"
+    },
+    {
+      "song_name": "Lemonade",
+      "worst_status": "caution",
+      "minimum_match_percent": 99.8,
+      "average_match_percent": 99.8,
+      "difficulty_matches": {
+        "Easy": 99.8,
+        "Normal": 99.8,
+        "Hard": 99.8,
+        "Expert": 99.8
+      },
+      "caution_count": 4,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Easy",
+          "label": "0:50-0:55",
+          "score": 3.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Normal",
+          "label": "0:50-0:55",
+          "score": 3.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Easy",
+          "label": "1:25-1:30",
+          "score": 2.234,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Hard",
+          "label": "0:45-0:50",
+          "score": 1.535,
+          "reasons": [
+            "unusually high note density"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Normal",
+          "label": "0:05-0:10",
+          "score": 1.198,
+          "reasons": [
+            "unusually high note density"
+          ],
+          "match_percent": 100.0
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\LemonadeDifficulties\\Lemonade_quality_report.json"
+    },
+    {
+      "song_name": "CHASEME",
+      "worst_status": "good",
+      "minimum_match_percent": 92.1,
+      "average_match_percent": 95.4,
+      "difficulty_matches": {
+        "Easy": 99.0,
+        "Normal": 97.3,
+        "Hard": 93.2,
+        "Expert": 92.1
+      },
+      "caution_count": 0,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Expert",
+          "label": "1:05-1:10",
+          "score": 2.957,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 94.7
+        },
+        {
+          "difficulty": "Hard",
+          "label": "1:00-1:05",
+          "score": 2.941,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Expert",
+          "label": "0:30-0:35",
+          "score": 2.251,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 86.8
+        },
+        {
+          "difficulty": "Expert",
+          "label": "2:30-2:35",
+          "score": 2.228,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 92.1
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\CHASEMEAudioStemDifficulties\\CHASEME_quality_report.json"
+    },
+    {
+      "song_name": "Rude",
+      "worst_status": "good",
+      "minimum_match_percent": 92.1,
+      "average_match_percent": 96.3,
+      "difficulty_matches": {
+        "Easy": 100.0,
+        "Normal": 98.1,
+        "Hard": 95.0,
+        "Expert": 92.1
+      },
+      "caution_count": 0,
+      "review_count": 0,
+      "long_note_overlap_count": 0,
+      "priority_windows": [
+        {
+          "difficulty": "Easy",
+          "label": "1:55-2:00",
+          "score": 2.13,
+          "reasons": [
+            "active audio but sparse notes"
+          ],
+          "match_percent": 100.0
+        },
+        {
+          "difficulty": "Expert",
+          "label": "0:45-0:50",
+          "score": 1.843,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 50.0
+        },
+        {
+          "difficulty": "Expert",
+          "label": "0:10-0:15",
+          "score": 1.355,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ],
+          "match_percent": 57.9
+        },
+        {
+          "difficulty": "Hard",
+          "label": "0:45-0:50",
+          "score": 0.841,
+          "reasons": [
+            "low audio-onset match"
+          ],
+          "match_percent": 55.2
+        }
+      ],
+      "source_report": "Saved\\ChartRecordings\\RudeAudioStemDifficulties\\Rude_quality_report.json"
+    }
+  ]
+}
