@@ -5,8 +5,6 @@ import unreal
 
 SOURCE_ROOT = r"C:\Users\user\Downloads\인물보고이름맞히기\아이돌\3세대"
 IMAGE_DIR = "/Game/IdolQuiz/Images/Generation3"
-DATA_DIR = "/Game/IdolQuiz/Data"
-CATALOG_PATH = DATA_DIR + "/DA_IdolQuiz_3rdGeneration"
 QUIZ_MAP = "/Game/Maps/IdolQuizMap"
 REPAIRED_SOURCE_DIR = os.path.join(os.path.dirname(__file__), "ImportCache", "IdolQuiz")
 
@@ -42,39 +40,16 @@ def import_images(files):
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks(tasks)
 
 
-def get_or_create_catalog():
-    catalog = unreal.load_asset(CATALOG_PATH)
-    if catalog is not None:
-        return catalog
-    factory = unreal.DataAssetFactory()
-    factory.set_editor_property("data_asset_class", unreal.IdolQuizCatalogDataAsset)
-    return unreal.AssetToolsHelpers.get_asset_tools().create_asset(
-        "DA_IdolQuiz_3rdGeneration", DATA_DIR, unreal.IdolQuizCatalogDataAsset, factory
-    )
-
-
 def main():
     files = source_files()
     if len(files) != 83:
         raise RuntimeError("Expected 83 third-generation images, found {}".format(len(files)))
     import_images(files)
-    questions = []
-    for index, (group_name, answer, _) in enumerate(files, 1):
+    for index, (_, _, _) in enumerate(files, 1):
         texture_path = IMAGE_DIR + "/T_IDOL3_{:03d}".format(index)
         texture = unreal.load_asset(texture_path)
         if texture is None:
             raise RuntimeError("Imported texture is missing: {}".format(texture_path))
-        question = unreal.IdolQuizQuestion()
-        question.set_editor_property("question_id", "IDOL3_{:03d}".format(index))
-        question.set_editor_property("image", texture)
-        question.set_editor_property("answer", answer)
-        question.set_editor_property("accepted_answers", [answer])
-        question.set_editor_property("group_name", group_name)
-        question.set_editor_property("generation", 3)
-        questions.append(question)
-    catalog = get_or_create_catalog()
-    catalog.set_editor_property("questions", questions)
-    unreal.EditorAssetLibrary.save_loaded_asset(catalog, only_if_is_dirty=False)
 
     level_subsystem = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
     if not unreal.EditorAssetLibrary.does_asset_exist(QUIZ_MAP):
@@ -91,7 +66,7 @@ def main():
     definition.set_editor_property("entry_map", unreal.load_asset(QUIZ_MAP))
     definition.set_editor_property("enabled", True)
     unreal.EditorAssetLibrary.save_loaded_asset(definition, only_if_is_dirty=False)
-    unreal.log("IDOL QUIZ READY: 83 questions across {} groups".format(len(set(group for group, _, _ in files))))
+    unreal.log("IDOL QUIZ IMAGES READY: 83 images across {} groups. Reimport the CSV DataTable separately.".format(len(set(group for group, _, _ in files))))
 
 
 main()

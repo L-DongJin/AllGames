@@ -32,6 +32,8 @@ def main():
                 last_time = time
             if chart.get_editor_property("song_id").is_none():
                 raise RuntimeError("Missing stable SongId: {}".format(name))
+            if chart.get_editor_property("title_image") is None:
+                raise RuntimeError("Missing title image: {}".format(name))
             level = chart.get_editor_property("chart_level")
             if not 1 <= level <= 24:
                 raise RuntimeError("Invalid chart level: {}".format(name))

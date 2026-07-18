@@ -1,0 +1,97 @@
+Name,QuestionId,Image,StageName,RealName,Aliases,GroupName,Generation,Category,bEnabled
+IDOL3_001,IDOL3_001,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_001.T_IDOL3_001'",류진,신류진,,ITZY,3,Idol,true
+IDOL3_002,IDOL3_002,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_002.T_IDOL3_002'",리아,최지수,,ITZY,3,Idol,true
+IDOL3_003,IDOL3_003,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_003.T_IDOL3_003'",예지,황예지,,ITZY,3,Idol,true
+IDOL3_004,IDOL3_004,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_004.T_IDOL3_004'",유나,신유나,,ITZY,3,Idol,true
+IDOL3_005,IDOL3_005,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_005.T_IDOL3_005'",채령,이채령,,ITZY,3,Idol,true
+IDOL3_006,IDOL3_006,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_006.T_IDOL3_006'",미주,이승아,이미주,그외,3,Idol,true
+IDOL3_007,IDOL3_007,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_007.T_IDOL3_007'",연우,이다빈,,그외,3,Idol,true
+IDOL3_008,IDOL3_008,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_008.T_IDOL3_008'",이나은,이나은,,그외,3,Idol,true
+IDOL3_009,IDOL3_009,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_009.T_IDOL3_009'",츄,김지우,,그외,3,Idol,true
+IDOL3_010,IDOL3_010,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_010.T_IDOL3_010'",슬기,강슬기,,레드벨벳,3,Idol,true
+IDOL3_011,IDOL3_011,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_011.T_IDOL3_011'",아이린,배주현,,레드벨벳,3,Idol,true
+IDOL3_012,IDOL3_012,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_012.T_IDOL3_012'",예리,김예림,,레드벨벳,3,Idol,true
+IDOL3_013,IDOL3_013,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_013.T_IDOL3_013'",웬디,손승완,,레드벨벳,3,Idol,true
+IDOL3_014,IDOL3_014,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_014.T_IDOL3_014'",조이,박수영,,레드벨벳,3,Idol,true
+IDOL3_015,IDOL3_015,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_015.T_IDOL3_015'",문별,문별이,,마마무,3,Idol,true
+IDOL3_016,IDOL3_016,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_016.T_IDOL3_016'",솔라,김용선,,마마무,3,Idol,true
+IDOL3_017,IDOL3_017,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_017.T_IDOL3_017'",화사,안혜진,,마마무,3,Idol,true
+IDOL3_018,IDOL3_018,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_018.T_IDOL3_018'",휘인,정휘인,,마마무,3,Idol,true
+IDOL3_019,IDOL3_019,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_019.T_IDOL3_019'",로제,박채영,Rosé|Rose,블랙핑크,3,Idol,true
+IDOL3_020,IDOL3_020,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_020.T_IDOL3_020'",리사,라리사 마노반,Lalisa Manobal|Lalisa Manoban,블랙핑크,3,Idol,true
+IDOL3_021,IDOL3_021,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_021.T_IDOL3_021'",제니,김제니,,블랙핑크,3,Idol,true
+IDOL3_022,IDOL3_022,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_022.T_IDOL3_022'",지수,김지수,,블랙핑크,3,Idol,true
+IDOL3_023,IDOL3_023,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_023.T_IDOL3_023'",강미나,강미나,미나,아이오아이,3,Idol,true
+IDOL3_024,IDOL3_024,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_024.T_IDOL3_024'",김도연,김도연,,아이오아이,3,Idol,true
+IDOL3_025,IDOL3_025,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_025.T_IDOL3_025'",김세정,김세정,세정,아이오아이,3,Idol,true
+IDOL3_026,IDOL3_026,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_026.T_IDOL3_026'",김소혜,김소혜,소혜,아이오아이,3,Idol,true
+IDOL3_027,IDOL3_027,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_027.T_IDOL3_027'",유연정,유연정,연정,아이오아이,3,Idol,true
+IDOL3_028,IDOL3_028,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_028.T_IDOL3_028'",임나영,임나영,나영,아이오아이,3,Idol,true
+IDOL3_029,IDOL3_029,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_029.T_IDOL3_029'",전소미,에닉 소미 다우마,소미|Ennik Somi Douma,아이오아이,3,Idol,true
+IDOL3_030,IDOL3_030,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_030.T_IDOL3_030'",정채연,정채연,채연,아이오아이,3,Idol,true
+IDOL3_031,IDOL3_031,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_031.T_IDOL3_031'",청하,김청하,김찬미,아이오아이,3,Idol,true
+IDOL3_032,IDOL3_032,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_032.T_IDOL3_032'",최유정,최유정,유정,아이오아이,3,Idol,true
+IDOL3_033,IDOL3_033,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_033.T_IDOL3_033'",강혜원,강혜원,혜원,아이즈원solo,3,Idol,true
+IDOL3_034,IDOL3_034,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_034.T_IDOL3_034'",권은비,권은비,은비,아이즈원solo,3,Idol,true
+IDOL3_035,IDOL3_035,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_035.T_IDOL3_035'",김민주,김민주,민주,아이즈원solo,3,Idol,true
+IDOL3_036,IDOL3_036,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_036.T_IDOL3_036'",야부키나코,야부키 나코,나코,아이즈원solo,3,Idol,true
+IDOL3_037,IDOL3_037,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_037.T_IDOL3_037'",이채연,이채연,채연,아이즈원solo,3,Idol,true
+IDOL3_038,IDOL3_038,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_038.T_IDOL3_038'",조유리,조유리,유리,아이즈원solo,3,Idol,true
+IDOL3_039,IDOL3_039,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_039.T_IDOL3_039'",최예나,최예나,예나,아이즈원solo,3,Idol,true
+IDOL3_040,IDOL3_040,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_040.T_IDOL3_040'",혼다히토미,혼다 히토미,히토미,아이즈원solo,3,Idol,true
+IDOL3_041,IDOL3_041,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_041.T_IDOL3_041'",미연,조미연,,여자아이들,3,Idol,true
+IDOL3_042,IDOL3_042,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_042.T_IDOL3_042'",민니,니차 욘따라락,Nicha Yontararak,여자아이들,3,Idol,true
+IDOL3_043,IDOL3_043,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_043.T_IDOL3_043'",소연,전소연,,여자아이들,3,Idol,true
+IDOL3_044,IDOL3_044,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_044.T_IDOL3_044'",슈화,예슈화,예 슈화,여자아이들,3,Idol,true
+IDOL3_045,IDOL3_045,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_045.T_IDOL3_045'",우기,송우기,쑹위치|Song Yuqi,여자아이들,3,Idol,true
+IDOL3_046,IDOL3_046,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_046.T_IDOL3_046'",소원,김소정,,여자친구,3,Idol,true
+IDOL3_047,IDOL3_047,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_047.T_IDOL3_047'",신비,황은비,,여자친구,3,Idol,true
+IDOL3_048,IDOL3_048,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_048.T_IDOL3_048'",엄지,김예원,,여자친구,3,Idol,true
+IDOL3_049,IDOL3_049,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_049.T_IDOL3_049'",예린,정예린,,여자친구,3,Idol,true
+IDOL3_050,IDOL3_050,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_050.T_IDOL3_050'",유주,최유나,,여자친구,3,Idol,true
+IDOL3_051,IDOL3_051,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_051.T_IDOL3_051'",은하,정은비,,여자친구,3,Idol,true
+IDOL3_052,IDOL3_052,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_052.T_IDOL3_052'",비니,배유빈,유빈,오마이걸,3,Idol,true
+IDOL3_053,IDOL3_053,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_053.T_IDOL3_053'",승희,현승희,,오마이걸,3,Idol,true
+IDOL3_054,IDOL3_054,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_054.T_IDOL3_054'",아린,최예원,,오마이걸,3,Idol,true
+IDOL3_055,IDOL3_055,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_055.T_IDOL3_055'",유아,유시아,,오마이걸,3,Idol,true
+IDOL3_056,IDOL3_056,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_056.T_IDOL3_056'",지호,김지호,,오마이걸,3,Idol,true
+IDOL3_057,IDOL3_057,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_057.T_IDOL3_057'",효정,최효정,,오마이걸,3,Idol,true
+IDOL3_058,IDOL3_058,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_058.T_IDOL3_058'",다영,임다영,,우주소녀,3,Idol,true
+IDOL3_059,IDOL3_059,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_059.T_IDOL3_059'",루다,이루다,,우주소녀,3,Idol,true
+IDOL3_060,IDOL3_060,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_060.T_IDOL3_060'",보나,김지연,,우주소녀,3,Idol,true
+IDOL3_061,IDOL3_061,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_061.T_IDOL3_061'",설아,김현정,,우주소녀,3,Idol,true
+IDOL3_062,IDOL3_062,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_062.T_IDOL3_062'",수빈,박수빈,,우주소녀,3,Idol,true
+IDOL3_063,IDOL3_063,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_063.T_IDOL3_063'",엑시,추소정,,우주소녀,3,Idol,true
+IDOL3_064,IDOL3_064,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_064.T_IDOL3_064'",여름,이진숙,,우주소녀,3,Idol,true
+IDOL3_065,IDOL3_065,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_065.T_IDOL3_065'",은서,손주연,,우주소녀,3,Idol,true
+IDOL3_066,IDOL3_066,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_066.T_IDOL3_066'",나연,임나연,,트와이스,3,Idol,true
+IDOL3_067,IDOL3_067,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_067.T_IDOL3_067'",다현,김다현,,트와이스,3,Idol,true
+IDOL3_068,IDOL3_068,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_068.T_IDOL3_068'",모모,히라이 모모,平井もも,트와이스,3,Idol,true
+IDOL3_069,IDOL3_069,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_069.T_IDOL3_069'",미나,묘이 미나,名井南,트와이스,3,Idol,true
+IDOL3_070,IDOL3_070,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_070.T_IDOL3_070'",사나,미나토자키 사나,湊崎紗夏,트와이스,3,Idol,true
+IDOL3_071,IDOL3_071,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_071.T_IDOL3_071'",정연,유정연,,트와이스,3,Idol,true
+IDOL3_072,IDOL3_072,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_072.T_IDOL3_072'",지효,박지효,,트와이스,3,Idol,true
+IDOL3_073,IDOL3_073,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_073.T_IDOL3_073'",쯔위,저우쯔위,周子瑜|주자유,트와이스,3,Idol,true
+IDOL3_074,IDOL3_074,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_074.T_IDOL3_074'",채영,손채영,,트와이스,3,Idol,true
+IDOL3_075,IDOL3_075,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_075.T_IDOL3_075'",노지선,노지선,지선,프로미스나인,3,Idol,true
+IDOL3_076,IDOL3_076,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_076.T_IDOL3_076'",박지원,박지원,지원,프로미스나인,3,Idol,true
+IDOL3_077,IDOL3_077,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_077.T_IDOL3_077'",백지헌,백지헌,지헌,프로미스나인,3,Idol,true
+IDOL3_078,IDOL3_078,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_078.T_IDOL3_078'",송하영,송하영,하영,프로미스나인,3,Idol,true
+IDOL3_079,IDOL3_079,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_079.T_IDOL3_079'",이나경,이나경,나경,프로미스나인,3,Idol,true
+IDOL3_080,IDOL3_080,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_080.T_IDOL3_080'",이새롬,이새롬,새롬,프로미스나인,3,Idol,true
+IDOL3_081,IDOL3_081,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_081.T_IDOL3_081'",이서연,이서연,서연,프로미스나인,3,Idol,true
+IDOL3_082,IDOL3_082,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_082.T_IDOL3_082'",이채영,이채영,채영,프로미스나인,3,Idol,true
+IDOL3_083,IDOL3_083,"Texture2D'/Game/IdolQuiz/Images/Generation3/T_IDOL3_083.T_IDOL3_083'",장규리,장규리,규리,프로미스나인,3,Idol,true
+IDOL4_001,IDOL4_001,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_001.T_IDOL4_001'",가을,김가을,,IVE,4,Idol,true
+IDOL4_002,IDOL4_002,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_002.T_IDOL4_002'",레이,나오이 레이,Naoi Rei|直井怜,IVE,4,Idol,true
+IDOL4_003,IDOL4_003,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_003.T_IDOL4_003'",리즈,김지원,,IVE,4,Idol,true
+IDOL4_004,IDOL4_004,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_004.T_IDOL4_004'",안유진,안유진,유진,IVE,4,Idol,true
+IDOL4_005,IDOL4_005,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_005.T_IDOL4_005'",이서,이현서,,IVE,4,Idol,true
+IDOL4_006,IDOL4_006,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_006.T_IDOL4_006'",장원영,장원영,원영,IVE,4,Idol,true
+IDOL4_007,IDOL4_007,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_007.T_IDOL4_007'",라미,신하람,하람,베이비몬스터,4,Idol,true
+IDOL4_008,IDOL4_008,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_008.T_IDOL4_008'",로라,이다인,,베이비몬스터,4,Idol,true
+IDOL4_009,IDOL4_009,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_009.T_IDOL4_009'",루카,카와이 루카,Kawai Ruka|河井瑠花,베이비몬스터,4,Idol,true
+IDOL4_010,IDOL4_010,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_010.T_IDOL4_010'",아사,에나미 아사,Enami Asa|榎並杏紗,베이비몬스터,4,Idol,true
+IDOL4_011,IDOL4_011,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_011.T_IDOL4_011'",아현,정아현,,베이비몬스터,4,Idol,true
+IDOL4_012,IDOL4_012,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_012.T_IDOL4_012'",치키타,리라차 폰데차피팟,Riracha Phondechaphiphat,베이비몬스터,4,Idol,true
+IDOL4_013,IDOL4_013,"Texture2D'/Game/IdolQuiz/Images/Generation4/T_IDOL4_013.T_IDOL4_013'",파리타,파리타 차이콩,Pharita Chaikong,베이비몬스터,4,Idol,true
