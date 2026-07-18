@@ -16,6 +16,19 @@ void ARhythmLobbyPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	if (!IsLocalController()) return;
+
+#if WITH_EDITOR
+	// LobbyTestMap is an editor-only development entry point for rapid chart iteration.
+	// Keeping the bypass behind WITH_EDITOR prevents an accidentally cooked map from
+	// providing unauthenticated access in a distributed build.
+	if (GetWorld() && GetWorld()->GetMapName().Contains(TEXT("LobbyTestMap")))
+	{
+		UE_LOG(LogTemp, Log, TEXT("LobbyTestMap: bypassing login for editor testing."));
+		ShowLobby();
+		return;
+	}
+#endif
+
 	if (const URhythmAccountSubsystem* Accounts = GetGameInstance()->GetSubsystem<URhythmAccountSubsystem>();
 		Accounts && Accounts->IsLoggedIn())
 	{

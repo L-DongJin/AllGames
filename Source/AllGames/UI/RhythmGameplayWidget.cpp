@@ -90,27 +90,7 @@ void URhythmGameplayWidget::NativeConstruct()
 		}
 	}
 
-	for (TActorIterator<ARhythmJudgementManager> It(GetWorld()); It; ++It)
-	{
-		JudgementManager = *It;
-		break;
-	}
-	if (JudgementManager)
-	{
-		JudgementManager->OnNoteJudged.AddDynamic(this, &ThisClass::HandleNoteJudged);
-		JudgementManager->OnLongNoteStateChanged.AddDynamic(this, &ThisClass::HandleLongNoteStateChanged);
-	}
-
-	for (TActorIterator<ARhythmScoreManager> It(GetWorld()); It; ++It)
-	{
-		ScoreManager = *It;
-		break;
-	}
-	if (ScoreManager)
-	{
-		ScoreManager->OnScoreChanged.AddDynamic(this, &ThisClass::HandleScoreChanged);
-		RefreshScoreText(ScoreManager->GetScoreState());
-	}
+	BindRuntimeManagers();
 
 	// NativeConstruct runs as the widget is added to the viewport, before Slate is guaranteed to
 	// have painted the lane screen once. Defer the countdown by one game-thread tick so the player
@@ -145,6 +125,10 @@ void URhythmGameplayWidget::NativeTick(const FGeometry& MyGeometry, const float 
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	UpdateResultAnimation();
+	if (!JudgementManager || !ScoreManager)
+	{
+		BindRuntimeManagers();
+	}
 	if (!bInitialLayoutReady || (Conductor && Conductor->IsStartCountdownActive()))
 	{
 		RefreshLayout(Conductor ? Conductor->GetMusicTimeSeconds() : 0.0f);
@@ -178,6 +162,39 @@ void URhythmGameplayWidget::NativeTick(const FGeometry& MyGeometry, const float 
 			}),
 			0.45f,
 			false);
+	}
+}
+
+void URhythmGameplayWidget::BindRuntimeManagers()
+{
+	if (!GetWorld())
+	{
+		return;
+	}
+
+	if (!JudgementManager)
+	{
+		for (TActorIterator<ARhythmJudgementManager> It(GetWorld()); It; ++It)
+		{
+			JudgementManager = *It;
+			JudgementManager->OnNoteJudged.AddUniqueDynamic(this, &ThisClass::HandleNoteJudged);
+			JudgementManager->OnLongNoteStateChanged.AddUniqueDynamic(
+				this, &ThisClass::HandleLongNoteStateChanged);
+			UE_LOG(LogTemp, Log, TEXT("Rhythm gameplay UI bound to judgement manager."));
+			break;
+		}
+	}
+
+	if (!ScoreManager)
+	{
+		for (TActorIterator<ARhythmScoreManager> It(GetWorld()); It; ++It)
+		{
+			ScoreManager = *It;
+			ScoreManager->OnScoreChanged.AddUniqueDynamic(this, &ThisClass::HandleScoreChanged);
+			RefreshScoreText(ScoreManager->GetScoreState());
+			UE_LOG(LogTemp, Log, TEXT("Rhythm gameplay UI bound to score manager."));
+			break;
+		}
 	}
 }
 
@@ -299,7 +316,7 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 	JudgementHitCountText->SetShadowOffset(FVector2D(3.0f, 3.0f));
 	JudgementHitCountText->SetShadowColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.9f));
 	FSlateFontInfo HitCountFont = JudgementHitCountText->GetFont();
-	HitCountFont.Size = 36;
+	HitCountFont.Size = JudgementHitCountFontSize;
 	JudgementHitCountText->SetFont(HitCountFont);
 	JudgementHitCountText->SetVisibility(ESlateVisibility::Collapsed);
 	RootCanvas->AddChildToCanvas(JudgementHitCountText);
@@ -1053,18 +1070,21 @@ void URhythmGameplayWidget::RefreshLayout(const float MusicTime)
 	{
 		if (UCanvasPanelSlot* FeedbackSlot = Cast<UCanvasPanelSlot>(JudgementFeedback->Slot))
 		{
-			FeedbackSlot->SetAnchors(FAnchors(0.5f, JudgementFeedbackVerticalPosition));
+			const float FeedbackY = FMath::Clamp(
+				JudgementFeedbackVerticalPosition + JudgementFeedbackVerticalOffset, 0.0f, 1.0f);
+			const FVector2D ScaledFeedbackMaxSize = JudgementFeedbackMaxSize * JudgementFeedbackScale;
+			FeedbackSlot->SetAnchors(FAnchors(0.5f, FeedbackY));
 			FeedbackSlot->SetAlignment(FVector2D(0.5f, 0.5f));
 			FeedbackSlot->SetPosition(FVector2D::ZeroVector);
-			FVector2D FeedbackSize = JudgementFeedbackMaxSize;
+			FVector2D FeedbackSize = ScaledFeedbackMaxSize;
 			if (const UTexture2D* FeedbackTexture = Cast<UTexture2D>(JudgementFeedback->GetBrush().GetResourceObject()))
 			{
 				const FVector2D TextureSize(FeedbackTexture->GetSizeX(), FeedbackTexture->GetSizeY());
 				if (TextureSize.X > 0.0f && TextureSize.Y > 0.0f)
 				{
 					const float UniformScale = FMath::Min(
-						JudgementFeedbackMaxSize.X / TextureSize.X,
-						JudgementFeedbackMaxSize.Y / TextureSize.Y);
+						ScaledFeedbackMaxSize.X / TextureSize.X,
+						ScaledFeedbackMaxSize.Y / TextureSize.Y);
 					FeedbackSize = TextureSize * UniformScale;
 				}
 			}
@@ -1076,10 +1096,12 @@ void URhythmGameplayWidget::RefreshLayout(const float MusicTime)
 	{
 		if (UCanvasPanelSlot* CountSlot = Cast<UCanvasPanelSlot>(JudgementHitCountText->Slot))
 		{
-			CountSlot->SetAnchors(FAnchors(0.5f, JudgementFeedbackVerticalPosition));
+			const float FeedbackY = FMath::Clamp(
+				JudgementFeedbackVerticalPosition + JudgementFeedbackVerticalOffset, 0.0f, 1.0f);
+			CountSlot->SetAnchors(FAnchors(0.5f, FeedbackY));
 			CountSlot->SetAlignment(FVector2D(0.5f, 0.0f));
-			CountSlot->SetPosition(FVector2D(0.0f, JudgementFeedbackMaxSize.Y * 0.34f));
-			CountSlot->SetSize(FVector2D(320.0f, 58.0f));
+			CountSlot->SetPosition(FVector2D(0.0f, JudgementFeedbackMaxSize.Y * JudgementFeedbackScale * 0.34f));
+			CountSlot->SetSize(FVector2D(280.0f, 52.0f));
 			CountSlot->SetZOrder(11);
 		}
 	}

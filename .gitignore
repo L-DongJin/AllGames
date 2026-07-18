@@ -3,6 +3,7 @@ Binaries/
 DerivedDataCache/
 Intermediate/
 Saved/
+Builds/
 
 # IDE-generated files
 .idea/

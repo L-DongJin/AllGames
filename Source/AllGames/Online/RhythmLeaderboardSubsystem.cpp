@@ -105,12 +105,57 @@ void URhythmLeaderboardSubsystem::SubmitScore(
 		return;
 	}
 
+	PendingSubmitScore = static_cast<int32>(ScoreState.Score);
+	bSubmittingScore = true;
+	PlayFab::ClientModels::FGetPlayerStatisticsRequest Request;
+	Request.StatisticNames.Add(PendingSubmitStatisticName);
+	IPlayFabModuleInterface::Get().GetClientAPI()->GetPlayerStatistics(
+		Request,
+		PlayFab::UPlayFabClientAPI::FGetPlayerStatisticsDelegate::CreateUObject(
+			this, &ThisClass::HandleCurrentStatisticsSuccess),
+		PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &ThisClass::HandleCurrentStatisticsError));
+}
+
+void URhythmLeaderboardSubsystem::HandleCurrentStatisticsSuccess(
+	const PlayFab::ClientModels::FGetPlayerStatisticsResult& Result)
+{
+	int32 CurrentBest = INDEX_NONE;
+	for (const PlayFab::ClientModels::FStatisticValue& Statistic : Result.Statistics)
+	{
+		if (Statistic.StatisticName == PendingSubmitStatisticName)
+		{
+			CurrentBest = Statistic.Value;
+			break;
+		}
+	}
+
+	if (CurrentBest != INDEX_NONE && PendingSubmitScore <= CurrentBest)
+	{
+		bSubmittingScore = false;
+		UE_LOG(LogTemp, Log, TEXT("PlayFab score kept existing best: %s, best %d, run %d"),
+			*PendingSubmitStatisticName, CurrentBest, PendingSubmitScore);
+		OnScoreSubmissionCompleted.Broadcast(true, TEXT("기존 최고 기록을 유지했습니다."));
+		return;
+	}
+
+	UpdatePendingScore();
+}
+
+void URhythmLeaderboardSubsystem::HandleCurrentStatisticsError(const PlayFab::FPlayFabCppError& Error)
+{
+	bSubmittingScore = false;
+	UE_LOG(LogTemp, Error, TEXT("PlayFab best-score lookup failed; score was not submitted: %s"),
+		*Error.GenerateErrorReport());
+	OnScoreSubmissionCompleted.Broadcast(false, TEXT("최고 기록을 확인하지 못해 점수를 등록하지 않았습니다."));
+}
+
+void URhythmLeaderboardSubsystem::UpdatePendingScore()
+{
 	PlayFab::ClientModels::FStatisticUpdate Statistic;
 	Statistic.StatisticName = PendingSubmitStatisticName;
-	Statistic.Value = static_cast<int32>(ScoreState.Score);
+	Statistic.Value = PendingSubmitScore;
 	PlayFab::ClientModels::FUpdatePlayerStatisticsRequest Request;
 	Request.Statistics.Add(Statistic);
-	bSubmittingScore = true;
 	IPlayFabModuleInterface::Get().GetClientAPI()->UpdatePlayerStatistics(
 		Request,
 		PlayFab::UPlayFabClientAPI::FUpdatePlayerStatisticsDelegate::CreateUObject(

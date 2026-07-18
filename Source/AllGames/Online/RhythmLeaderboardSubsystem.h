@@ -15,6 +15,7 @@ namespace PlayFab
 	struct FPlayFabCppError;
 	namespace ClientModels
 	{
+		struct FGetPlayerStatisticsResult;
 		struct FGetLeaderboardResult;
 		struct FGetLeaderboardAroundPlayerResult;
 		struct FUpdatePlayerStatisticsResult;
@@ -42,6 +43,9 @@ public:
 	bool IsRequestingAroundPlayerLeaderboard() const { return bRequestingAroundPlayer; }
 
 private:
+	void HandleCurrentStatisticsSuccess(const PlayFab::ClientModels::FGetPlayerStatisticsResult& Result);
+	void HandleCurrentStatisticsError(const PlayFab::FPlayFabCppError& Error);
+	void UpdatePendingScore();
 	void HandleSubmitSuccess(const PlayFab::ClientModels::FUpdatePlayerStatisticsResult& Result);
 	void HandleSubmitError(const PlayFab::FPlayFabCppError& Error);
 	void HandleTopSuccess(const PlayFab::ClientModels::FGetLeaderboardResult& Result);
@@ -54,6 +58,7 @@ private:
 	bool bRequestingTop = false;
 	bool bRequestingAroundPlayer = false;
 	FString PendingSubmitStatisticName;
+	int32 PendingSubmitScore = 0;
 	FString PendingTopStatisticName;
 	FString PendingAroundPlayerStatisticName;
 };

@@ -141,6 +141,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement")
 	FVector2D JudgementFeedbackMaxSize = FVector2D(620.0f, 270.0f);
 
+	/** Final size multiplier shared by Perfect/Great/Good/Miss art and the HIT counter. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement", meta = (ClampMin = "0.25", ClampMax = "2.0"))
+	float JudgementFeedbackScale = 0.86f;
+
+	/** Additional normalized vertical offset; negative values move feedback upward. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement", meta = (ClampMin = "-0.5", ClampMax = "0.5"))
+	float JudgementFeedbackVerticalOffset = -0.025f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement", meta = (ClampMin = "8", ClampMax = "96"))
+	int32 JudgementHitCountFontSize = 30;
+
 	/** Duration of the animated score count-up on the result screen. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Result", meta = (ClampMin = "0.2", ClampMax = "5.0"))
 	float ResultCountUpDuration = 1.8f;
@@ -179,6 +190,7 @@ private:
 	void HandlePauseLobbyClicked();
 
 	void SetPauseMenuVisible(bool bVisible);
+	void BindRuntimeManagers();
 	void RefreshScoreText(const FRhythmScoreState& ScoreState);
 	void UpdateJudgementAnimation();
 	void UpdateResultAnimation();

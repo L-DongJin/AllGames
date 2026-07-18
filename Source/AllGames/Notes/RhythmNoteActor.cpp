@@ -24,5 +24,7 @@ ARhythmNoteActor::ARhythmNoteActor()
 void ARhythmNoteActor::InitializeNote(const FRhythmNoteData& InNoteData)
 {
 	NoteData = InNoteData;
+#if WITH_EDITOR
 	SetActorLabel(FString::Printf(TEXT("Note_Lane%d_Time%.2f"), NoteData.LaneIndex + 1, NoteData.TargetTimeSeconds));
+#endif
 }

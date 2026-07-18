@@ -144,7 +144,7 @@ The MIDI parser also pairs Note On and Note Off events. Clearly sustained Vocal/
 
 Editor Python scripts convert CSV rows to four `URhythmSongDataAsset` assets. Each asset stores the same music but a different `ERhythmDifficulty`, ordered note array, 5-key mode, BPM, measured metadata offset, and base travel time.
 
-`DA_RhythmSongCatalog` contains difficulty groups for each unique music asset. The lobby cycles unique songs, and the selected difficulty resolves the matching chart for that music. As of 2026-07-17 the production catalog contains eleven songs and forty-four charts:
+`DA_RhythmSongCatalog` contains difficulty groups for each unique music asset. The lobby cycles unique songs, and the selected difficulty resolves the matching chart for that music. As of 2026-07-19 the production catalog contains sixteen songs and sixty-four charts:
 
 - Choom: 488 / 576 / 715 / 815 notes;
 - Lemonade: 520 / 605 / 881 / 1104 notes;
@@ -157,6 +157,11 @@ Editor Python scripts convert CSV rows to four `URhythmSongDataAsset` assets. Ea
 - 갑자기: 523 / 592 / 857 / 1052 notes from multitrack MIDI.
 - HeavySerenade: 471 / 752 / 1063 / 1539 notes from aligned audio stems;
 - RUDE!: 524 / 858 / 1177 / 1731 notes from aligned audio stems.
+- SHEESH: 455 / 652 / 884 / 1292 notes from aligned audio stems.
+- DRIP: 519 / 685 / 1002 / 1402 notes from aligned audio stems.
+- BANG BANG: 424 / 489 / 559 / 607 notes from multitrack MIDI.
+- 404 (New Era): 444 / 518 / 628 / 684 notes from multitrack MIDI.
+- 캐치캐치: 510 / 567 / 679 / 765 notes from multitrack MIDI.
 
 ### Automatic quality report
 

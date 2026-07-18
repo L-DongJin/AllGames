@@ -1,6 +1,6 @@
 # AllGames Rhythm Game Development Plan
 
-Last updated: 2026-07-17
+Last updated: 2026-07-19
 
 ## Goal
 
@@ -9,17 +9,20 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 ## Current status
 
 - Prototype progress: stages 1-10 complete; stage 11 implemented and awaiting full-song PIE verification.
-- Current stage: eleven-song, forty-four-chart catalog with automatic QA reports, awaiting prioritized PIE listening verification.
+- AllGames platform progress: the shared MainHub is implemented, and the second mini-game `Idol Quiz` now has a complete single-player prototype awaiting manual PIE verification.
+- Idol Quiz content: 83 third-generation idol questions across 13 groups, generated from folder names (group) and image filenames (answer). Each round selects 10 questions without replacement.
+- Current stage: sixteen-song, sixty-four-chart catalog with automatic QA reports, awaiting prioritized PIE listening verification for the five newest songs.
 - Current online stage: PlayFab account login and score submission are PIE-verified; result/lobby leaderboard presentation is implemented and awaiting PIE verification.
 - Next online stage after verification: assign permanent SongIds to production chart assets, confirm maximum-score aggregation, then prepare server-validated submission before public distribution.
-- Default map: `/Game/Maps/LobbyMap`; it starts `/Game/Maps/FiveKeyMap` after settings are confirmed.
+- Default map: `/Game/Maps/MainHubMap`; it authenticates once, launches the selected mini-game entry map, and the Rhythm entry continues through `/Game/Maps/LobbyMap` to `/Game/Maps/FiveKeyMap`.
 - Preserved 9-key test map: `/Game/Maps/TestMap`.
 - Playable catalog: Choom, Lemonade, It'sMe, CHASE-ME, CANON-D, Drama, 만찬가, LoveAttack, 갑자기, HeavySerenade, and RUDE!; every song has Easy/Normal/Hard/Expert 5-key charts.
 - Test song format: stereo, 48 kHz, 16-bit PCM WAV, approximately 176.054 seconds.
 - Default input mode follows SongData; FiveKeyMap selects 5-key.
-- Latest successful full build: `AllGamesEditor Win64 Development` on 2026-07-17.
+- Latest successful full build: `AllGamesEditor Win64 Development` on 2026-07-19.
 - Repository scope now includes the lobby, complete 5-key gameplay loop, MIDI authoring tools, and the three-song production catalog.
 - Detailed chart-authoring history and the reusable current workflow are documented in `Docs/ChartAuthoringPipeline.md`.
+- Next Idol Quiz stage after prototype verification: add timed rounds and server-authoritative multiplayer rooms where the first correct chat answer wins. Do not begin this stage until requested.
 
 ## Implemented architecture
 
@@ -27,7 +30,7 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 
 - `ARhythmGameModeBase` is the C++ gameplay GameMode base.
 - `BP_RhythmGameMode` is the editor-configurable Blueprint child.
-- `FiveKeyMap` is the editor startup map and game default map; `TestMap` remains the 9-key development map.
+- `MainHubMap` is the editor startup and packaged-game default map. `LobbyTestMap` bypasses login for editor-only rhythm iteration, while `TestMap` remains the 9-key development map.
 - FiveKeyMap is based on TestMap and gives its single Conductor a per-map 5-key SongData override.
 
 ### Input
@@ -238,7 +241,7 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Deferred countdown start by one game-thread tick after `WBP_RhythmGameplay` enters the viewport, ensuring Slate paints the lane/note UI before `3, 2, 1, GO!` begins instead of making the countdown appear to belong to the preceding screen.
 - Rebalanced the production chart pipeline around vocal and drum attacks. Bass/Other/FX events now fill only clear gaps with difficulty-scaled caps, and only vocal phrases can become MIDI hooks. Long notes are capped at 2.25 seconds, spaced apart, and permit at most 0/1/2/3 extra taps on Easy/Normal/Hard/Expert; conflicting ornamental taps are removed. Regenerated and updated all production charts except the intentionally preserved CANON-D set.
 - Added a catalog-wide `ChartLevel` rating from 1-24 to every Song Data Asset. The shared formula uses average notes per second, peak two-second density, and long-note occupancy, so Easy/Normal/Hard/Expert remain authoring categories while players can compare actual difficulty across different songs.
-- Added per-song `TitleImage` artwork to Song Data Assets and connected all eleven textures from `/Game/Title`. The lobby normalizes them into one 720x250 area at 72% opacity and crossfades/scales between the old and new image over 0.28 seconds when song selection changes.
+- Added per-song `TitleImage` artwork to the original eleven Song Data Assets. The lobby normalizes artwork into one 720x250 area at 72% opacity and crossfades/scales between the old and new image over 0.28 seconds when song selection changes. The five songs added on 2026-07-19 currently await matching `/Game/Title` artwork and intentionally retain an empty `TitleImage` field.
 - Expanded the lobby song-art area to 720x480 and reflowed difficulty, shared level, speed, and start controls below it. Scroll-speed selection now cycles through `1x`, `2x`, `2.5x`, `3x`, `3.5x`, and `4x`; it continues to affect visual travel time only.
 - Added `/Game/UI/WBP_RhythmLobby` as the editor-facing child of `URhythmLobbyWidget`. Its Class Defaults expose `Lobby Background Image` and `Lobby Background Tint` under `Rhythm|Appearance`; the lobby controller loads this WBP with a C++ fallback, while layout and behavior remain code-driven.
 - Exposed `Song Image Width` and `Song Image Height` in `WBP_RhythmLobby` Class Defaults under `Rhythm|Appearance`. Both the current and outgoing crossfade images use the same editor-tuned dimensions, with the existing 720x480 layout retained as the default.
@@ -254,6 +257,21 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - User verified a successful live score write for `RUDE_5K_HARD_V1`. Connected the result screen to show submission progress followed by the logged-in player's online rank and personal best, and added a selection-aware online top-10 panel to the lobby. Stale asynchronous responses are discarded and the latest song/difficulty is retried after an in-flight request completes.
 - Exposed the lobby leaderboard heading and player-entry presentation through `WBP_RhythmLobby` Class Defaults. Designers can independently tune the normalized title/entry positions, shared area size and font asset, separate title/entry font sizes, and colors without changing the C++ query logic.
 - Fixed a countdown-only upper-left UI cluster. Lane backgrounds, key labels, the judgement line, and score HUD previously waited for the first music-timeline event before receiving Canvas positions, leaving them visible at `(0,0)` during the three-second countdown. Position-dependent widgets now remain collapsed until valid geometry is available, are laid out from the Conductor time during countdown, and then become visible together.
+- Added the first Windows Development packaging profile. The UI-driven project now targets DX11/SM5 and disables unused Ray Tracing, Lumen GI/reflections, Virtual Shadow Maps, Mesh Distance Fields, and Substrate for lower shader/VRAM cost and improved laptop stability. Packaging uses compressed IoStore/Pak output, excludes editor/movie/crash-reporter content, and cooks from LobbyMap and FiveKeyMap so unreferenced TestMap/development assets are omitted.
+- The first Game-target build exposed an editor-only `SetActorLabel()` call in `ARhythmNoteActor`; guarded the Outliner debug label with `WITH_EDITOR`. A subsequent BuildCookRun completed Build, Cook, Stage, Pak/IoStore, prerequisites, and Archive successfully to `Builds/WindowsDevelopment`.
+- The first packaged archive contains 49 files and approximately 1.16 GB: 204.36 MB compressed game content plus large Development-only executable/symbol files (approximately 293 MB EXE and 460 MB PDB). A 12-second packaged smoke test initialized DX11, XAudio2, PlayFab, LobbyMap, and the login UI without a crash; engine initialization completed in approximately 2.9 seconds. Full interactive packaged login, lobby, gameplay, music, and leaderboard verification remains pending.
+- Packaged interactive testing found a black FiveKeyMap after START. Runtime logs proved both `/Game/UI/WBP_RhythmLobby` and `/Game/UI/WBP_RhythmGameplay` were omitted because their native `TSoftClassPtr` paths are not hard cook dependencies; the lobby silently used its C++ fallback while gameplay had no widget and therefore no countdown. Added `/Game/UI` to `DirectoriesToAlwaysCook` so both Blueprint presentation classes and their dependencies are staged while keeping the rest of the cook reference-driven.
+- Rebuilt the Windows Development archive successfully after the cook fix. Package count increased from 526 to 539 and compressed content from 204.36 MB to 215.99 MB; cooked output now explicitly contains both `WBP_RhythmLobby` and `WBP_RhythmGameplay`. The rebuilt executable remained alive through a 10-second startup smoke test. Manual START/countdown/gameplay verification is required before marking the packaged loop complete.
+- Packaged gameplay input reached the judgement manager, but the presentation did not react because the gameplay widget could initialize before the runtime judgement and score managers. The widget now retries those bindings during tick and uses unique delegates once the managers appear, restoring judged-note removal, judgement feedback, and score display in packaged builds.
+- Removed the redundant `RHYTHM SELECT`, subtitle, and `SONG` lobby headings, then rebalanced the artwork, settings, controls, ranking area, start button, and help row for the 16:10 packaged layout.
+- Fixed leaderboard best-score regression: because the PlayFab statistic was configured with `Last` aggregation, every completed run previously overwrote the stored score. Submission now reads the player's current statistic first and only sends an update when the completed run is a new personal best; lookup failure safely leaves the existing record untouched.
+- Added a lobby Escape confirmation overlay with mouse-driven `게임 종료` and `취소` actions. Escape toggles the overlay instead of requiring Alt+F4, and lobby selection input is suppressed while the confirmation is visible.
+- Reduced the gameplay Perfect/Great/Good/Miss feedback and HIT counter to 86% scale and moved the group slightly upward. The new scale, normalized vertical offset, and HIT font size remain editable in `WBP_RhythmGameplay` Class Defaults under `Rhythm|Appearance|Judgement`.
+- Added SHEESH and DRIP from four aligned WAV stems each, plus BANG BANG, 404 (New Era), and 캐치캐치 from four-role MIDI stems aligned against their master WAVs. Generated and cataloged twenty difficulty assets with increasing Easy-to-Expert density, stable online SongIds, shared 1-24 chart levels, and automatic onset-quality reports.
+- Added `/Game/Maps/LobbyTestMap` as an editor-only rapid-testing entry point. `ARhythmLobbyPlayerController` bypasses PlayFab login only when this map is running in an editor build; normal LobbyMap and packaged builds continue to require authentication.
+- Began the AllGames multi-game platform layer. Added `MainHubMap`, shared account gating, catalog-driven mini-game definition assets, reusable game-entry cards, and an Escape exit confirmation. The default startup now enters MainHub; Rhythm launches the existing LobbyMap, while Idol Quiz is visible as a disabled coming-soon entry. Adding future games requires a definition asset and catalog entry rather than another hardcoded hub branch.
+- Added an `ALL GAMES` action to the rhythm lobby so players can return to MainHub without restarting. Packaging configuration now cooks MainHubMap alongside the existing rhythm maps; no package was generated during this stage.
+- Packaged gameplay then exposed an initialization-order race: `URhythmGameplayWidget::NativeConstruct()` ran before the GameMode spawned `ARhythmJudgementManager` and `ARhythmScoreManager`. Input, judgement, and scoring worked internally, but the UI never subscribed, so no feedback, score update, or judged-note removal appeared. Added idempotent runtime-manager binding that retries from tick until both managers exist and uses unique delegates; PIE and packaged startup order are now both supported.
 - Confirmed the PlayFab operating assumption for development: Development Mode does not accrue monthly metered charges but has account/usage limits; switching the title to Live and a paid plan is an explicit, effectively permanent release action. Client-side score posting remains acceptable for private testing and is scheduled to move behind server validation before public competitive distribution.
 - Raised judgement feedback from normalized Y 0.20 to 0.16, reduced its maximum area from 720x320 to 620x270, and reduced/raised the accompanying HIT counter for a less dominant upper-screen presentation. Blueprint appearance properties remain editable for later tuning.
 - Added CANON-D from separated 120 BPM Vocal/Drums/Bass/Other MIDI sources and the existing 198.856-second master SoundWave. The reusable multitrack alignment/motif pipeline generated Easy/Normal/Hard/Expert 5-key charts with 403/495/927/1182 notes, 2/3/7/15 long notes, and coverage through 196.925 seconds.
@@ -330,6 +348,18 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Added a song-finished result overlay with final score, max combo, accuracy, and Perfect/Great/Good/Miss totals. Enter reloads the current map and Escape exits the session.
 - Added repeatable creation and validation scripts for the full 5-key chart/map. Automated validation passed for note ordering, unique timestamps, lane range/counts, map Conductor override, and disabled tap recording.
 - Rebuilt `AllGamesEditor` successfully after the complete 5-key mode and result-screen implementation. Full-song PIE verification remains pending.
+
+### 2026-07-19 - Idol Quiz single-player prototype
+
+- Added data-driven Idol Quiz question types and catalog assets. Runtime code reads image, canonical answer, accepted aliases, group, and generation without hardcoding individual idols.
+- Added `AIdolQuizGameModeBase`, `AIdolQuizPlayerController`, and `UIdolQuizWidget`. A game randomly draws 10 unique questions, accepts answers through the chat-style input, ignores case/spaces/punctuation during comparison, awards 100 points for a correct answer, and advances after feedback.
+- Added restart and `ALL GAMES` navigation. The prototype intentionally remains single-player; multiplayer rooms, a round timer, and server-authoritative first-correct-answer ownership are future work.
+- Imported 83 third-generation idol images from 13 group folders into `/Game/IdolQuiz/Images/Generation3`, built `/Game/IdolQuiz/Data/DA_IdolQuiz_3rdGeneration`, created `/Game/Maps/IdolQuizMap`, and enabled the Idol Quiz card in the shared MainHub.
+- Preserved the user's source folder convention: immediate folder name becomes group metadata and the image filename without extension becomes the correct answer. Future bulk additions can use the same convention and import script.
+- Found one mislabeled source file: `레드벨벳/예리.jpg` contained WEBP data. The original download was left untouched; a project-side PNG repair copy is used by the repeatable import workflow.
+- UE 5.7's headless Interchange import crashed while notifying Content Browser because Slate was unavailable. The import was completed safely through a full Editor process with rendering disabled; this engine automation limitation is recorded in the workflow.
+- Automated content validation passed: 83 questions, 83 image references, unique question IDs, nonempty answers/groups, generation metadata, 13 groups, IdolQuizMap, and enabled MainHub entry.
+- Manual PIE verification still required: launch Idol Quiz from MainHub, confirm images display, correct/wrong answers behave as expected, 10 questions finish, restart works, and `ALL GAMES` returns to MainHub.
 
 ### 2026-07-15
 

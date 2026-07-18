@@ -8,6 +8,7 @@
 #include "RhythmLobbyWidget.generated.h"
 
 class UButton;
+class UBorder;
 class UAudioComponent;
 class UImage;
 class UFont;
@@ -82,6 +83,7 @@ private:
 	void RestartSongPreview();
 	void StartGame();
 	void RefreshLeaderboard();
+	void SetExitConfirmationVisible(bool bVisible);
 	void HandleTopLeaderboardCompleted(bool bSuccess, const FRhythmLeaderboardResult& Result);
 
 	UFUNCTION() void PreviousDifficulty();
@@ -91,6 +93,9 @@ private:
 	UFUNCTION() void DecreaseSpeed();
 	UFUNCTION() void IncreaseSpeed();
 	UFUNCTION() void HandleStartClicked();
+	UFUNCTION() void HandleReturnToMainHub();
+	UFUNCTION() void HandleExitConfirmed();
+	UFUNCTION() void HandleExitCanceled();
 
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> SongValueText;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> DifficultyValueText;
@@ -99,6 +104,11 @@ private:
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> HelpText;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> LeaderboardTitleText;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> LeaderboardText;
+	UPROPERTY(Transient) TObjectPtr<UButton> MainHubButton;
+	UPROPERTY(Transient) TObjectPtr<UBorder> ExitConfirmationBackground;
+	UPROPERTY(Transient) TObjectPtr<UTextBlock> ExitConfirmationTitle;
+	UPROPERTY(Transient) TObjectPtr<UButton> ExitConfirmButton;
+	UPROPERTY(Transient) TObjectPtr<UButton> ExitCancelButton;
 	UPROPERTY(Transient) TObjectPtr<UImage> SongTitleImage;
 	UPROPERTY(Transient) TObjectPtr<UImage> PreviousSongTitleImage;
 	UPROPERTY(Transient) TObjectPtr<UTexture2D> DisplayedTitleTexture;
@@ -111,6 +121,7 @@ private:
 	float TitleTransitionDuration = 0.28f;
 	bool bTitleTransitionActive = false;
 	bool bLeaderboardDelegatesBound = false;
+	bool bExitConfirmationVisible = false;
 	FString RequestedLeaderboardStatistic;
 	int32 SelectedRow = 0;
 };

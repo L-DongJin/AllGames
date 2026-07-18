@@ -5,12 +5,14 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/AudioComponent.h"
 #include "Components/Button.h"
+#include "Components/Border.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "InputCoreTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Sound/SoundBase.h"
 #include "Engine/Texture2D.h"
 #include "Engine/Font.h"
@@ -85,28 +87,25 @@ void URhythmLobbyWidget::BuildLayout()
 		Slot->SetSize(Size);
 	};
 
-	AddCentered(MakeText(WidgetTree, TEXT("LobbyTitle"), TEXT("RHYTHM SELECT"), 74, FLinearColor(0.25f, 0.85f, 1.0f)), 0.10f, FVector2D(1000, 110));
-	AddCentered(MakeText(WidgetTree, TEXT("LobbySubtitle"), TEXT("SELECT SONG AND PLAY SETTINGS"), 24, FLinearColor(0.65f, 0.7f, 0.85f)), 0.18f, FVector2D(900, 50));
 	const FVector2D SongImageSize(
 		FMath::Max(1.0f, SongImageWidth),
 		FMath::Max(1.0f, SongImageHeight));
 	PreviousSongTitleImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("PreviousSongTitleImage"));
 	PreviousSongTitleImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
-	AddCentered(PreviousSongTitleImage, 0.34f, SongImageSize);
+	AddCentered(PreviousSongTitleImage, 0.255f, SongImageSize);
 	SongTitleImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("SongTitleImage"));
 	SongTitleImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.72f));
-	AddCentered(SongTitleImage, 0.34f, SongImageSize);
-	AddCentered(MakeText(WidgetTree, TEXT("SongLabel"), TEXT("SONG"), 30, FLinearColor::White), 0.22f, FVector2D(420, 50));
+	AddCentered(SongTitleImage, 0.255f, SongImageSize);
 	SongValueText = MakeText(WidgetTree, TEXT("SongValue"), TEXT("CHOOM"), 38, FLinearColor(0.25f, 0.85f, 1.0f));
 	AddCentered(SongValueText, 0.465f, FVector2D(700, 60));
-	AddCentered(MakeText(WidgetTree, TEXT("DifficultyLabel"), TEXT("DIFFICULTY"), 30, FLinearColor::White), 0.56f, FVector2D(420, 50));
+	AddCentered(MakeText(WidgetTree, TEXT("DifficultyLabel"), TEXT("DIFFICULTY"), 28, FLinearColor::White), 0.535f, FVector2D(420, 46));
 	DifficultyValueText = MakeText(WidgetTree, TEXT("DifficultyValue"), TEXT("NORMAL"), 42, FLinearColor(1.0f, 0.8f, 0.2f));
-	AddCentered(DifficultyValueText, 0.605f, FVector2D(420, 60));
+	AddCentered(DifficultyValueText, 0.58f, FVector2D(420, 56));
 	ChartLevelText = MakeText(WidgetTree, TEXT("ChartLevelValue"), TEXT("LEVEL 1"), 34, FLinearColor(1.0f, 0.35f, 0.55f));
-	AddCentered(ChartLevelText, 0.65f, FVector2D(420, 52));
-	AddCentered(MakeText(WidgetTree, TEXT("SpeedLabel"), TEXT("NOTE SPEED"), 30, FLinearColor::White), 0.705f, FVector2D(420, 50));
+	AddCentered(ChartLevelText, 0.625f, FVector2D(420, 48));
+	AddCentered(MakeText(WidgetTree, TEXT("SpeedLabel"), TEXT("NOTE SPEED"), 28, FLinearColor::White), 0.69f, FVector2D(420, 46));
 	SpeedValueText = MakeText(WidgetTree, TEXT("SpeedValue"), TEXT("1x"), 42, FLinearColor(0.35f, 1.0f, 0.65f));
-	AddCentered(SpeedValueText, 0.75f, FVector2D(420, 60));
+	AddCentered(SpeedValueText, 0.735f, FVector2D(420, 56));
 
 	auto AddArrowButton = [this, Root](const TCHAR* Name, const TCHAR* Label, float X, float Y)
 	{
@@ -118,20 +117,30 @@ void URhythmLobbyWidget::BuildLayout()
 		Slot->SetSize(FVector2D(74, 64));
 		return Button;
 	};
-	AddArrowButton(TEXT("PreviousSongButton"), TEXT("<"), 0.25f, 0.34f)->OnClicked.AddDynamic(this, &ThisClass::PreviousSong);
-	AddArrowButton(TEXT("NextSongButton"), TEXT(">"), 0.75f, 0.34f)->OnClicked.AddDynamic(this, &ThisClass::NextSong);
-	AddArrowButton(TEXT("PreviousDifficultyButton"), TEXT("<"), 0.34f, 0.605f)->OnClicked.AddDynamic(this, &ThisClass::PreviousDifficulty);
-	AddArrowButton(TEXT("NextDifficultyButton"), TEXT(">"), 0.66f, 0.605f)->OnClicked.AddDynamic(this, &ThisClass::NextDifficulty);
-	AddArrowButton(TEXT("DecreaseSpeedButton"), TEXT("<"), 0.34f, 0.75f)->OnClicked.AddDynamic(this, &ThisClass::DecreaseSpeed);
-	AddArrowButton(TEXT("IncreaseSpeedButton"), TEXT(">"), 0.66f, 0.75f)->OnClicked.AddDynamic(this, &ThisClass::IncreaseSpeed);
+	AddArrowButton(TEXT("PreviousSongButton"), TEXT("<"), 0.25f, 0.255f)->OnClicked.AddDynamic(this, &ThisClass::PreviousSong);
+	AddArrowButton(TEXT("NextSongButton"), TEXT(">"), 0.75f, 0.255f)->OnClicked.AddDynamic(this, &ThisClass::NextSong);
+	AddArrowButton(TEXT("PreviousDifficultyButton"), TEXT("<"), 0.34f, 0.58f)->OnClicked.AddDynamic(this, &ThisClass::PreviousDifficulty);
+	AddArrowButton(TEXT("NextDifficultyButton"), TEXT(">"), 0.66f, 0.58f)->OnClicked.AddDynamic(this, &ThisClass::NextDifficulty);
+	AddArrowButton(TEXT("DecreaseSpeedButton"), TEXT("<"), 0.34f, 0.735f)->OnClicked.AddDynamic(this, &ThisClass::DecreaseSpeed);
+	AddArrowButton(TEXT("IncreaseSpeedButton"), TEXT(">"), 0.66f, 0.735f)->OnClicked.AddDynamic(this, &ThisClass::IncreaseSpeed);
 
 	UButton* StartButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("StartButton"));
 	StartButton->AddChild(MakeText(WidgetTree, TEXT("StartButtonText"), TEXT("START"), 42, FLinearColor::White));
 	StartButton->OnClicked.AddDynamic(this, &ThisClass::HandleStartClicked);
-	AddCentered(StartButton, 0.85f, FVector2D(440, 78));
+	AddCentered(StartButton, 0.84f, FVector2D(440, 76));
 
 	HelpText = MakeText(WidgetTree, TEXT("LobbyHelp"), TEXT("UP/DOWN: SELECT    LEFT/RIGHT: CHANGE    ENTER: START"), 22, FLinearColor(0.55f, 0.62f, 0.75f));
-	AddCentered(HelpText, 0.95f, FVector2D(1250, 42));
+	AddCentered(HelpText, 0.94f, FVector2D(1250, 40));
+
+	MainHubButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("MainHubButton"));
+	MainHubButton->AddChild(MakeText(WidgetTree, TEXT("MainHubButtonText"), TEXT("ALL GAMES"), 22, FLinearColor::White));
+	MainHubButton->OnClicked.AddDynamic(this, &ThisClass::HandleReturnToMainHub);
+	if (UCanvasPanelSlot* HubButtonSlot = Root->AddChildToCanvas(MainHubButton))
+	{
+		HubButtonSlot->SetAnchors(FAnchors(0.035f, 0.045f));
+		HubButtonSlot->SetAlignment(FVector2D(0.0f, 0.0f));
+		HubButtonSlot->SetSize(FVector2D(180.0f, 52.0f));
+	}
 
 	LeaderboardTitleText = MakeText(WidgetTree, TEXT("LeaderboardTitleText"), TEXT("ONLINE TOP 10"),
 		LeaderboardTitleFontSize, LeaderboardTitleColor);
@@ -166,6 +175,38 @@ void URhythmLobbyWidget::BuildLayout()
 			FMath::Max(1.0f, LeaderboardAreaSize.X),
 			FMath::Max(1.0f, LeaderboardAreaSize.Y)));
 	}
+
+	ExitConfirmationBackground = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("ExitConfirmationBackground"));
+	ExitConfirmationBackground->SetBrushColor(FLinearColor(0.005f, 0.01f, 0.03f, 0.94f));
+	if (UCanvasPanelSlot* OverlaySlot = Root->AddChildToCanvas(ExitConfirmationBackground))
+	{
+		OverlaySlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+		OverlaySlot->SetOffsets(FMargin(0.0f));
+	}
+
+	ExitConfirmationTitle = MakeText(WidgetTree, TEXT("ExitConfirmationTitle"), TEXT("게임을 종료하시겠습니까?"), 38, FLinearColor::White);
+	AddCentered(ExitConfirmationTitle, 0.43f, FVector2D(650.0f, 70.0f));
+
+	ExitConfirmButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("ExitConfirmButton"));
+	ExitConfirmButton->AddChild(MakeText(WidgetTree, TEXT("ExitConfirmButtonText"), TEXT("게임 종료"), 28, FLinearColor::White));
+	ExitConfirmButton->OnClicked.AddDynamic(this, &ThisClass::HandleExitConfirmed);
+	if (UCanvasPanelSlot* ConfirmSlot = Root->AddChildToCanvas(ExitConfirmButton))
+	{
+		ConfirmSlot->SetAnchors(FAnchors(0.43f, 0.53f));
+		ConfirmSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+		ConfirmSlot->SetSize(FVector2D(210.0f, 68.0f));
+	}
+
+	ExitCancelButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("ExitCancelButton"));
+	ExitCancelButton->AddChild(MakeText(WidgetTree, TEXT("ExitCancelButtonText"), TEXT("취소"), 28, FLinearColor::White));
+	ExitCancelButton->OnClicked.AddDynamic(this, &ThisClass::HandleExitCanceled);
+	if (UCanvasPanelSlot* CancelSlot = Root->AddChildToCanvas(ExitCancelButton))
+	{
+		CancelSlot->SetAnchors(FAnchors(0.57f, 0.53f));
+		CancelSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+		CancelSlot->SetSize(FVector2D(210.0f, 68.0f));
+	}
+	SetExitConfirmationVisible(false);
 	RefreshSettings();
 }
 
@@ -204,6 +245,15 @@ void URhythmLobbyWidget::NativeTick(const FGeometry& MyGeometry, const float InD
 FReply URhythmLobbyWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	const FKey Key = InKeyEvent.GetKey();
+	if (Key == EKeys::Escape)
+	{
+		SetExitConfirmationVisible(!bExitConfirmationVisible);
+		return FReply::Handled();
+	}
+	if (bExitConfirmationVisible)
+	{
+		return FReply::Handled();
+	}
 	if (Key == EKeys::Up) { SelectedRow = FMath::Max(0, SelectedRow - 1); RefreshSettings(); return FReply::Handled(); }
 	if (Key == EKeys::Down) { SelectedRow = FMath::Min(3, SelectedRow + 1); RefreshSettings(); return FReply::Handled(); }
 	if (Key == EKeys::Left) { if (SelectedRow == 0) PreviousSong(); else if (SelectedRow == 1) PreviousDifficulty(); else if (SelectedRow == 2) DecreaseSpeed(); return FReply::Handled(); }
@@ -405,6 +455,31 @@ void URhythmLobbyWidget::StartGame()
 	UGameplayStatics::OpenLevel(this, TEXT("FiveKeyMap"));
 }
 
+void URhythmLobbyWidget::SetExitConfirmationVisible(const bool bVisible)
+{
+	bExitConfirmationVisible = bVisible;
+	const ESlateVisibility ExitVisibility = bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+	if (ExitConfirmationBackground) ExitConfirmationBackground->SetVisibility(ExitVisibility);
+	if (ExitConfirmationTitle) ExitConfirmationTitle->SetVisibility(ExitVisibility);
+	if (ExitConfirmButton) ExitConfirmButton->SetVisibility(ExitVisibility);
+	if (ExitCancelButton) ExitCancelButton->SetVisibility(ExitVisibility);
+	if (bVisible && ExitCancelButton)
+	{
+		ExitCancelButton->SetKeyboardFocus();
+	}
+}
+
+void URhythmLobbyWidget::HandleExitConfirmed()
+{
+	UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, false);
+}
+
+void URhythmLobbyWidget::HandleExitCanceled()
+{
+	SetExitConfirmationVisible(false);
+	SetKeyboardFocus();
+}
+
 void URhythmLobbyWidget::PreviousDifficulty() { if (auto* S = Cast<URhythmGameInstance>(GetGameInstance())) S->ChangeDifficulty(-1); RefreshSettings(); }
 void URhythmLobbyWidget::NextDifficulty() { if (auto* S = Cast<URhythmGameInstance>(GetGameInstance())) S->ChangeDifficulty(1); RefreshSettings(); }
 void URhythmLobbyWidget::PreviousSong() { if (auto* S = Cast<URhythmGameInstance>(GetGameInstance())) S->ChangeSong(-1); RefreshSettings(); }
@@ -412,3 +487,9 @@ void URhythmLobbyWidget::NextSong() { if (auto* S = Cast<URhythmGameInstance>(Ge
 void URhythmLobbyWidget::DecreaseSpeed() { if (auto* S = Cast<URhythmGameInstance>(GetGameInstance())) S->ChangeScrollSpeed(-1); RefreshSettings(); }
 void URhythmLobbyWidget::IncreaseSpeed() { if (auto* S = Cast<URhythmGameInstance>(GetGameInstance())) S->ChangeScrollSpeed(1); RefreshSettings(); }
 void URhythmLobbyWidget::HandleStartClicked() { StartGame(); }
+
+void URhythmLobbyWidget::HandleReturnToMainHub()
+{
+	StopSongPreview();
+	UGameplayStatics::OpenLevel(this, TEXT("MainHubMap"));
+}
