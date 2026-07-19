@@ -24,6 +24,9 @@ Build/*/FileOpenOrder/
 *.tmp
 *.log
 
+# Local online-service credentials (copy from the tracked example)
+Config/AllGamesSecrets.ini
+
 # Python analysis caches
 __pycache__/
 *.pyc

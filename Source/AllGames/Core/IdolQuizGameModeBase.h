@@ -24,6 +24,7 @@ public:
 	FOnIdolQuizRoundTimedOut OnRoundTimedOut;
 	void StartQuiz();
 	void SubmitAnswer(const FString& Answer);
+	void SubmitMessage(APlayerController* Sender,const FString& Message);
 	const FIdolQuizQuestion* GetCurrentQuestion() const;
 	int32 GetRemainingTimeSeconds() const { return RemainingTimeSeconds; }
 	FString GetCurrentHint() const { const FIdolQuizQuestion* Question=GetCurrentQuestion(); return bHintRevealed&&Question?BuildInitialHint(Question->StageName):FString(); }

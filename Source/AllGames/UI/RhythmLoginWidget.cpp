@@ -13,6 +13,17 @@
 
 namespace
 {
+	void ApplyBlackInputText(UEditableTextBox* Input)
+	{
+		if (!Input) return;
+		const FSlateColor Black(FLinearColor::Black);
+		FEditableTextBoxStyle Style = Input->GetWidgetStyle();
+		Style.SetForegroundColor(Black).SetFocusedForegroundColor(Black).SetReadOnlyForegroundColor(Black);
+		FTextBlockStyle TextStyle = Style.TextStyle;
+		TextStyle.SetColorAndOpacity(Black);
+		Style.SetTextStyle(TextStyle);
+		Input->SetWidgetStyle(Style);
+	}
 	UTextBlock* MakeLoginText(UWidgetTree* Tree, const TCHAR* Name, const FString& Value, const int32 Size)
 	{
 		UTextBlock* Text = Tree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), Name);
@@ -94,14 +105,14 @@ void URhythmLoginWidget::BuildLayout()
 	UsernameInput = WidgetTree->ConstructWidget<UEditableTextBox>(
 		UEditableTextBox::StaticClass(), TEXT("LoginUsernameInput"));
 	UsernameInput->SetHintText(FText::FromString(TEXT("아이디를 입력하세요")));
-	UsernameInput->SetForegroundColor(FLinearColor::Black);
+	ApplyBlackInputText(UsernameInput);
 	AddCentered(LoginPanel, UsernameInput, 0.42f, FVector2D(520.0f, 64.0f));
 
 	PasswordInput = WidgetTree->ConstructWidget<UEditableTextBox>(
 		UEditableTextBox::StaticClass(), TEXT("LoginPasswordInput"));
 	PasswordInput->SetHintText(FText::FromString(TEXT("비밀번호를 입력하세요")));
 	PasswordInput->SetIsPassword(true);
-	PasswordInput->SetForegroundColor(FLinearColor::Black);
+	ApplyBlackInputText(PasswordInput);
 	AddCentered(LoginPanel, PasswordInput, 0.51f, FVector2D(520.0f, 64.0f));
 
 	auto MakeButton = [this](UCanvasPanel* Panel, const TCHAR* Name, const TCHAR* Label,
@@ -146,21 +157,21 @@ void URhythmLoginWidget::BuildLayout()
 	RegistrationUsernameInput = WidgetTree->ConstructWidget<UEditableTextBox>(
 		UEditableTextBox::StaticClass(), TEXT("RegistrationUsernameInput"));
 	RegistrationUsernameInput->SetHintText(FText::FromString(TEXT("사용할 아이디 (3~20자)")));
-	RegistrationUsernameInput->SetForegroundColor(FLinearColor::Black);
+	ApplyBlackInputText(RegistrationUsernameInput);
 	AddCentered(RegistrationPanel, RegistrationUsernameInput, 0.36f, FVector2D(520.0f, 64.0f));
 
 	RegistrationPasswordInput = WidgetTree->ConstructWidget<UEditableTextBox>(
 		UEditableTextBox::StaticClass(), TEXT("RegistrationPasswordInput"));
 	RegistrationPasswordInput->SetHintText(FText::FromString(TEXT("사용할 비밀번호 (6자 이상)")));
 	RegistrationPasswordInput->SetIsPassword(true);
-	RegistrationPasswordInput->SetForegroundColor(FLinearColor::Black);
+	ApplyBlackInputText(RegistrationPasswordInput);
 	AddCentered(RegistrationPanel, RegistrationPasswordInput, 0.45f, FVector2D(520.0f, 64.0f));
 
 	RegistrationPasswordConfirmInput = WidgetTree->ConstructWidget<UEditableTextBox>(
 		UEditableTextBox::StaticClass(), TEXT("RegistrationPasswordConfirmInput"));
 	RegistrationPasswordConfirmInput->SetHintText(FText::FromString(TEXT("비밀번호를 한 번 더 입력하세요")));
 	RegistrationPasswordConfirmInput->SetIsPassword(true);
-	RegistrationPasswordConfirmInput->SetForegroundColor(FLinearColor::Black);
+	ApplyBlackInputText(RegistrationPasswordConfirmInput);
 	AddCentered(RegistrationPanel, RegistrationPasswordConfirmInput, 0.54f, FVector2D(520.0f, 64.0f));
 
 	CreateAccountButton = MakeButton(RegistrationPanel, TEXT("CreateAccountButton"), TEXT("가입"),

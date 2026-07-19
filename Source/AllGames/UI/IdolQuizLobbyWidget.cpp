@@ -1,0 +1,20 @@
+#include "IdolQuizLobbyWidget.h"
+#include "Blueprint/WidgetTree.h"
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
+#include "GameFramework/GameStateBase.h"
+#include "../Core/IdolQuizLobbyPlayerController.h"
+#include "../Core/IdolQuizPlayerState.h"
+#include "../Online/IdolQuizSessionSubsystem.h"
+namespace{UTextBlock* LobbyText(UWidgetTree* T,const TCHAR* N,const FString& V,int32 S){UTextBlock* X=T->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(),N);X->SetText(FText::FromString(V));X->SetJustification(ETextJustify::Center);X->SetColorAndOpacity(FSlateColor(FLinearColor::White));FSlateFontInfo F=X->GetFont();F.Size=S;X->SetFont(F);return X;}}
+UIdolQuizLobbyWidget::UIdolQuizLobbyWidget(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer){SetIsFocusable(true);}
+TSharedRef<SWidget>UIdolQuizLobbyWidget::RebuildWidget(){if(WidgetTree&&!WidgetTree->RootWidget)BuildLayout();return Super::RebuildWidget();}
+void UIdolQuizLobbyWidget::BuildLayout(){UCanvasPanel* Root=WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(),TEXT("LobbyRoot"));WidgetTree->RootWidget=Root;auto Add=[Root](UWidget* W,float X,float Y,FVector2D S){UCanvasPanelSlot* Slot=Root->AddChildToCanvas(W);Slot->SetAnchors(FAnchors(X,Y));Slot->SetAlignment(FVector2D(.5f,.5f));Slot->SetSize(S);};UImage* BG=WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(),TEXT("BG"));BG->SetColorAndOpacity(FLinearColor(.006f,.014f,.04f,1));UCanvasPanelSlot* BS=Root->AddChildToCanvas(BG);BS->SetAnchors(FAnchors(0,0,1,1));BS->SetOffsets(FMargin(0));Add(LobbyText(WidgetTree,TEXT("Title"),TEXT("대기실"),48),.5f,.09f,FVector2D(600,80));const FLinearColor Colors[6]={FLinearColor(.2f,.85f,1),FLinearColor(1,.35f,.7f),FLinearColor(.35f,1,.45f),FLinearColor(1,.65f,.2f),FLinearColor(.72f,.45f,1),FLinearColor(.25f,.55f,1)};for(int32 I=0;I<6;++I){UTextBlock* P=LobbyText(WidgetTree,*FString::Printf(TEXT("Player%d"),I+1),TEXT("None"),28);P->SetColorAndOpacity(FSlateColor(Colors[I]));Add(P,.28f+(I%3)*.22f,.28f+(I/3)*.2f,FVector2D(300,80));PlayerNames.Add(P);}StatusText=LobbyText(WidgetTree,TEXT("Status"),TEXT("방장이 게임을 시작할 때까지 기다려 주세요."),20);Add(StatusText,.5f,.68f,FVector2D(900,55));StartButton=WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(),TEXT("Start"));StartButton->AddChild(LobbyText(WidgetTree,TEXT("StartText"),TEXT("게임 시작"),28));StartButton->OnClicked.AddDynamic(this,&ThisClass::HandleStart);Add(StartButton,.62f,.82f,FVector2D(280,72));UButton* Leave=WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(),TEXT("Leave"));Leave->AddChild(LobbyText(WidgetTree,TEXT("LeaveText"),TEXT("나가기"),26));Leave->OnClicked.AddDynamic(this,&ThisClass::HandleLeave);Add(Leave,.38f,.82f,FVector2D(240,72));}
+void UIdolQuizLobbyWidget::NativeConstruct(){Super::NativeConstruct();if(APlayerController* PC=GetOwningPlayer())StartButton->SetVisibility(PC->HasAuthority()?ESlateVisibility::Visible:ESlateVisibility::Collapsed);RefreshPlayers();}
+void UIdolQuizLobbyWidget::NativeTick(const FGeometry& MyGeometry,float InDeltaTime){Super::NativeTick(MyGeometry,InDeltaTime);RefreshPlayers();}
+void UIdolQuizLobbyWidget::RefreshPlayers(){TArray<APlayerState*> Players;if(GetWorld()&&GetWorld()->GetGameState())Players=GetWorld()->GetGameState()->PlayerArray;for(int32 I=0;I<PlayerNames.Num();++I){FString Name=TEXT("None");if(Players.IsValidIndex(I))if(const AIdolQuizPlayerState* PS=Cast<AIdolQuizPlayerState>(Players[I]))Name=PS->GetQuizPlayerName();PlayerNames[I]->SetText(FText::FromString(Name));}StatusText->SetText(FText::FromString(FString::Printf(TEXT("%d / 6 참가"),Players.Num())));}
+void UIdolQuizLobbyWidget::HandleStart(){if(AIdolQuizLobbyPlayerController* PC=GetOwningPlayer<AIdolQuizLobbyPlayerController>())PC->ServerStartIdolQuiz();}
+void UIdolQuizLobbyWidget::HandleLeave(){if(UGameInstance* GI=GetGameInstance())if(UIdolQuizSessionSubsystem* S=GI->GetSubsystem<UIdolQuizSessionSubsystem>())S->LeaveRoom(true);}

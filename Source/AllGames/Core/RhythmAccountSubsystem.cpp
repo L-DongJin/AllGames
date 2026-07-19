@@ -7,6 +7,16 @@
 #include "Core/PlayFabClientDataModels.h"
 #include "Core/PlayFabError.h"
 #include "PlayFabRuntimeSettings.h"
+#include "EOSShared.h"
+#include "IEOSSDKManager.h"
+#include "Online/Auth.h"
+#include "Online/OnlineServices.h"
+#include "Online/OnlineServicesEOSGS.h"
+#include "eos_connect.h"
+#include "eos_sdk.h"
+#include "HAL/FileManager.h"
+#include "Misc/ConfigCacheIni.h"
+#include "Misc/Paths.h"
 
 void URhythmAccountSubsystem::Login(const FString& InUsername, const FString& Password)
 {
@@ -58,6 +68,7 @@ void URhythmAccountSubsystem::Register(const FString& InUsername, const FString&
 void URhythmAccountSubsystem::Logout()
 {
 	bLoggedIn = false;
+	bEOSLoggedIn = false;
 	bRequestInProgress = false;
 	PendingUsername.Reset();
 	PlayerId.Reset();
@@ -90,6 +101,165 @@ void URhythmAccountSubsystem::HandleLoginSuccess(const PlayFab::ClientModels::FL
 	PlayerId = Result.PlayFabId;
 	Username = PendingUsername;
 	bLoggedIn = true;
+	bEOSDeviceCreateAttempted = false;
+	BeginEOSDeviceLogin();
+}
+
+void URhythmAccountSubsystem::BeginEOSDeviceLogin()
+{
+	if (!LoadPrivateEOSConfig())
+	{
+		HandleEOSLoginComplete(false, TEXT("EOS local credentials are missing."));
+		return;
+	}
+
+	// Existing installations already have a cached EOS Device ID. Try it first so EOS does not
+	// emit an error for an unnecessary CreateDeviceId call. A missing ID falls back to creation.
+	if (!bEOSDeviceCreateAttempted)
+	{
+		LoginEOSIdentity();
+		return;
+	}
+
+	const TSharedPtr<UE::Online::FOnlineServicesEOSGS> Services =
+		StaticCastSharedPtr<UE::Online::FOnlineServicesEOSGS>(
+			UE::Online::GetServices(UE::Online::EOnlineServices::Epic));
+	if (!Services.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("EOSGS login failed: Online Services EOSGS is unavailable."));
+		CompleteAuthentication(true, FString::Printf(TEXT("%s님, 환영합니다. (인터넷 멀티플레이 연결 대기)"), *Username));
+		return;
+	}
+
+	const IEOSPlatformHandlePtr PlatformHandle = Services->GetEOSPlatformHandle();
+	if (!PlatformHandle.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("EOS login failed: platform handle is unavailable."));
+		CompleteAuthentication(true, FString::Printf(TEXT("%s님, 환영합니다. (인터넷 멀티플레이 연결 대기)"), *Username));
+		return;
+	}
+
+	EOS_Connect_CreateDeviceIdOptions Options{};
+	Options.ApiVersion = EOS_CONNECT_CREATEDEVICEID_API_LATEST;
+	Options.DeviceModel = "WindowsPC";
+	EOS_Connect_CreateDeviceId(
+		EOS_Platform_GetConnectInterface(static_cast<EOS_HPlatform>(*PlatformHandle)),
+		&Options,
+		this,
+		&ThisClass::HandleCreateDeviceIdComplete);
+}
+
+bool URhythmAccountSubsystem::LoadPrivateEOSConfig()
+{
+	const FString SecretsPath = FPaths::Combine(FPaths::ProjectConfigDir(), TEXT("AllGamesSecrets.ini"));
+	if (!IFileManager::Get().FileExists(*SecretsPath))
+	{
+		UE_LOG(LogTemp, Error, TEXT("EOS credentials file is missing: %s"), *SecretsPath);
+		return false;
+	}
+
+	FConfigFile SecretsConfig;
+	SecretsConfig.Read(SecretsPath);
+
+	static const TCHAR* Section = TEXT("EOSSDK.Platform.AllGames");
+	FString ClientSecret;
+	FString ClientEncryptionKey;
+	if (!SecretsConfig.GetString(Section, TEXT("ClientSecret"), ClientSecret)
+		|| !SecretsConfig.GetString(Section, TEXT("ClientEncryptionKey"), ClientEncryptionKey)
+		|| ClientSecret.IsEmpty()
+		|| ClientEncryptionKey.IsEmpty())
+	{
+		UE_LOG(LogTemp, Error, TEXT("EOS credentials file does not contain the required values."));
+		return false;
+	}
+
+	GConfig->SetString(Section, TEXT("ClientSecret"), *ClientSecret, GEngineIni);
+	GConfig->SetString(Section, TEXT("ClientEncryptionKey"), *ClientEncryptionKey, GEngineIni);
+	return true;
+}
+
+void EOS_CALL URhythmAccountSubsystem::HandleCreateDeviceIdComplete(
+	const EOS_Connect_CreateDeviceIdCallbackInfo* Data)
+{
+	URhythmAccountSubsystem* This = static_cast<URhythmAccountSubsystem*>(Data ? Data->ClientData : nullptr);
+	if (!IsValid(This))
+	{
+		return;
+	}
+
+	if (Data->ResultCode == EOS_EResult::EOS_Success ||
+		Data->ResultCode == EOS_EResult::EOS_DuplicateNotAllowed)
+	{
+		This->LoginEOSIdentity();
+		return;
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("EOS CreateDeviceId failed: %s"),
+		UTF8_TO_TCHAR(EOS_EResult_ToString(Data->ResultCode)));
+	This->CompleteAuthentication(true, FString::Printf(
+		TEXT("%s님, 환영합니다. (인터넷 멀티플레이 연결 대기)"), *This->Username));
+}
+
+void URhythmAccountSubsystem::LoginEOSIdentity()
+{
+	const TSharedPtr<UE::Online::FOnlineServicesEOSGS> Services =
+		StaticCastSharedPtr<UE::Online::FOnlineServicesEOSGS>(
+			UE::Online::GetServices(UE::Online::EOnlineServices::Epic));
+	const UE::Online::IAuthPtr Auth = Services.IsValid() ? Services->GetAuthInterface() : nullptr;
+	if (!Auth.IsValid())
+	{
+		CompleteAuthentication(true, FString::Printf(TEXT("%s님, 환영합니다. (인터넷 멀티플레이 연결 대기)"), *Username));
+		return;
+	}
+
+	UE::Online::FAuthGetLocalOnlineUserByPlatformUserId::Params ExistingUserParams;
+	ExistingUserParams.PlatformUserId = FPlatformMisc::GetPlatformUserForUserIndex(0);
+	const UE::Online::TOnlineResult<UE::Online::FAuthGetLocalOnlineUserByPlatformUserId> ExistingUser =
+		Auth->GetLocalOnlineUserByPlatformUserId(MoveTemp(ExistingUserParams));
+	if (ExistingUser.IsOk() && UE::Online::IsOnlineStatus(ExistingUser.GetOkValue().AccountInfo->LoginStatus))
+	{
+		HandleEOSLoginComplete(true, FString());
+		return;
+	}
+
+	UE::Online::FAuthLogin::Params Params;
+	Params.PlatformUserId = FPlatformMisc::GetPlatformUserForUserIndex(0);
+	Params.CredentialsType = UE::Online::LoginCredentialsType::ExternalAuth;
+	Params.CredentialsId = Username;
+	Params.CredentialsToken.Set<UE::Online::FExternalAuthToken>(
+		UE::Online::FExternalAuthToken{UE::Online::ExternalLoginType::DeviceIdAccessToken, FString()});
+
+	Auth->Login(MoveTemp(Params)).OnComplete(
+		this,
+		[this](const UE::Online::TOnlineResult<UE::Online::FAuthLogin>& Result)
+		{
+			HandleEOSLoginComplete(
+				Result.IsOk(),
+				Result.IsError() ? Result.GetErrorValue().GetLogString() : FString());
+		});
+}
+
+void URhythmAccountSubsystem::HandleEOSLoginComplete(
+	const bool bWasSuccessful,
+	const FString& Error)
+{
+	bEOSLoggedIn = bWasSuccessful;
+	if (!bWasSuccessful)
+	{
+		if (!bEOSDeviceCreateAttempted)
+		{
+			UE_LOG(LogTemp, Log, TEXT("EOS Device ID was not found; creating it before retrying login."));
+			bEOSDeviceCreateAttempted = true;
+			BeginEOSDeviceLogin();
+			return;
+		}
+		UE_LOG(LogTemp, Error, TEXT("EOS identity login failed after Device ID creation: %s"), *Error);
+		CompleteAuthentication(true, FString::Printf(
+			TEXT("%s님, 환영합니다. (인터넷 멀티플레이 연결 대기)"), *Username));
+		return;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("EOS Connect device login succeeded for %s."), *Username);
 	CompleteAuthentication(true, FString::Printf(TEXT("%s님, 환영합니다."), *Username));
 }
 
