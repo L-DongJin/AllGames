@@ -14,6 +14,7 @@ protected: virtual TSharedRef<SWidget> RebuildWidget()override; virtual void Nat
 private:
 	struct FVisibleChatMessage{FString Text;double ExpiresAtSeconds=0.0;};
 	void BuildLayout(); void BindGameState(); void RefreshReplicatedState(); void HandleNetworkChat(const FString& PlayerName,const FString& Message); void HandleNetworkFeedback(bool bCorrect,const FString& PlayerName,const FString& Message);
+	void HandleNetworkSkip(const FString& CorrectAnswer);
 	void HandleQuestionChanged(const FIdolQuizQuestion& Question,int32 Round,int32 Total);
 	void HandleAnswerResolved(bool bCorrect,const FString& Answer,int32 Score); void HandleQuizFinished(int32 Score,int32 Total);
 	void HandleTimeChanged(int32 RemainingSeconds); void HandleHintChanged(const FString& Hint); void HandleRoundTimedOut(const FString& CorrectAnswer);
@@ -23,7 +24,8 @@ private:
 	UPROPERTY(Transient)TObjectPtr<UImage>FaceImage; UPROPERTY(Transient)TObjectPtr<UTextBlock>RoundText;
 	UPROPERTY(Transient)TArray<TObjectPtr<UTextBlock>>PlayerNameTexts; UPROPERTY(Transient)TArray<TObjectPtr<UTextBlock>>PlayerCountTexts; UPROPERTY(Transient)TObjectPtr<UTextBlock>ChatText;
 	UPROPERTY(Transient)TObjectPtr<UTextBlock>TimerText; UPROPERTY(Transient)TObjectPtr<UTextBlock>HintText;
+	UPROPERTY(Transient)TObjectPtr<UTextBlock>SkipText;
 	UPROPERTY(Transient)TObjectPtr<UTextBlock>FeedbackText; UPROPERTY(Transient)TObjectPtr<UEditableTextBox>AnswerInput;
 	UPROPERTY(Transient)TObjectPtr<UButton>SubmitButton; UPROPERTY(Transient)TObjectPtr<UButton>RestartButton;
-	UPROPERTY(Transient)TObjectPtr<AIdolQuizGameStateBase>QuizGameState; TArray<FVisibleChatMessage>ChatMessages; FString LocalPlayerName=TEXT("Player"); bool bChatInputOpen=false;
+	UPROPERTY(Transient)TObjectPtr<AIdolQuizGameStateBase>QuizGameState; TArray<FVisibleChatMessage>ChatMessages; FString LocalPlayerName=TEXT("Player"); bool bChatInputOpen=false; int32 LastDisplayedRound=INDEX_NONE;
 };

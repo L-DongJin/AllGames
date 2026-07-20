@@ -25,6 +25,7 @@ public:
 	void StartQuiz();
 	void SubmitAnswer(const FString& Answer);
 	void SubmitMessage(APlayerController* Sender,const FString& Message);
+	void RequestSkip(APlayerController* Sender);
 	const FIdolQuizQuestion* GetCurrentQuestion() const;
 	int32 GetRemainingTimeSeconds() const { return RemainingTimeSeconds; }
 	FString GetCurrentHint() const { const FIdolQuizQuestion* Question=GetCurrentQuestion(); return bHintRevealed&&Question?BuildInitialHint(Question->StageName):FString(); }
@@ -37,6 +38,7 @@ private:
 	void AdvanceQuestion();
 	void StartRoundTimer();
 	void TickRoundTimer();
+	int32 GetRequiredSkipVotes() const;
 	UPROPERTY(EditDefaultsOnly,Category="Idol Quiz") TSoftObjectPtr<UDataTable> QuestionTable;
 	UPROPERTY(EditDefaultsOnly,Category="Idol Quiz|Timer",meta=(ClampMin="5",ClampMax="120")) int32 RoundDurationSeconds=30;
 	UPROPERTY(EditDefaultsOnly,Category="Idol Quiz|Timer",meta=(ClampMin="1",ClampMax="60")) int32 HintAfterSeconds=15;
@@ -48,6 +50,7 @@ private:
 	int32 RemainingTimeSeconds=0;
 	bool bRoundResolved=false;
 	bool bHintRevealed=false;
+	TSet<TWeakObjectPtr<APlayerState>> SkipVoters;
 	FTimerHandle AdvanceTimer;
 	FTimerHandle RoundTimer;
 };

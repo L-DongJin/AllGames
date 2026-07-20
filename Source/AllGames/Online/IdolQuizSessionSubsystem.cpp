@@ -17,6 +17,7 @@ namespace
 	const UE::Online::FSchemaId RoomSchemaId(TEXT("IdolQuizLobby"));
 	const UE::Online::FSchemaAttributeId RoomNameAttribute(TEXT("RoomName"));
 	const UE::Online::FSchemaAttributeId RoomCategoryAttribute(TEXT("RoomCategory"));
+	const UE::Online::FSchemaAttributeId QuestionCountAttribute(TEXT("QuestionCount"));
 
 	TSharedPtr<UE::Online::FOnlineServicesEOSGS> GetEOSServices()
 	{
@@ -42,6 +43,16 @@ namespace
 			return static_cast<EIdolQuizRoomCategory>(FMath::Clamp<int64>(Value->GetInt64(), 0, 2));
 		}
 		return EIdolQuizRoomCategory::Idol;
+	}
+
+	int32 ReadQuestionCount(const UE::Online::FLobby& Lobby)
+	{
+		if (const UE::Online::FSchemaVariant* Value = Lobby.Attributes.Find(QuestionCountAttribute);
+			Value && Value->GetType() == UE::Online::ESchemaAttributeType::Int64)
+		{
+			return FMath::Clamp(static_cast<int32>(Value->GetInt64()), 50, 1000);
+		}
+		return 50;
 	}
 }
 
@@ -103,7 +114,8 @@ bool UIdolQuizSessionSubsystem::TryGetEOSAccount(UE::Online::FAccountId& OutAcco
 
 void UIdolQuizSessionSubsystem::CreateRoom(
 	const FString& RoomName,
-	const EIdolQuizRoomCategory Category)
+	const EIdolQuizRoomCategory Category,
+	const int32 QuestionCount)
 {
 	PendingRoomName = RoomName.TrimStartAndEnd().Left(24);
 	if (PendingRoomName.IsEmpty())
@@ -123,6 +135,7 @@ void UIdolQuizSessionSubsystem::CreateRoom(
 	}
 
 	PendingCategory = Category;
+	PendingQuestionCount = FMath::Clamp(FMath::RoundToInt(static_cast<float>(QuestionCount) / 50.0f) * 50, 50, 1000);
 	CreateEOSRoom();
 }
 
@@ -148,6 +161,9 @@ void UIdolQuizSessionSubsystem::CreateEOSRoom()
 	Params.Attributes.Emplace(
 		RoomCategoryAttribute,
 		UE::Online::FSchemaVariant(static_cast<int64>(PendingCategory)));
+	Params.Attributes.Emplace(
+		QuestionCountAttribute,
+		UE::Online::FSchemaVariant(static_cast<int64>(PendingQuestionCount)));
 
 	bRoomOperationInProgress = true;
 	Lobbies->CreateLobby(MoveTemp(Params)).OnComplete(
@@ -215,6 +231,7 @@ void UIdolQuizSessionSubsystem::StartEOSFindAttempt()
 					FIdolQuizRoomInfo& Room = Rooms.AddDefaulted_GetRef();
 					Room.RoomName = ReadRoomName(*Lobby);
 					Room.Category = ReadRoomCategory(*Lobby);
+					Room.QuestionCount = ReadQuestionCount(*Lobby);
 					Room.CurrentPlayers = Lobby->Members.Num();
 					Room.MaxPlayers = Lobby->MaxMembers;
 					Room.PingMs = 0;
@@ -371,6 +388,11 @@ bool UIdolQuizSessionSubsystem::HasActiveSession() const
 EIdolQuizRoomCategory UIdolQuizSessionSubsystem::GetActiveRoomCategory() const
 {
 	return ActiveEOSLobby.IsValid() ? ReadRoomCategory(*ActiveEOSLobby) : PendingCategory;
+}
+
+int32 UIdolQuizSessionSubsystem::GetActiveRoomQuestionCount() const
+{
+	return ActiveEOSLobby.IsValid() ? ReadQuestionCount(*ActiveEOSLobby) : PendingQuestionCount;
 }
 
 FString UIdolQuizSessionSubsystem::GetCategoryLabel(const EIdolQuizRoomCategory Category)

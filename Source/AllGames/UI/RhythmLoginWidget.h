@@ -39,6 +39,9 @@ private:
 	void HandleLoginClicked();
 
 	UFUNCTION()
+	void HandleLoginPasswordCommitted(const FText& Text, ETextCommit::Type CommitMethod);
+
+	UFUNCTION()
 	void HandleOpenRegistrationClicked();
 
 	UFUNCTION()

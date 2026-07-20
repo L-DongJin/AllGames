@@ -32,6 +32,9 @@ struct FIdolQuizRoomInfo
 
 	UPROPERTY(BlueprintReadOnly)
 	EIdolQuizRoomCategory Category = EIdolQuizRoomCategory::Idol;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 QuestionCount = 50;
 };
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnIdolRoomsFound, bool, const TArray<FIdolQuizRoomInfo>&);
@@ -49,13 +52,14 @@ public:
 	FOnIdolRoomsFound OnRoomsFound;
 	FOnIdolSessionAction OnSessionAction;
 
-	void CreateRoom(const FString& RoomName, EIdolQuizRoomCategory Category);
+	void CreateRoom(const FString& RoomName, EIdolQuizRoomCategory Category, int32 QuestionCount);
 	void FindRooms();
 	void JoinRoom(int32 VisibleRoomIndex);
 	void LeaveRoom(bool bReturnToBrowser = true);
 
 	bool HasActiveSession() const;
 	EIdolQuizRoomCategory GetActiveRoomCategory() const;
+	int32 GetActiveRoomQuestionCount() const;
 	static FString GetCategoryLabel(EIdolQuizRoomCategory Category);
 
 private:
@@ -72,6 +76,7 @@ private:
 
 	FString PendingRoomName;
 	EIdolQuizRoomCategory PendingCategory = EIdolQuizRoomCategory::Idol;
+	int32 PendingQuestionCount = 50;
 	bool bFindInProgress = false;
 	bool bRoomOperationInProgress = false;
 	bool bReturnAfterLeave = false;

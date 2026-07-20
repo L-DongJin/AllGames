@@ -63,6 +63,11 @@ TSharedRef<SWidget> URhythmLoginWidget::RebuildWidget()
 void URhythmLoginWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	if (PasswordInput)
+	{
+		PasswordInput->OnTextCommitted.RemoveDynamic(this, &ThisClass::HandleLoginPasswordCommitted);
+		PasswordInput->OnTextCommitted.AddDynamic(this, &ThisClass::HandleLoginPasswordCommitted);
+	}
 	if (URhythmAccountSubsystem* Accounts = GetGameInstance()->GetSubsystem<URhythmAccountSubsystem>())
 	{
 		Accounts->OnAuthenticationCompleted.AddUObject(
@@ -190,6 +195,14 @@ void URhythmLoginWidget::HandleLoginClicked()
 	{
 		SetRequestState(true, TEXT("로그인 중입니다..."));
 		Accounts->Login(UsernameInput->GetText().ToString(), PasswordInput->GetText().ToString());
+	}
+}
+
+void URhythmLoginWidget::HandleLoginPasswordCommitted(const FText&, const ETextCommit::Type CommitMethod)
+{
+	if (CommitMethod == ETextCommit::OnEnter && !bRegistrationMode && LoginButton && LoginButton->GetIsEnabled())
+	{
+		HandleLoginClicked();
 	}
 }
 

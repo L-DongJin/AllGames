@@ -11,3 +11,4 @@ void AIdolQuizPlayerController::BeginPlay()
 }
 void AIdolQuizPlayerController::ServerSubmitQuizMessage_Implementation(const FString& Message){if(AIdolQuizGameModeBase* GM=GetWorld()->GetAuthGameMode<AIdolQuizGameModeBase>())GM->SubmitMessage(this,Message);}
 void AIdolQuizPlayerController::ServerSetQuizPlayerName_Implementation(const FString& Name){if(AIdolQuizPlayerState* PS=GetPlayerState<AIdolQuizPlayerState>())PS->SetQuizPlayerName(Name);}
+void AIdolQuizPlayerController::ServerRequestSkip_Implementation(){if(AIdolQuizGameModeBase* GM=GetWorld()->GetAuthGameMode<AIdolQuizGameModeBase>())GM->RequestSkip(this);}
