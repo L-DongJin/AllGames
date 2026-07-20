@@ -34,12 +34,29 @@ UMainHubWidget::UMainHubWidget(const FObjectInitializer& ObjectInitializer) : Su
 {
 	SetIsFocusable(true);
 	GameCatalog = TSoftObjectPtr<UMiniGameCatalogDataAsset>(FSoftObjectPath(TEXT("/Game/Common/Data/DA_MiniGameCatalog.DA_MiniGameCatalog")));
+	GameCardWidgetClass = TSoftClassPtr<UMiniGameEntryWidget>(FSoftObjectPath(TEXT("/Game/UI/WBP_GameCard.WBP_GameCard_C")));
 }
 
 TSharedRef<SWidget> UMainHubWidget::RebuildWidget()
 {
 	if (WidgetTree && !WidgetTree->RootWidget) BuildLayout();
 	return Super::RebuildWidget();
+}
+
+void UMainHubWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	GameGrid = Cast<UUniformGridPanel>(WidgetTree ? WidgetTree->FindWidget(TEXT("GameGrid")) : nullptr);
+	ExitBackground = Cast<UBorder>(WidgetTree ? WidgetTree->FindWidget(TEXT("ExitBackground")) : nullptr);
+	ExitConfirmButton = Cast<UButton>(WidgetTree ? WidgetTree->FindWidget(TEXT("ExitConfirmButton")) : nullptr);
+	ExitCancelButton = Cast<UButton>(WidgetTree ? WidgetTree->FindWidget(TEXT("ExitCancelButton")) : nullptr);
+	if (ExitConfirmButton) ExitConfirmButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleExitConfirmed);
+	if (ExitCancelButton) ExitCancelButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleExitCanceled);
+	if (!IsDesignTime())
+	{
+		PopulateGames();
+		SetExitVisible(false);
+	}
 }
 
 void UMainHubWidget::BuildLayout()
@@ -59,8 +76,7 @@ void UMainHubWidget::BuildLayout()
 	AddCentered(HubText(WidgetTree, TEXT("Title"), TEXT("ALL GAMES"), 68), 0.10f, FVector2D(900,100));
 	AddCentered(HubText(WidgetTree, TEXT("Subtitle"), TEXT("플레이할 게임을 선택하세요"), 26), 0.17f, FVector2D(800,50));
 	GameGrid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass(), TEXT("GameGrid"));
-	AddCentered(GameGrid, 0.50f, FVector2D(1180,600));
-	PopulateGames();
+	AddCentered(GameGrid, 0.53f, FVector2D(1240,700));
 
 	ExitBackground = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("ExitBackground"));
 	ExitBackground->SetBrushColor(FLinearColor(0.005f,0.01f,0.03f,0.95f));
@@ -79,14 +95,27 @@ void UMainHubWidget::BuildLayout()
 
 void UMainHubWidget::PopulateGames()
 {
+	// Widget Blueprint designer instances have no gameplay world/player controller.
+	// Creating catalog-entry user widgets there can dereference an invalid designer context.
+	if (IsDesignTime()) return;
+
 	UMiniGameCatalogDataAsset* Catalog = GameCatalog.LoadSynchronous();
 	if (!Catalog || !GameGrid) return;
+	GameGrid->ClearChildren();
 	for (int32 Index=0; Index<Catalog->Games.Num(); ++Index)
 	{
 		if (!Catalog->Games[Index]) continue;
-		UMiniGameEntryWidget* Entry = CreateWidget<UMiniGameEntryWidget>(GetOwningPlayer(), UMiniGameEntryWidget::StaticClass());
+		UClass* CardClass = GameCardWidgetClass.LoadSynchronous();
+		UMiniGameEntryWidget* Entry = CreateWidget<UMiniGameEntryWidget>(GetOwningPlayer(), CardClass ? CardClass : UMiniGameEntryWidget::StaticClass());
+		if (!Entry) continue;
+		if (GameCardSize.X > 0.0f && GameCardSize.Y > 0.0f) Entry->SetCardSize(GameCardSize);
+		Entry->SetCardFrameImage(GameCardFrameImage);
 		Entry->SetDefinition(Catalog->Games[Index]); Entry->OnSelected.AddUObject(this, &ThisClass::HandleGameSelected);
-		if (UUniformGridSlot* GridSlot = GameGrid->AddChildToUniformGrid(Entry, Index/3, Index%3)) GridSlot->SetHorizontalAlignment(HAlign_Fill);
+		if (UUniformGridSlot* GridSlot = GameGrid->AddChildToUniformGrid(Entry, Index/3, Index%3))
+		{
+			GridSlot->SetHorizontalAlignment(HAlign_Center);
+			GridSlot->SetVerticalAlignment(VAlign_Center);
+		}
 	}
 }
 

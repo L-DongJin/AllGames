@@ -22,7 +22,8 @@ void AIdolQuizGameModeBase::StartQuiz()
 	if(EligibleQuestions.IsEmpty()){UE_LOG(LogTemp,Error,TEXT("Idol Quiz question DataTable has no enabled rows."));return;}
 	for(int32 Index=0;Index<EligibleQuestions.Num();++Index)QuestionOrder.Add(Index);
 	for(int32 Index=QuestionOrder.Num()-1;Index>0;--Index)QuestionOrder.Swap(Index,FMath::RandRange(0,Index));
-	QuestionOrder.SetNum(FMath::Min(QuestionsPerGame,QuestionOrder.Num()));AdvanceQuestion();
+	// Each match uses the complete enabled pool for the selected category, in shuffled order.
+	AdvanceQuestion();
 }
 const FIdolQuizQuestion* AIdolQuizGameModeBase::GetCurrentQuestion()const
 {

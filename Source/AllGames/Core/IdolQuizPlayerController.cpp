@@ -6,7 +6,7 @@
 #include "RhythmAccountSubsystem.h"
 void AIdolQuizPlayerController::BeginPlay()
 {
-	Super::BeginPlay();if(!IsLocalController())return;QuizWidget=CreateWidget<UIdolQuizWidget>(this,UIdolQuizWidget::StaticClass());if(!QuizWidget)return;
+	Super::BeginPlay();if(!IsLocalController())return;UClass* WidgetClass=LoadClass<UIdolQuizWidget>(nullptr,TEXT("/Game/UI/WBP_IdolQuiz.WBP_IdolQuiz_C"));QuizWidget=CreateWidget<UIdolQuizWidget>(this,WidgetClass?WidgetClass:UIdolQuizWidget::StaticClass());if(!QuizWidget)return;
 	QuizWidget->AddToViewport();FInputModeUIOnly Mode;Mode.SetWidgetToFocus(QuizWidget->TakeWidget());SetInputMode(Mode);SetShowMouseCursor(true);FString Name=TEXT("Player");if(UGameInstance* GI=GetGameInstance())if(URhythmAccountSubsystem* Account=GI->GetSubsystem<URhythmAccountSubsystem>())if(!Account->GetUsername().IsEmpty())Name=Account->GetUsername();ServerSetQuizPlayerName(Name);
 }
 void AIdolQuizPlayerController::ServerSubmitQuizMessage_Implementation(const FString& Message){if(AIdolQuizGameModeBase* GM=GetWorld()->GetAuthGameMode<AIdolQuizGameModeBase>())GM->SubmitMessage(this,Message);}

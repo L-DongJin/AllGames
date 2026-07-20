@@ -42,7 +42,8 @@ void ARhythmLobbyPlayerController::BeginPlay()
 
 void ARhythmLobbyPlayerController::ShowLogin()
 {
-	LoginWidget = CreateWidget<URhythmLoginWidget>(this, URhythmLoginWidget::StaticClass());
+	UClass* LoginClass=LoadClass<URhythmLoginWidget>(nullptr,TEXT("/Game/UI/WBP_RhythmLogin.WBP_RhythmLogin_C"));
+	LoginWidget = CreateWidget<URhythmLoginWidget>(this, LoginClass?LoginClass:URhythmLoginWidget::StaticClass());
 	if (!LoginWidget)
 	{
 		return;

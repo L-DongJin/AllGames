@@ -299,13 +299,17 @@ void UIdolQuizSessionSubsystem::JoinRoom(const int32 VisibleRoomIndex)
 				return;
 			}
 
+			const FString ResolvedConnectString = ConnectResult.GetOkValue().ResolvedConnectString;
+			// UE 5.7 EOSGS returns "EOS:PUID". FURL treats a single-colon value as a
+			// protocol plus map name, so bracket it to preserve Host="EOS:PUID" for NetDriverEOS.
+			const FString TravelURL = FString::Printf(TEXT("[%s]"), *ResolvedConnectString);
 			UE_LOG(LogTemp, Log, TEXT("Idol Quiz EOS room joined; starting P2P travel to %s"),
-				*ConnectResult.GetOkValue().ResolvedConnectString);
+				*TravelURL);
 			OnSessionAction.Broadcast(true, TEXT("인터넷 방에 입장합니다."));
 			if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 			{
 				PlayerController->ClientTravel(
-					ConnectResult.GetOkValue().ResolvedConnectString,
+					TravelURL,
 					TRAVEL_Absolute);
 			}
 		});

@@ -38,7 +38,6 @@ private:
 	void StartRoundTimer();
 	void TickRoundTimer();
 	UPROPERTY(EditDefaultsOnly,Category="Idol Quiz") TSoftObjectPtr<UDataTable> QuestionTable;
-	UPROPERTY(EditDefaultsOnly,Category="Idol Quiz",meta=(ClampMin="1",ClampMax="100")) int32 QuestionsPerGame=10;
 	UPROPERTY(EditDefaultsOnly,Category="Idol Quiz|Timer",meta=(ClampMin="5",ClampMax="120")) int32 RoundDurationSeconds=30;
 	UPROPERTY(EditDefaultsOnly,Category="Idol Quiz|Timer",meta=(ClampMin="1",ClampMax="60")) int32 HintAfterSeconds=15;
 	UPROPERTY(Transient) TObjectPtr<UDataTable> LoadedQuestionTable;
