@@ -1,6 +1,6 @@
 # AllGames Rhythm Game Development Plan
 
-Last updated: 2026-07-19
+Last updated: 2026-07-25
 
 ## Goal
 
@@ -9,22 +9,22 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 ## Current status
 
 - Prototype progress: stages 1-10 complete; stage 11 implemented and awaiting full-song PIE verification.
-- AllGames platform progress: the shared MainHub is implemented, and the second mini-game `Idol Quiz` now has a complete single-player prototype awaiting manual PIE verification.
-- Idol Quiz content: 96 idol questions (83 third-generation plus 13 fourth-generation) across 15 groups. Each round selects 10 questions without replacement.
+- AllGames platform progress: the shared MainHub launches Rhythm Game, Person Quiz, and the new real-time Drawing Quiz prototype.
+- Idol Quiz content: 589 unique idol/actor questions. EOS rooms support host-selected 50-question increments and server-authoritative chat answers and skip voting.
 - Idol Quiz data source: `SourceAssets/IdolQuiz/IdolQuizQuestions.csv` is the editable source of truth and `/Game/IdolQuiz/Data/DT_IdolQuizQuestions` is its runtime DataTable. Rows support stage name, real name, pipe-separated aliases, group, generation, category, image, and enabled state.
-- Current stage: sixteen-song, sixty-four-chart catalog with automatic QA reports, awaiting prioritized PIE listening verification for the five newest songs.
+- Current stage: sixteen-song, sixty-four-chart catalog rebalanced to a shared Lv1-20 ceiling with at least two displayed levels between adjacent difficulties. Four previously Lv21-22 Expert charts were rebuilt and await focused PIE playtesting.
 - Current online stage: PlayFab account login and score submission are PIE-verified; result/lobby leaderboard presentation is implemented and awaiting PIE verification.
 - EOS nationwide multiplayer setup: the Developer Portal product, Live sandbox/deployment, Peer-to-Peer client policy, and game client have been created. The project intentionally remains on `OnlineSubsystemNull` until EOS Connect authentication is implemented, so the existing LAN room flow is not broken mid-migration.
 - Next online stage after verification: assign permanent SongIds to production chart assets, confirm maximum-score aggregation, then prepare server-validated submission before public distribution.
 - Default map: `/Game/Maps/MainHubMap`; it authenticates once, launches the selected mini-game entry map, and the Rhythm entry continues through `/Game/Maps/LobbyMap` to `/Game/Maps/FiveKeyMap`.
 - Preserved 9-key test map: `/Game/Maps/TestMap`.
-- Playable catalog: Choom, Lemonade, It'sMe, CHASE-ME, CANON-D, Drama, 만찬가, LoveAttack, 갑자기, HeavySerenade, and RUDE!; every song has Easy/Normal/Hard/Expert 5-key charts.
+- Playable catalog: Choom, Lemonade, It'sMe, CHASE-ME, CANON-D, Drama, 만찬가, LoveAttack, 갑자기, HeavySerenade, RUDE!, SHEESH, DRIP, BANG BANG, 404 (New Era), and 캐치캐치; every song has Easy/Normal/Hard/Expert 5-key charts.
 - Test song format: stereo, 48 kHz, 16-bit PCM WAV, approximately 176.054 seconds.
 - Default input mode follows SongData; FiveKeyMap selects 5-key.
-- Latest successful full build: `AllGamesEditor Win64 Development` on 2026-07-19.
+- Latest successful full build: `AllGamesEditor Win64 Development` on 2026-07-25.
 - Repository scope now includes the lobby, complete 5-key gameplay loop, MIDI authoring tools, and the three-song production catalog.
 - Detailed chart-authoring history and the reusable current workflow are documented in `Docs/ChartAuthoringPipeline.md`.
-- Next Idol Quiz stage after prototype verification: add timed rounds and server-authoritative multiplayer rooms where the first correct chat answer wins. Do not begin this stage until requested.
+- Current Drawing Quiz stage: 2-6 player network prototype is connected to the shared EOS room browser and waiting room; manual two-client create/join/start/play verification is next.
 
 ## Implemented architecture
 
@@ -457,6 +457,111 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Password-field Enter now invokes the same guarded login request as clicking the Login button, so keyboard login no longer requires returning to the mouse.
 - Skip completion now multicasts `스킵! 정답: 이름` to every client and waits two seconds before advancing, matching the existing timeout answer-reveal duration.
 - Corrected the remaining display-name/group-folder mismatches in the expanded quiz table: `TripleS` sources strip the `트리플에스` prefix and `키오프` sources strip `키스오브라이프`. A full 589-row manifest check reports zero Idol stage answers that still contain a group prefix or whitespace.
+
+### 2026-07-21 - Real-time Drawing Quiz prototype
+
+- Checkpointed and pushed the completed Person Quiz expansion, answer normalization, skip voting, and keyboard-login work as commit `f7fc75f` before beginning the third mini-game.
+- Added a server-authoritative Drawing Quiz gameplay framework for 2-6 players. The server rotates the drawing player, selects the word, owns the 60-second round timer, validates chat answers, awards score, reveals the answer, and advances rounds.
+- Added replicated round/player state and protected RPCs. Only the current drawing player may submit normalized canvas segments or clear the board; strokes, clears, chat, timer, hint, feedback, and scores are distributed to all clients.
+- Added a native UMG prototype with a 1120x690 drawing canvas, player/score list, chat-answer field with Enter submission, round/timer/drawer/word presentation, black/red/blue brushes, eraser, full clear, and return-to-hub control.
+- Created `/Game/Maps/DrawingQuizMap`, assigned `ADrawingQuizGameMode`, created `/Game/Common/Data/DA_Game_DrawingQuiz`, and appended the enabled game to the shared mini-game catalog. Both binary assets are tracked through Git LFS and the map is included in packaged map cooking.
+- `AllGamesEditor Win64 Development` builds successfully. Manual verification remains: use multi-client PIE with a Listen Server and at least two players, confirm that only the drawer can draw, every client sees identical strokes/chat, the first correct answer scores, roles rotate, and a completed game stops cleanly.
+- The Drawing Quiz direct gameplay prototype is now routed through the shared EOS room browser and waiting room rather than launched as an isolated local session.
+- Generalized the existing EOS room flow into the shared AllGames multiplayer entry without duplicating a second session stack. Both Person Quiz and Drawing Quiz definitions now open the same advertised room browser and use the same six-player waiting room.
+- Added a room game type and per-game advertised settings. Creating a room first selects `인물 퀴즈` or `그림 퀴즈`; Person Quiz exposes category and 50-question increments, while Drawing Quiz exposes 1-5 drawing turns per player and a 30-120 second round timer.
+- Room search rows and the waiting room show the selected game and its settings. Existing EOS rooms without the new game attribute remain compatible and are interpreted as Person Quiz rooms.
+- The host's shared waiting-room Start command now performs authoritative server travel to `IdolQuizMap` or `DrawingQuizMap` according to the room metadata. Drawing Quiz reads its advertised round count and timer from the session subsystem on match start.
+- Extended the EOSGS lobby schema with public `GameType`, `DrawingRounds`, and `DrawingRoundTime` attributes. The full Editor target builds successfully and both mini-game Data Assets now enter the shared room browser.
+- Manual verification remains mandatory: use two distinct EOS accounts/PCs, create each game type, find/join the room, compare waiting-room settings, start as host, and confirm all clients travel into the same selected gameplay map.
+- Simplified the MainHub catalog to two top-level choices: `리듬게임` and `퀴즈게임`. The former Drawing Quiz definition asset remains preserved for data reuse, but it is no longer a third MainHub card because Person/Drawing selection now belongs to shared room creation.
+- Renamed the former Person Quiz catalog entry to `퀴즈게임`, updated its description for both quiz modes, and kept its entry map on the shared EOS room browser.
+- Exposed `Login Background Image` and tint in `WBP_RhythmLogin` Class Defaults and bound the property to the optional `AccountBackground` designer widget, so the image works in both native fallback and Blueprint-authored hierarchies.
+- Exposed separate Rhythm/Quiz card cover images and per-card frame-image overrides on `WBP_MainHub`, with the existing shared frame retained as a fallback. Also exposed title and description TextBlock-container dimensions independently from font size; the runtime card applies those dimensions to optional `NameBox` and `DescriptionBox` widgets.
+- Rebuilt `AllGamesEditor Win64 Development` successfully after the reflected UI-property additions. Manual editor verification remains for background assignment, two-card catalog presentation, per-card artwork, and title/description box resizing.
+- Replaced the runtime MainHub presentation class with the user's designer-authored `/Game/UI/WBP_GameSelect`. Its existing hierarchy was preserved and the Blueprint was reparented to `UMainHubWidget`, allowing native navigation and Escape handling without rebuilding the visual layout.
+- Bound `btn_RhythmGame` directly to `LobbyMap` and `btn_QuizGame` directly to the shared `IdolQuizRoomMap` browser. When both authored buttons exist, the old dynamic catalog grid is skipped; the native/catalog layout remains only as a load-failure fallback.
+- Bound the authored `ExitBackground`, `ExitconfirmButton` (including its existing lowercase naming), and `ExitCancelButton`. The exit overlay starts hidden, Escape toggles it, Confirm quits, and Cancel hides it and restores widget focus.
+- Validated the reparented Blueprint class through the Unreal Editor API (`WBP_GAME_SELECT CLASS READY`) and rebuilt the Editor target successfully.
+- Exposed separate Normal/Hovered/Pressed artwork and layout size properties for Login, Open Registration, Create Account, and Registration Back buttons in `WBP_RhythmLogin` Class Defaults. Missing state artwork falls back to the first supplied button texture.
+- Added the registration back control to the native account layout. It returns to the login panel without submitting account creation and can use its own three-state artwork and size.
+- Exposed the online room browser background image/tint and independent three-state artwork/size properties for Create Room, Refresh, and Back buttons in `WBP_IdolQuizRoom` Class Defaults.
+- Added editable Normal/Hovered/Pressed colors for every discovered room-entry button, replacing the fixed gray presentation while preserving room join behavior.
+- Rebuilt `AllGamesEditor Win64 Development` successfully after the account and room-browser reflected UI-property additions. Manual WBP assignment and PIE visual verification remain.
+- Diagnosed room-browser button artwork appearing as text-only. The WBP properties and all six texture references were stored correctly; the runtime-created Slate brushes lacked an explicit `ImageSize`, allowing a zero-sized resource presentation. Button artwork helpers now copy the editable button size into every Normal/Hovered/Pressed brush, force a white non-destructive tint, and preserve the same fix for account buttons. Full Editor build succeeded; an editor restart and PIE recheck remain.
+- Replaced the room browser presentation with the user's designer-authored `/Game/UI/WBP_RoomBrowser`; the controller now loads it first and retains `WBP_IdolQuizRoom`/native UI only as fallbacks. The Blueprint's existing hierarchy was preserved and reparented from plain `UserWidget` to `UIdolQuizRoomWidget`, then compiled and type-validated.
+- Bound authored `BG`, `OpenCreate`, `Refresh`, `Back`, `Status`, `Room0`-`Room5`, and `Room0Text`-`Room5Text` widgets by exact name. The create-room dialog remains code-generated and is attached to `RoomRoot` (or the root Canvas fallback) at runtime, so the user does not need to build that dense popup hierarchy manually.
+- Changed room-slot behavior for designer stability: all six room buttons remain visible, empty slots have blank text and are disabled, and only populated search-result slots are enabled and can invoke EOS Join. Full Editor build succeeded and the reparented WBP class validation passed.
+- Fixed an initialization race in the designer-authored room list: before the first asynchronous EOS search callback, authored room buttons and their default `Text Block` labels were still active. `NativeConstruct` now immediately clears all six labels and disables every slot before starting discovery.
+- Added `VisibleRoomCount` as an independent C++ join guard. Even if a Blueprint style or later UI edit accidentally leaves an empty button enabled, indices outside the current EOS result count return without calling Join. Missing optional Status widgets are also null-guarded to prevent error-reporting paths from crashing. Full Editor build succeeded.
+- Replaced the room-dialog `OnGenerateWidget` row factory after a reproducible Slate access-violation crash when changing the game to Drawing Quiz. The dialog now creates `URoomComboBoxString` controls whose white text style is configured before Slate reconstruction, avoiding recursive runtime widget creation.
+- Limited Person Quiz room sizes to 50-question increments from 50 through 300. Drawing Quiz continues to use its independent rounds-per-player and round-time settings.
+- Connected the designer-authored `/Game/UI/WBP_SharedLobby` to `UIdolQuizLobbyWidget` while preserving its Canvas layout. Runtime binding now discovers `GameInfo`, `Player1`-`Player6`, `Status`, `Start`, and `Leave` by exact widget name; `BG` and `Title` remain presentation-only designer widgets.
+- The shared-lobby player controller now loads `WBP_SharedLobby` first and falls back to the native layout only if the Blueprint class cannot load. Player names/status/settings refresh from replicated state, Start is host-only, Start performs authoritative selected-game travel, and Leave exits the EOS room.
+- Rebuilt the full Editor target successfully and validated that `WBP_SharedLobby_C` inherits `UIdolQuizLobbyWidget`. Manual two-client verification remains for replicated names, host-only Start, selected-game travel, and Leave behavior.
+- Fixed stale EOS room rows after all players leave. The final owner now changes a one-member lobby from public advertising to invitation-only before leaving; discovery filters zero-member cached snapshots, and automatically leaves/suppresses orphan lobbies where the current account is still registered after a PIE crash or forced shutdown (`EOS_Lobby_LobbyAlreadyExists`).
+- Bound the designer `WBP_SharedLobby.Title` TextBlock to the active EOS `RoomName`, so the exact title entered during room creation is displayed in the shared waiting room. Person Quiz counts are now consistently clamped to the exposed 50-300 range when written and read.
+- Full `AllGamesEditor` build succeeded after the EOS cleanup and room-title changes. Manual PIE verification remains: refresh once to clean historical orphan rooms, create/leave a new one-member room, confirm its row disappears, and confirm the entered title appears in `WBP_SharedLobby`.
+- Generated a fresh Windows Development package after the shared-lobby/EOS cleanup changes. Build, Cook, Stage, Pak/IoStore, prerequisites, App-local VC++ runtime, and Archive all completed successfully to `Builds/EOS_Multiplayer_AppLocal_20260721`; 1,290 packages and all seven configured maps were cooked.
+- Verified packaged `AllGames.exe`, EOS SDK, VC++ runtime DLLs, and cooked `WBP_SharedLobby`, `WBP_RoomBrowser`, and `WBP_GameSelect`. Created `Builds/AllGames_EOS_Multiplayer_Latest.zip` (about 1.05 GB). Google Drive upload remains pending because the `G:` Drive Desktop volume was not mounted in the current session.
+- Added `Docs/PackagingGuide.md` with the editor and AutomationTool workflows, configuration meanings, ZIP/Drive steps, clean-PC multiplayer test checklist, and common failure diagnostics.
+- Hardened EOS room recreation after every participant leaves, returns through another map, or the previous process is forcibly stopped. Entering creation from the browser releases any stale local `ActiveEOSLobby` guard, calls `RestoreLobbies`, reads every joined lobby known to EOSGS, leaves all residual memberships, and only then submits `CreateLobby`; cleanup failure blocks creation with a clear retry message instead of creating another unreachable room.
+- Changed Drawing Quiz stroke delivery from unreliable client/server and multicast RPCs to reliable ordered delivery. Increased normalized point spacing from 0.002 to 0.004 to control reliable traffic while preserving connected line segments; eraser strokes use the same reliable path and full Clear remains a reliable authoritative multicast.
+- Added `UBackgroundMusicSubsystem`, loading `/Game/Audio/BGM/AllGames-BGM` once and persisting it through MainHub, account, room browser, shared lobby, Person Quiz, and Drawing Quiz map travel. It loops at 35% volume and fades out automatically in rhythm maps (`LobbyMap`, `FiveKeyMap`, and `TestMap`).
+- Full `AllGamesEditor Win64 Development` build succeeded. Required manual checks are two-client Drawing Quiz line/eraser/clear synchronization, leave-all then immediate room recreation, and BGM continuity/stopping across quiz and rhythm navigation. No new package was generated for these changes.
+- Reworked Drawing Quiz erasing from painting white strokes into deterministic vector-stroke removal, so it works independently of canvas background color. The canvas now retries GameState delegate binding when constructed before replicated state is ready, and Clear performs an immediate local reset followed by the authoritative server multicast. Full Editor build succeeded.
+- Fixed shared BGM being loaded and logged without producing sound. `CreateSound2D` only constructed the audio component, so initial playback now uses `SpawnSound2D`; a one-shot ticker also retries until the initial world exists instead of relying solely on later map-load callbacks. Full `AllGamesEditor` build succeeded; manual PIE audio verification remains.
+
+### 2026-07-25 - Rhythm difficulty ladder rebalance
+
+- Audited all 16 songs and 64 production charts directly from their Unreal Data Assets, including note count, average density, peak two-second density, long-note load, and stored level.
+- Replaced the former open-ended Lv1-24 presentation with a Lv1-20 ceiling. Every song now has at least a two-level step between Easy, Normal, Hard, and Expert; BANG BANG and 404 now use 9/11/13/15.
+- Rebuilt the four over-ceiling Expert charts from their aligned Vocal/Drums/Bass/FX WAV stems with weaker auxiliary onsets removed: Drama 1663 -> 1455 notes (Lv18), HeavySerenade 1479 -> 1297 (Lv19), RUDE! 1630 -> 1389 (Lv19), and SHEESH 1292 -> 1120 (Lv18).
+- The shared WAV-stem Expert profile now prioritizes strong vocal/drum attacks with stricter percentiles, wider minimum onset spacing, and a smaller bass/FX supplement budget. RUDE! remains GOOD at 92.8% onset match; the other three retain their generated focused-listening reports.
+- Incremented the four rebuilt Expert `ChartVersion` values to 2 so their new score distributions are not mixed with the denser previous leaderboard boards.
+- Added reproducible source CSVs and QA reports under `SourceData/Rhythm/Balance20260725`, plus application, inspection, and validation scripts. Unreal validation passed for 16 songs / 64 unique charts, sorted single-note timing, valid lanes, strictly increasing note counts, maximum Lv20, and minimum two-level display gaps.
+- Full `AllGamesEditor Win64 Development` build succeeded after changing the reflected `ChartLevel` editor clamp to Lv20.
+- Manual PIE verification remains for the four rebuilt Expert charts, especially Drama 2:25-2:35 and HeavySerenade 0:15-0:20 / 2:05-2:15 / 2:55-end.
+
+### 2026-07-25 - Shared UI audio and Drawing Quiz input reliability
+
+- Increased shared non-rhythm BGM volume from 0.35 to 0.525, exactly 1.5x, for both initial spawn and later fade-in.
+- Fixed room-creation dropdown rows remaining dark by overriding the combo box's actual Slate row factory. Selected content and every popup option now explicitly render white rather than relying on inherited foreground color.
+- Diagnosed the remaining Drawing Quiz broken-line appearance without adding a plugin. The issue came from rendering each two-point segment separately, waiting for the server echo before local display, and issuing excessive individual multicast calls.
+- Added immediate local stroke prediction, per-tick bounded segment batching, duplicate-echo suppression, and contiguous Slate polyline rendering. Normalized sampling is now 0.0025 while network RPC frequency is controlled by batching.
+- Fixed partially clickable eraser/Clear controls: the overlapping feedback TextBlock is now hit-test-invisible, controls have a higher Z-order, and both hit boxes were enlarged.
+- Replaced multicast-only Clear with a server-owned replicated `CanvasRevision` and RepNotify, while retaining immediate local clearing. Accepted and rejected server clear requests now produce distinct diagnostic logs.
+- Full `AllGamesEditor Win64 Development` build succeeded. Manual PIE checks remain for dropdown popup colors, BGM loudness, one-client drawing smoothness, and two-PC stroke/eraser/Clear synchronization.
+- Expanded the Drawing Quiz palette to seven colors: black, red, blue, orange, yellow, green, and purple. Color selection is now presented as text-free 52x52 swatches in a vertical strip to the left of the canvas.
+- Moved only Eraser and Clear below the canvas and enlarged their click areas, leaving the color strip clear of the bottom action row.
+- The first packaging attempt exposed a missing concrete `ADrawingQuizPlayerState` include that Unity Editor builds had masked. Added the explicit include and verified both `AllGamesEditor` and standalone `AllGames Win64 Development` targets.
+- Windows Build/Cook/Stage/Pak/IoStore/Archive completed successfully to `Builds/EOS_Multiplayer_AppLocal_20260725`, including all configured maps, EOS SDK, prerequisites, and app-local VC++ runtime DLLs.
+- Replaced `Builds/AllGames_EOS_Multiplayer_Latest.zip` with the new 1.05 GB archive and verified its launcher, game executable, EOS SDK, VC++ runtime, and IoStore container entries. Google Drive copy was skipped because the `G:` Drive Desktop volume was not mounted.
+
+### 2026-07-25 - Rhythm judgement-line hit feedback
+
+- Added three layered gameplay feedback effects to `URhythmGameplayWidget` without changing conductor timing, note judgement, score, or combo rules.
+- Every lane press now produces a short lane-local flash at the judgement line. Perfect, Great, and Good judgements additionally create a colored expanding burst and upward-scattering sparks; Miss deliberately omits the success burst.
+- Perfect uses cyan and the strongest particle count, Great uses yellow at reduced strength, and Good uses green at a smaller strength. The same implementation adapts automatically to both 5-key and 9-key lane widths.
+- Exposed the three textures, flash dimensions/duration, burst dimensions/duration, per-judgement spark counts, and spark dimensions/duration under `WBP_RhythmGameplay > Class Defaults > Rhythm > Appearance > Hit Effects`.
+- Automatically connected `/Game/Textures/T_LanePressFlash`, `/Game/Textures/T_HitSpark`, and the currently imported `/Game/Textures/T_JuggementHitBurst`. The last asset's package name contains the existing `Juggement` spelling, while the editor-facing property uses the correct `Judgement` label.
+- Confirmed all three `.uasset` files use the repository Git LFS filter and rebuilt `AllGamesEditor Win64 Development` successfully. Manual PIE verification remains for effect scale, opacity, visibility at 2560x1600, and both 5-key/9-key layouts.
+
+### 2026-07-25 - Shared button click audio and Drawing Quiz keyboard chat
+
+- Imported the supplied `click-2.wav` as `/Game/Audio/UI/S_UI_Click`.
+- Added a shared UI sound-style helper that assigns the same Pressed Sound to every `UButton` in a widget tree, including Blueprint-authored buttons and runtime-generated buttons.
+- Applied the shared click sound to login/registration, game selection, mini-game cards, rhythm song selection, rhythm pause/result controls, room browser/create dialog, shared waiting room, Person Quiz, and Drawing Quiz controls.
+- Added Drawing Quiz Enter-key handling: when the chat field is not focused, Enter focuses and opens it for immediate typing; Enter while editing continues to submit through the existing authoritative chat/answer RPC.
+- Full `AllGamesEditor Win64 Development` build succeeded. Manual PIE verification remains for perceived click volume, every major screen's buttons, and Enter-to-focus/Enter-to-submit in Drawing Quiz.
+
+### 2026-07-27 - Shared multiplayer player colors in quiz chat
+
+- Defined one shared six-player color palette in slot order: Player1 red, Player2 blue, Player3 green, Player4 yellow, Player5 purple, and Player6 orange.
+- Added `AQuizPlayerStateBase`, which assigns a unique available color index on the authoritative server, replicates it to clients, and copies it through seamless travel so a player's waiting-room color remains stable in Person Quiz and Drawing Quiz.
+- Updated the shared waiting room and Person Quiz player list to place each account in its replicated color slot rather than inferring identity from a local array index.
+- Extended both Person Quiz and Drawing Quiz authoritative chat multicasts with the player's color index. Player names now use their shared slot color while message bodies remain white.
+- Replaced each quiz's single combined chat TextBlock with individual name/message rows, allowing per-player name colors without rich-text string parsing. Person Quiz retains its six-second expiry and 12-row cap; Drawing Quiz now also expires rows after six seconds with a 10-row cap.
+- Full `AllGamesEditor Win64 Development` build succeeded, including UnrealHeaderTool validation for the new reflected base PlayerState and updated replicated RPC signatures. Manual multi-client verification remains for colors across waiting-room-to-game travel, chat on every client, leave/rejoin slot reuse, and six-second row expiry.
 
 ### 2026-07-15
 

@@ -26,6 +26,8 @@ public:
 	void SetDefinition(UMiniGameDefinitionDataAsset* InDefinition);
 	void SetCardFrameImage(UTexture2D* InImage);
 	void SetCardSize(FVector2D InSize);
+	void SetCoverOverride(UTexture2D* InImage);
+	void SetTextBoxSizes(FVector2D InTitleSize, FVector2D InDescriptionSize);
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -57,6 +59,18 @@ private:
 
 	UPROPERTY(meta = (BindWidgetOptional), Transient)
 	TObjectPtr<UImage> CoverImage;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTexture2D> CoverOverrideTexture;
+
+	UPROPERTY(meta = (BindWidgetOptional), Transient)
+	TObjectPtr<USizeBox> NameBox;
+
+	UPROPERTY(meta = (BindWidgetOptional), Transient)
+	TObjectPtr<USizeBox> DescriptionBox;
+
+	FVector2D TitleTextBoxSize = FVector2D(340.0f, 52.0f);
+	FVector2D DescriptionTextBoxSize = FVector2D(340.0f, 66.0f);
 
 	UPROPERTY(meta = (BindWidgetOptional), Transient)
 	TObjectPtr<UTextBlock> NameText;

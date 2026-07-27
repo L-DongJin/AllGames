@@ -35,7 +35,7 @@ def main():
             if chart.get_editor_property("title_image") is None:
                 raise RuntimeError("Missing title image: {}".format(name))
             level = chart.get_editor_property("chart_level")
-            if not 1 <= level <= 24:
+            if not 1 <= level <= 20:
                 raise RuntimeError("Invalid chart level: {}".format(name))
             summaries.append((name, len(notes), level, round(last_time, 3)))
     if not unreal.EditorAssetLibrary.does_asset_exist("/Game/Maps/LobbyTestMap"):

@@ -35,7 +35,7 @@ def chart_level(notes):
         peak_two_second_nps = max(peak_two_second_nps, (end_index - start_index) / 2.0)
     hold_burden = sum(min(duration, 2.25) for duration in durations) / playable_duration
     raw = average_nps * 1.5 + peak_two_second_nps * 0.8 + hold_burden * 2.0
-    return max(1, min(24, round(raw)))
+    return max(1, min(20, round(raw)))
 
 
 def main():

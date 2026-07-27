@@ -42,7 +42,7 @@ def main():
             require(chart is not None, "Missing chart {}".format(asset_name))
             require(chart.get_editor_property("title_image") is not None, "Missing title image in {}".format(asset_name))
             level = chart.get_editor_property("chart_level")
-            require(1 <= level <= 24, "Invalid chart level in {}".format(asset_name))
+            require(1 <= level <= 20, "Invalid chart level in {}".format(asset_name))
             notes = chart.get_editor_property("notes")
             expected_notes, expected_holds = expected_difficulties[difficulty_index]
             require(len(notes) == expected_notes, "Unexpected note count in {}".format(asset_name))

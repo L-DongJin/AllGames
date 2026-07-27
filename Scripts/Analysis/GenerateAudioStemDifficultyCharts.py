@@ -48,9 +48,12 @@ PROFILES = {
         0.070, ("vocals", "drums", "bass", "music"), 0.68, 0.07, 2, 16.0,
     ),
     "Expert": Profile(
-        {"vocals": 76.0, "drums": 76.0, "bass": 82.0, "music": 87.0},
-        {"vocals": 0.075, "drums": 0.078, "bass": 0.14, "music": 0.18},
-        0.052, ("vocals", "drums", "bass", "music"), 0.52, 0.10, 3, 12.0,
+        # Expert remains denser than Hard, but no longer keeps nearly every weak
+        # stem onset. This targets the shared Lv20 ceiling and emphasizes audible
+        # vocal/drum attacks instead of noisy bass/FX fill.
+        {"vocals": 79.0, "drums": 79.0, "bass": 84.0, "music": 89.0},
+        {"vocals": 0.09, "drums": 0.09, "bass": 0.16, "music": 0.20},
+        0.06, ("vocals", "drums", "bass", "music"), 0.55, 0.08, 3, 12.0,
     ),
 }
 

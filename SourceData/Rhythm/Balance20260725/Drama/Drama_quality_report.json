@@ -1,0 +1,145 @@
+{
+  "song_name": "Drama",
+  "audio_duration_seconds": 215.17061224489797,
+  "audio_analysis_source": "combined aligned vocal/drum/bass/music stems",
+  "window_seconds": 5.0,
+  "match_radius_seconds": 0.1,
+  "difficulties": {
+    "Easy": {
+      "status": "good",
+      "note_count": 547,
+      "notes_per_second": 2.542,
+      "maximum_five_second_density": 19,
+      "longest_note_gap_seconds": 2.078,
+      "audio_onset_match_percent": 97.4,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        106,
+        83,
+        162,
+        76,
+        120
+      ],
+      "lane_imbalance_percent": 48.1,
+      "long_note_count": 2,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": []
+    },
+    "Normal": {
+      "status": "good",
+      "note_count": 866,
+      "notes_per_second": 4.025,
+      "maximum_five_second_density": 25,
+      "longest_note_gap_seconds": 0.94,
+      "audio_onset_match_percent": 95.3,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        168,
+        136,
+        263,
+        113,
+        186
+      ],
+      "lane_imbalance_percent": 51.8,
+      "long_note_count": 1,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": []
+    },
+    "Hard": {
+      "status": "caution",
+      "note_count": 1169,
+      "notes_per_second": 5.433,
+      "maximum_five_second_density": 35,
+      "longest_note_gap_seconds": 0.673,
+      "audio_onset_match_percent": 89.6,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        216,
+        178,
+        374,
+        153,
+        248
+      ],
+      "lane_imbalance_percent": 60.0,
+      "long_note_count": 1,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": [
+        {
+          "start_seconds": 150.0,
+          "end_seconds": 155.0,
+          "label": "2:30-2:35",
+          "score": 1.743,
+          "note_count": 25,
+          "audio_activity": 0.1104,
+          "onset_match_percent": 52.0,
+          "median_onset_distance_ms": 92.9,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ]
+        },
+        {
+          "start_seconds": 145.0,
+          "end_seconds": 150.0,
+          "label": "2:25-2:30",
+          "score": 0.6,
+          "note_count": 25,
+          "audio_activity": 0.1634,
+          "onset_match_percent": 60.0,
+          "median_onset_distance_ms": 34.8,
+          "reasons": [
+            "low audio-onset match"
+          ]
+        }
+      ]
+    },
+    "Expert": {
+      "status": "caution",
+      "note_count": 1455,
+      "notes_per_second": 6.762,
+      "maximum_five_second_density": 41,
+      "longest_note_gap_seconds": 0.476,
+      "audio_onset_match_percent": 88.0,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        262,
+        219,
+        474,
+        195,
+        305
+      ],
+      "lane_imbalance_percent": 62.9,
+      "long_note_count": 0,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": [
+        {
+          "start_seconds": 150.0,
+          "end_seconds": 155.0,
+          "label": "2:30-2:35",
+          "score": 1.687,
+          "note_count": 32,
+          "audio_activity": 0.1104,
+          "onset_match_percent": 53.1,
+          "median_onset_distance_ms": 92.9,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ]
+        },
+        {
+          "start_seconds": 145.0,
+          "end_seconds": 150.0,
+          "label": "2:25-2:30",
+          "score": 0.787,
+          "note_count": 32,
+          "audio_activity": 0.1634,
+          "onset_match_percent": 56.2,
+          "median_onset_distance_ms": 34.8,
+          "reasons": [
+            "low audio-onset match"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -79,8 +79,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Chart")
 	ERhythmDifficulty Difficulty = ERhythmDifficulty::Normal;
 
-	/** Shared chart difficulty rating. Uses one catalog-wide scale from 1 to 24. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Chart", meta = (ClampMin = "1", ClampMax = "24", UIMin = "1", UIMax = "24"))
+	/** Shared chart difficulty rating. Uses one catalog-wide scale from 1 to 20. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Chart", meta = (ClampMin = "1", ClampMax = "20", UIMin = "1", UIMax = "20"))
 	int32 ChartLevel = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Chart", meta = (ClampMin = "0.1"))

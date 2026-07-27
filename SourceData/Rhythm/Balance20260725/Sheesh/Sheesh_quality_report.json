@@ -1,0 +1,103 @@
+{
+  "song_name": "Sheesh",
+  "audio_duration_seconds": 170.6057142857143,
+  "audio_analysis_source": "combined aligned vocal/drum/bass/music stems",
+  "window_seconds": 5.0,
+  "match_radius_seconds": 0.1,
+  "difficulties": {
+    "Easy": {
+      "status": "good",
+      "note_count": 455,
+      "notes_per_second": 2.667,
+      "maximum_five_second_density": 22,
+      "longest_note_gap_seconds": 2.589,
+      "audio_onset_match_percent": 100.0,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        92,
+        65,
+        134,
+        64,
+        100
+      ],
+      "lane_imbalance_percent": 47.3,
+      "long_note_count": 1,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": []
+    },
+    "Normal": {
+      "status": "good",
+      "note_count": 652,
+      "notes_per_second": 3.822,
+      "maximum_five_second_density": 25,
+      "longest_note_gap_seconds": 2.171,
+      "audio_onset_match_percent": 98.2,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        129,
+        102,
+        192,
+        86,
+        143
+      ],
+      "lane_imbalance_percent": 47.2,
+      "long_note_count": 1,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": []
+    },
+    "Hard": {
+      "status": "caution",
+      "note_count": 884,
+      "notes_per_second": 5.182,
+      "maximum_five_second_density": 34,
+      "longest_note_gap_seconds": 1.091,
+      "audio_onset_match_percent": 92.6,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        167,
+        131,
+        284,
+        115,
+        187
+      ],
+      "lane_imbalance_percent": 60.6,
+      "long_note_count": 1,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": [
+        {
+          "start_seconds": 30.0,
+          "end_seconds": 35.0,
+          "label": "0:30-0:35",
+          "score": 2.019,
+          "note_count": 24,
+          "audio_activity": 0.2247,
+          "onset_match_percent": 95.8,
+          "median_onset_distance_ms": 0.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ]
+        }
+      ]
+    },
+    "Expert": {
+      "status": "good",
+      "note_count": 1120,
+      "notes_per_second": 6.565,
+      "maximum_five_second_density": 41,
+      "longest_note_gap_seconds": 0.906,
+      "audio_onset_match_percent": 89.3,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        212,
+        165,
+        347,
+        147,
+        249
+      ],
+      "lane_imbalance_percent": 54.9,
+      "long_note_count": 0,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": []
+    }
+  }
+}

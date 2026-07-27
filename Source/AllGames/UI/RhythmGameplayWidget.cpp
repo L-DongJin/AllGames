@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "RhythmGameplayWidget.h"
+#include "../Audio/UiSoundStyle.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/Button.h"
@@ -31,11 +32,20 @@ URhythmGameplayWidget::URhythmGameplayWidget(const FObjectInitializer& ObjectIni
 	static ConstructorHelpers::FObjectFinder<UTexture2D> GoodFinder(TEXT("/Game/Textures/T_Judgement_Good.T_Judgement_Good"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> MissFinder(TEXT("/Game/Textures/T_Judgement_Miss.T_Judgement_Miss"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> LaneGlowFinder(TEXT("/Game/Textures/T_LaneGlow.T_LaneGlow"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> LanePressFlashFinder(
+		TEXT("/Game/Textures/T_LanePressFlash.T_LanePressFlash"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> JudgementHitBurstFinder(
+		TEXT("/Game/Textures/T_JuggementHitBurst.T_JuggementHitBurst"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> HitSparkFinder(
+		TEXT("/Game/Textures/T_HitSpark.T_HitSpark"));
 	PerfectJudgementImage = PerfectFinder.Object;
 	GreatJudgementImage = GreatFinder.Object;
 	GoodJudgementImage = GoodFinder.Object;
 	MissJudgementImage = MissFinder.Object;
 	LaneGlowImage = LaneGlowFinder.Object;
+	LanePressFlashImage = LanePressFlashFinder.Object;
+	JudgementHitBurstImage = JudgementHitBurstFinder.Object;
+	HitSparkImage = HitSparkFinder.Object;
 }
 
 TSharedRef<SWidget> URhythmGameplayWidget::RebuildWidget()
@@ -91,6 +101,7 @@ void URhythmGameplayWidget::NativeConstruct()
 	}
 
 	BindRuntimeManagers();
+	AllGamesUiSound::ApplyButtonClickSound(WidgetTree);
 
 	// NativeConstruct runs as the widget is added to the viewport, before Slate is guaranteed to
 	// have painted the lane screen once. Defer the countdown by one game-thread tick so the player
@@ -125,6 +136,7 @@ void URhythmGameplayWidget::NativeTick(const FGeometry& MyGeometry, const float 
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	UpdateResultAnimation();
+	UpdateHitEffects(InDeltaTime);
 	if (!JudgementManager || !ScoreManager)
 	{
 		BindRuntimeManagers();
@@ -262,6 +274,8 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 
 	LaneImages.Reset();
 	LaneGlowImages.Reset();
+	LanePressFlashImages.Reset();
+	LanePressFlashRemainingSeconds.Init(0.0f, LaneCount);
 	LaneKeyLabels.Reset();
 	const TArray<FString> KeyNames = LaneCount == 5
 		? TArray<FString>{ TEXT("D"), TEXT("F"), TEXT("SPACE"), TEXT("J"), TEXT("K") }
@@ -284,6 +298,16 @@ void URhythmGameplayWidget::BuildWidgetLayout()
 		LaneGlow->SetVisibility(ESlateVisibility::Collapsed);
 		LaneCanvas->AddChildToCanvas(LaneGlow);
 		LaneGlowImages.Add(LaneGlow);
+
+		UImage* LanePressFlash = WidgetTree->ConstructWidget<UImage>(
+			UImage::StaticClass(), *FString::Printf(TEXT("LanePressFlash%d"), LaneIndex + 1));
+		if (LanePressFlashImage)
+		{
+			LanePressFlash->SetBrushFromTexture(LanePressFlashImage);
+		}
+		LanePressFlash->SetVisibility(ESlateVisibility::Collapsed);
+		LaneCanvas->AddChildToCanvas(LanePressFlash);
+		LanePressFlashImages.Add(LanePressFlash);
 
 		UTextBlock* KeyLabel = WidgetTree->ConstructWidget<UTextBlock>(
 			UTextBlock::StaticClass(), *FString::Printf(TEXT("LaneKeyLabel%d"), LaneIndex + 1));
@@ -675,6 +699,8 @@ void URhythmGameplayWidget::HandleNoteJudged(
 		}
 	}
 
+	SpawnJudgementHitEffects(NoteData.LaneIndex, Judgement);
+
 	bool bRemovedVisual = false;
 	for (int32 Index = NoteVisuals.Num() - 1; Index >= 0; --Index)
 	{
@@ -710,13 +736,150 @@ void URhythmGameplayWidget::HandleNoteJudged(
 
 void URhythmGameplayWidget::HandleLaneGlowInput(const int32 LaneIndex, const bool bPressed)
 {
-	if (!LaneGlowImage || !LaneGlowImages.IsValidIndex(LaneIndex) || !LaneGlowImages[LaneIndex])
+	if (!LaneGlowImages.IsValidIndex(LaneIndex) || !LaneGlowImages[LaneIndex])
 	{
 		return;
 	}
 
-	LaneGlowImages[LaneIndex]->SetVisibility(
-		bPressed ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+	if (LaneGlowImage)
+	{
+		LaneGlowImages[LaneIndex]->SetVisibility(
+			bPressed ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+	}
+	if (bPressed && LanePressFlashImage && LanePressFlashImages.IsValidIndex(LaneIndex)
+		&& LanePressFlashRemainingSeconds.IsValidIndex(LaneIndex))
+	{
+		LanePressFlashRemainingSeconds[LaneIndex] = LanePressFlashSeconds;
+		LanePressFlashImages[LaneIndex]->SetRenderOpacity(1.0f);
+		LanePressFlashImages[LaneIndex]->SetRenderScale(FVector2D(0.82f, 0.72f));
+		LanePressFlashImages[LaneIndex]->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+}
+
+void URhythmGameplayWidget::SpawnJudgementHitEffects(
+	const int32 LaneIndex, const ERhythmJudgement Judgement)
+{
+	if (!LaneCanvas || !GetWorld() || LaneIndex < 0 || LaneIndex >= LaneCount
+		|| Judgement == ERhythmJudgement::Miss)
+	{
+		return;
+	}
+
+	const FVector2D CanvasSize = LaneCanvas->GetCachedGeometry().GetLocalSize();
+	if (CanvasSize.X <= 1.0f || CanvasSize.Y <= 1.0f)
+	{
+		return;
+	}
+
+	const float LaneWidth = CanvasSize.X / static_cast<float>(LaneCount);
+	const FVector2D HitCenter(
+		(LaneIndex + 0.5f) * LaneWidth,
+		CanvasSize.Y * JudgementLineVerticalPosition);
+	FLinearColor EffectColor = FLinearColor(0.25f, 0.95f, 1.0f);
+	float Strength = 1.0f;
+	int32 SparkCount = PerfectSparkCount;
+	if (Judgement == ERhythmJudgement::Great)
+	{
+		EffectColor = FLinearColor(1.0f, 0.86f, 0.18f);
+		Strength = 0.82f;
+		SparkCount = GreatSparkCount;
+	}
+	else if (Judgement == ERhythmJudgement::Good)
+	{
+		EffectColor = FLinearColor(0.35f, 1.0f, 0.32f);
+		Strength = 0.65f;
+		SparkCount = GoodSparkCount;
+	}
+
+	if (JudgementHitBurstImage)
+	{
+		UImage* Burst = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+		Burst->SetBrushFromTexture(JudgementHitBurstImage);
+		Burst->SetColorAndOpacity(EffectColor);
+		Burst->SetVisibility(ESlateVisibility::HitTestInvisible);
+		UCanvasPanelSlot* BurstSlot = LaneCanvas->AddChildToCanvas(Burst);
+		const float BurstSize = LaneWidth * JudgementHitBurstLaneScale * Strength;
+		BurstSlot->SetPosition(HitCenter - FVector2D(BurstSize * 0.5f));
+		BurstSlot->SetSize(FVector2D(BurstSize));
+		BurstSlot->SetZOrder(12);
+
+		FAnimatedHitEffect& Effect = AnimatedHitEffects.AddDefaulted_GetRef();
+		Effect.Image = Burst;
+		Effect.StartPosition = HitCenter - FVector2D(BurstSize * 0.5f);
+		Effect.DurationSeconds = JudgementHitBurstSeconds;
+		Effect.StartScale = 0.55f;
+		Effect.EndScale = 1.35f;
+	}
+
+	if (HitSparkImage)
+	{
+		for (int32 SparkIndex = 0; SparkIndex < SparkCount; ++SparkIndex)
+		{
+			UImage* Spark = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+			Spark->SetBrushFromTexture(HitSparkImage);
+			Spark->SetColorAndOpacity(EffectColor);
+			Spark->SetVisibility(ESlateVisibility::HitTestInvisible);
+			UCanvasPanelSlot* SparkSlot = LaneCanvas->AddChildToCanvas(Spark);
+			SparkSlot->SetPosition(HitCenter - FVector2D(HitSparkSize * 0.5f));
+			SparkSlot->SetSize(FVector2D(HitSparkSize));
+			SparkSlot->SetZOrder(13);
+
+			const float Angle = FMath::FRandRange(-PI * 0.92f, -PI * 0.08f);
+			const float Speed = FMath::FRandRange(90.0f, 210.0f) * Strength;
+			FAnimatedHitEffect& Effect = AnimatedHitEffects.AddDefaulted_GetRef();
+			Effect.Image = Spark;
+			Effect.StartPosition = HitCenter - FVector2D(HitSparkSize * 0.5f);
+			Effect.Velocity = FVector2D(FMath::Cos(Angle), FMath::Sin(Angle)) * Speed;
+			Effect.DurationSeconds = HitSparkSeconds;
+			Effect.StartScale = FMath::FRandRange(0.7f, 1.1f);
+			Effect.EndScale = 0.2f;
+		}
+	}
+}
+
+void URhythmGameplayWidget::UpdateHitEffects(const float DeltaSeconds)
+{
+	for (int32 LaneIndex = 0; LaneIndex < LanePressFlashRemainingSeconds.Num(); ++LaneIndex)
+	{
+		if (!LanePressFlashImages.IsValidIndex(LaneIndex) || !LanePressFlashImages[LaneIndex]
+			|| LanePressFlashRemainingSeconds[LaneIndex] <= 0.0f)
+		{
+			continue;
+		}
+		LanePressFlashRemainingSeconds[LaneIndex] =
+			FMath::Max(0.0f, LanePressFlashRemainingSeconds[LaneIndex] - DeltaSeconds);
+		const float Alpha = LanePressFlashRemainingSeconds[LaneIndex]
+			/ FMath::Max(LanePressFlashSeconds, 0.01f);
+		LanePressFlashImages[LaneIndex]->SetRenderOpacity(Alpha);
+		LanePressFlashImages[LaneIndex]->SetRenderScale(
+			FVector2D(FMath::Lerp(1.12f, 0.82f, Alpha), FMath::Lerp(1.0f, 0.72f, Alpha)));
+		if (LanePressFlashRemainingSeconds[LaneIndex] <= 0.0f)
+		{
+			LanePressFlashImages[LaneIndex]->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+
+	for (int32 Index = AnimatedHitEffects.Num() - 1; Index >= 0; --Index)
+	{
+		FAnimatedHitEffect& Effect = AnimatedHitEffects[Index];
+		if (!Effect.Image)
+		{
+			AnimatedHitEffects.RemoveAtSwap(Index);
+			continue;
+		}
+		Effect.AgeSeconds += DeltaSeconds;
+		const float Alpha = FMath::Clamp(
+			Effect.AgeSeconds / FMath::Max(Effect.DurationSeconds, 0.01f), 0.0f, 1.0f);
+		Effect.Image->SetRenderOpacity(1.0f - Alpha);
+		Effect.Image->SetRenderScale(FVector2D(
+			FMath::Lerp(Effect.StartScale, Effect.EndScale, 1.0f - FMath::Pow(1.0f - Alpha, 3.0f))));
+		Effect.Image->SetRenderTranslation(Effect.Velocity * Effect.AgeSeconds);
+		if (Alpha >= 1.0f)
+		{
+			Effect.Image->RemoveFromParent();
+			AnimatedHitEffects.RemoveAtSwap(Index);
+		}
+	}
 }
 
 void URhythmGameplayWidget::HandleScoreChanged(const FRhythmScoreState ScoreState)
@@ -1045,6 +1208,18 @@ void URhythmGameplayWidget::RefreshLayout(const float MusicTime)
 					GlowTopY));
 				GlowSlot->SetSize(FVector2D(GlowWidth, FMath::Max(1.0f, GlowBottomY - GlowTopY)));
 				GlowSlot->SetZOrder(2);
+			}
+		}
+		if (LanePressFlashImages.IsValidIndex(LaneIndex))
+		{
+			if (UCanvasPanelSlot* FlashSlot = Cast<UCanvasPanelSlot>(LanePressFlashImages[LaneIndex]->Slot))
+			{
+				const float FlashWidth = LaneWidth * LanePressFlashWidthScale;
+				FlashSlot->SetPosition(FVector2D(
+					LaneIndex * LaneWidth + (LaneWidth - FlashWidth) * 0.5f,
+					JudgementY - LanePressFlashHeight * 0.72f));
+				FlashSlot->SetSize(FVector2D(FlashWidth, LanePressFlashHeight));
+				FlashSlot->SetZOrder(11);
 			}
 		}
 		if (LaneKeyLabels.IsValidIndex(LaneIndex))

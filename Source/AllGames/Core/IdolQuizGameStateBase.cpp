@@ -8,6 +8,6 @@ void AIdolQuizGameStateBase::SetRemainingTime(int32 Seconds){if(HasAuthority()){
 void AIdolQuizGameStateBase::SetHint(const FString& InHint){if(HasAuthority()){Hint=InHint;OnQuizStateChanged.Broadcast();ForceNetUpdate();}}
 void AIdolQuizGameStateBase::SetFinished(bool bInFinished){if(HasAuthority()){bFinished=bInFinished;OnQuizStateChanged.Broadcast();ForceNetUpdate();}}
 void AIdolQuizGameStateBase::SetSkipProgress(int32 Votes,int32 RequiredVotesValue){if(HasAuthority()){SkipVotes=FMath::Max(0,Votes);RequiredSkipVotes=FMath::Max(1,RequiredVotesValue);OnQuizStateChanged.Broadcast();ForceNetUpdate();}}
-void AIdolQuizGameStateBase::MulticastChat_Implementation(const FString& Name,const FString& Message){OnChatReceived.Broadcast(Name,Message);}
+void AIdolQuizGameStateBase::MulticastChat_Implementation(const FString& Name,const FString& Message,const int32 PlayerColorIndex){OnChatReceived.Broadcast(Name,Message,PlayerColorIndex);}
 void AIdolQuizGameStateBase::MulticastFeedback_Implementation(bool bCorrect,const FString& Name,const FString& Message){OnFeedbackReceived.Broadcast(bCorrect,Name,Message);}
 void AIdolQuizGameStateBase::MulticastSkipFeedback_Implementation(const FString& CorrectAnswer){OnSkipReceived.Broadcast(CorrectAnswer);}

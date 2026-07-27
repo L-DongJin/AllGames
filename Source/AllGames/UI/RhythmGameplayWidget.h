@@ -152,6 +152,45 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Judgement", meta = (ClampMin = "8", ClampMax = "96"))
 	int32 JudgementHitCountFontSize = 30;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects")
+	TObjectPtr<UTexture2D> LanePressFlashImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects")
+	TObjectPtr<UTexture2D> JudgementHitBurstImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects")
+	TObjectPtr<UTexture2D> HitSparkImage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "0.03", ClampMax = "0.5"))
+	float LanePressFlashSeconds = 0.12f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "0.25", ClampMax = "2.0"))
+	float LanePressFlashWidthScale = 1.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "8.0", ClampMax = "400.0"))
+	float LanePressFlashHeight = 150.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "0.05", ClampMax = "1.0"))
+	float JudgementHitBurstSeconds = 0.24f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "0.5", ClampMax = "4.0"))
+	float JudgementHitBurstLaneScale = 1.75f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "0", ClampMax = "24"))
+	int32 PerfectSparkCount = 8;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "0", ClampMax = "24"))
+	int32 GreatSparkCount = 5;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "0", ClampMax = "24"))
+	int32 GoodSparkCount = 3;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "4.0", ClampMax = "100.0"))
+	float HitSparkSize = 28.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Hit Effects", meta = (ClampMin = "0.05", ClampMax = "1.0"))
+	float HitSparkSeconds = 0.28f;
+
 	/** Duration of the animated score count-up on the result screen. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rhythm|Appearance|Result", meta = (ClampMin = "0.2", ClampMax = "5.0"))
 	float ResultCountUpDuration = 1.8f;
@@ -193,7 +232,9 @@ private:
 	void BindRuntimeManagers();
 	void RefreshScoreText(const FRhythmScoreState& ScoreState);
 	void UpdateJudgementAnimation();
+	void UpdateHitEffects(float DeltaSeconds);
 	void UpdateResultAnimation();
+	void SpawnJudgementHitEffects(int32 LaneIndex, ERhythmJudgement Judgement);
 
 	void BuildWidgetLayout();
 	void RefreshLayout(float MusicTimeSeconds);
@@ -215,6 +256,17 @@ private:
 		float HideWorldTime = 0.0f;
 	};
 
+	struct FAnimatedHitEffect
+	{
+		TObjectPtr<UImage> Image;
+		FVector2D StartPosition = FVector2D::ZeroVector;
+		FVector2D Velocity = FVector2D::ZeroVector;
+		float AgeSeconds = 0.0f;
+		float DurationSeconds = 0.2f;
+		float StartScale = 1.0f;
+		float EndScale = 1.0f;
+	};
+
 	UPROPERTY(Transient)
 	TObjectPtr<UCanvasPanel> LaneCanvas;
 
@@ -232,6 +284,9 @@ private:
 
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<UImage>> LaneGlowImages;
+
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UImage>> LanePressFlashImages;
 
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<UTextBlock>> LaneKeyLabels;
@@ -304,6 +359,8 @@ private:
 
 	TArray<FNoteVisual> NoteVisuals;
 	TArray<FTimedEffectVisual> LongNoteEffects;
+	TArray<FAnimatedHitEffect> AnimatedHitEffects;
+	TArray<float> LanePressFlashRemainingSeconds;
 	float JudgementHideWorldTime = 0.0f;
 	float JudgementAnimationStartWorldTime = 0.0f;
 	float ResultAnimationStartRealTime = 0.0f;

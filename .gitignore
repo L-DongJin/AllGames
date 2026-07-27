@@ -4,6 +4,7 @@ DerivedDataCache/
 Intermediate/
 Saved/
 Builds/
+outputs/
 
 # IDE-generated files
 .idea/

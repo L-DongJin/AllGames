@@ -1,0 +1,199 @@
+{
+  "song_name": "HeavySerenade",
+  "audio_duration_seconds": 179.40897959183673,
+  "audio_analysis_source": "combined aligned vocal/drum/bass/music stems",
+  "window_seconds": 5.0,
+  "match_radius_seconds": 0.1,
+  "difficulties": {
+    "Easy": {
+      "status": "caution",
+      "note_count": 479,
+      "notes_per_second": 2.67,
+      "maximum_five_second_density": 20,
+      "longest_note_gap_seconds": 1.382,
+      "audio_onset_match_percent": 99.0,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        89,
+        71,
+        153,
+        64,
+        102
+      ],
+      "lane_imbalance_percent": 59.7,
+      "long_note_count": 1,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": [
+        {
+          "start_seconds": 80.0,
+          "end_seconds": 85.0,
+          "label": "1:20-1:25",
+          "score": 2.547,
+          "note_count": 20,
+          "audio_activity": 0.2659,
+          "onset_match_percent": 95.0,
+          "median_onset_distance_ms": 0.0,
+          "reasons": [
+            "unusually high note density"
+          ]
+        }
+      ]
+    },
+    "Normal": {
+      "status": "good",
+      "note_count": 731,
+      "notes_per_second": 4.074,
+      "maximum_five_second_density": 27,
+      "longest_note_gap_seconds": 1.382,
+      "audio_onset_match_percent": 96.2,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        140,
+        105,
+        219,
+        99,
+        168
+      ],
+      "lane_imbalance_percent": 49.8,
+      "long_note_count": 0,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": []
+    },
+    "Hard": {
+      "status": "caution",
+      "note_count": 1014,
+      "notes_per_second": 5.652,
+      "maximum_five_second_density": 35,
+      "longest_note_gap_seconds": 0.534,
+      "audio_onset_match_percent": 89.9,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        183,
+        158,
+        331,
+        130,
+        212
+      ],
+      "lane_imbalance_percent": 63.2,
+      "long_note_count": 0,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": [
+        {
+          "start_seconds": 15.0,
+          "end_seconds": 20.0,
+          "label": "0:15-0:20",
+          "score": 1.1,
+          "note_count": 30,
+          "audio_activity": 0.1342,
+          "onset_match_percent": 50.0,
+          "median_onset_distance_ms": 63.8,
+          "reasons": [
+            "low audio-onset match"
+          ]
+        },
+        {
+          "start_seconds": 130.0,
+          "end_seconds": 135.0,
+          "label": "2:10-2:15",
+          "score": 0.683,
+          "note_count": 24,
+          "audio_activity": 0.1061,
+          "onset_match_percent": 58.3,
+          "median_onset_distance_ms": 40.6,
+          "reasons": [
+            "low audio-onset match"
+          ]
+        },
+        {
+          "start_seconds": 125.0,
+          "end_seconds": 130.0,
+          "label": "2:05-2:10",
+          "score": 0.523,
+          "note_count": 26,
+          "audio_activity": 0.1384,
+          "onset_match_percent": 61.5,
+          "median_onset_distance_ms": 46.4,
+          "reasons": [
+            "low audio-onset match"
+          ]
+        }
+      ]
+    },
+    "Expert": {
+      "status": "caution",
+      "note_count": 1297,
+      "notes_per_second": 7.229,
+      "maximum_five_second_density": 42,
+      "longest_note_gap_seconds": 0.441,
+      "audio_onset_match_percent": 87.2,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        239,
+        199,
+        414,
+        167,
+        278
+      ],
+      "lane_imbalance_percent": 59.6,
+      "long_note_count": 0,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": [
+        {
+          "start_seconds": 15.0,
+          "end_seconds": 20.0,
+          "label": "0:15-0:20",
+          "score": 2.011,
+          "note_count": 33,
+          "audio_activity": 0.1342,
+          "onset_match_percent": 48.5,
+          "median_onset_distance_ms": 104.5,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ]
+        },
+        {
+          "start_seconds": 175.0,
+          "end_seconds": 179.409,
+          "label": "2:55-2:59",
+          "score": 1.889,
+          "note_count": 24,
+          "audio_activity": 0.084,
+          "onset_match_percent": 50.0,
+          "median_onset_distance_ms": 98.7,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ]
+        },
+        {
+          "start_seconds": 130.0,
+          "end_seconds": 135.0,
+          "label": "2:10-2:15",
+          "score": 1.583,
+          "note_count": 30,
+          "audio_activity": 0.1061,
+          "onset_match_percent": 53.3,
+          "median_onset_distance_ms": 81.2,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ]
+        },
+        {
+          "start_seconds": 125.0,
+          "end_seconds": 130.0,
+          "label": "2:05-2:10",
+          "score": 0.631,
+          "note_count": 32,
+          "audio_activity": 0.1384,
+          "onset_match_percent": 59.4,
+          "median_onset_distance_ms": 46.4,
+          "reasons": [
+            "low audio-onset match"
+          ]
+        }
+      ]
+    }
+  }
+}

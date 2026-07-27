@@ -7,6 +7,6 @@ UCLASS()
 class ALLGAMES_API AIdolQuizLobbyPlayerController:public APlayerController
 {
 	GENERATED_BODY()
-public:virtual void BeginPlay()override;UFUNCTION(Server,Reliable)void ServerSetQuizPlayerName(const FString& Name);UFUNCTION(Server,Reliable)void ServerStartIdolQuiz();
+public:virtual void BeginPlay()override;UFUNCTION(Server,Reliable)void ServerSetQuizPlayerName(const FString& Name);UFUNCTION(Server,Reliable)void ServerStartSelectedGame();
 private:UPROPERTY(Transient)TObjectPtr<UIdolQuizLobbyWidget>LobbyWidget;
 };

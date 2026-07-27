@@ -13,6 +13,13 @@ enum class EIdolQuizRoomCategory : uint8
 	IdolAndActor
 };
 
+UENUM(BlueprintType)
+enum class EMiniGameRoomType : uint8
+{
+	PersonQuiz,
+	DrawingQuiz
+};
+
 USTRUCT(BlueprintType)
 struct FIdolQuizRoomInfo
 {
@@ -35,6 +42,15 @@ struct FIdolQuizRoomInfo
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 QuestionCount = 50;
+
+	UPROPERTY(BlueprintReadOnly)
+	EMiniGameRoomType GameType = EMiniGameRoomType::PersonQuiz;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 DrawingRoundsPerPlayer = 2;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 DrawingRoundTime = 60;
 };
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnIdolRoomsFound, bool, const TArray<FIdolQuizRoomInfo>&);
@@ -52,21 +68,31 @@ public:
 	FOnIdolRoomsFound OnRoomsFound;
 	FOnIdolSessionAction OnSessionAction;
 
-	void CreateRoom(const FString& RoomName, EIdolQuizRoomCategory Category, int32 QuestionCount);
+	void CreateRoom(const FString& RoomName, EMiniGameRoomType GameType,
+		EIdolQuizRoomCategory Category, int32 QuestionCount,
+		int32 DrawingRoundsPerPlayer, int32 DrawingRoundTime);
 	void FindRooms();
 	void JoinRoom(int32 VisibleRoomIndex);
 	void LeaveRoom(bool bReturnToBrowser = true);
 
 	bool HasActiveSession() const;
+	FString GetActiveRoomName() const;
 	EIdolQuizRoomCategory GetActiveRoomCategory() const;
 	int32 GetActiveRoomQuestionCount() const;
+	EMiniGameRoomType GetActiveGameType() const;
+	int32 GetActiveDrawingRoundsPerPlayer() const;
+	int32 GetActiveDrawingRoundTime() const;
 	static FString GetCategoryLabel(EIdolQuizRoomCategory Category);
+	static FString GetGameTypeLabel(EMiniGameRoomType GameType);
 
 private:
 	bool TryGetEOSAccount(UE::Online::FAccountId& OutAccountId) const;
 	void CreateEOSRoom();
+	void CleanupJoinedLobbiesAndCreate();
+	void CreateEOSRoomInternal();
 	void StartEOSFindAttempt();
 	void ScheduleFindRetry();
+	void LeaveEOSLobbyNow();
 	void ReturnToRoomBrowser();
 	void HandleNetworkFailure(
 		UWorld* World,
@@ -77,6 +103,9 @@ private:
 	FString PendingRoomName;
 	EIdolQuizRoomCategory PendingCategory = EIdolQuizRoomCategory::Idol;
 	int32 PendingQuestionCount = 50;
+	EMiniGameRoomType PendingGameType = EMiniGameRoomType::PersonQuiz;
+	int32 PendingDrawingRoundsPerPlayer = 2;
+	int32 PendingDrawingRoundTime = 60;
 	bool bFindInProgress = false;
 	bool bRoomOperationInProgress = false;
 	bool bReturnAfterLeave = false;

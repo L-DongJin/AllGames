@@ -53,7 +53,7 @@ void AIdolQuizGameModeBase::SubmitMessage(APlayerController* Sender,const FStrin
 {
 	const FIdolQuizQuestion* Question=GetCurrentQuestion();if(!Question||bRoundResolved||Answer.TrimStartAndEnd().IsEmpty())return;
 	AIdolQuizPlayerState* PlayerState=Sender?Sender->GetPlayerState<AIdolQuizPlayerState>():nullptr;const FString PlayerName=PlayerState?PlayerState->GetQuizPlayerName():TEXT("Player");
-	if(AIdolQuizGameStateBase* GS=GetGameState<AIdolQuizGameStateBase>())GS->MulticastChat(PlayerName,Answer.TrimStartAndEnd().Left(80));
+	if(AIdolQuizGameStateBase* GS=GetGameState<AIdolQuizGameStateBase>())GS->MulticastChat(PlayerName,Answer.TrimStartAndEnd().Left(80),PlayerState?PlayerState->GetPlayerColorIndex():0);
 	const FString Normalized=NormalizeAnswer(Answer);TArray<FString> AcceptedAnswers={Question->StageName,Question->RealName};AppendAliases(Question->Aliases,AcceptedAnswers);
 	bool bCorrect=false;for(const FString& Accepted:AcceptedAnswers)if(!Accepted.IsEmpty()&&(Answer.TrimStartAndEnd().Equals(Accepted.TrimStartAndEnd(),ESearchCase::IgnoreCase)||Normalized==NormalizeAnswer(Accepted))){bCorrect=true;break;}
 	if(!bCorrect){UE_LOG(LogTemp,Log,TEXT("Idol Quiz wrong answer: input='%s', stage='%s', real='%s'"),*Answer,*Question->StageName,*Question->RealName);OnAnswerResolved.Broadcast(false,Answer.TrimStartAndEnd(),Score);return;}

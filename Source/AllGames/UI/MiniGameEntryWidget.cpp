@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MiniGameEntryWidget.h"
+#include "../Audio/UiSoundStyle.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/Button.h"
@@ -36,7 +37,9 @@ void UMiniGameEntryWidget::NativeConstruct()
 	}
 	SetCardSize(CardSize);
 	SetCardFrameImage(CardFrameTexture);
+	SetTextBoxSizes(TitleTextBoxSize, DescriptionTextBoxSize);
 	SetDefinition(Definition);
+	AllGamesUiSound::ApplyButtonClickSound(WidgetTree);
 }
 
 void UMiniGameEntryWidget::BuildLayout()
@@ -59,7 +62,7 @@ void UMiniGameEntryWidget::BuildLayout()
 		CoverSlot->SetPadding(FMargin(18.0f, 18.0f, 18.0f, 8.0f));
 		CoverSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 	}
-	USizeBox* NameBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("NameBox"));
+	NameBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("NameBox"));
 	NameBox->SetWidthOverride(TextWrapWidth);
 	NameBox->SetHeightOverride(52.0f);
 	NameText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("NameText"));
@@ -68,7 +71,7 @@ void UMiniGameEntryWidget::BuildLayout()
 	FSlateFontInfo NameFont = NameText->GetFont(); NameFont.Size = 24; NameText->SetFont(NameFont);
 	NameBox->AddChild(NameText);
 	if (UVerticalBoxSlot* NameSlot = Content->AddChildToVerticalBox(NameBox)) NameSlot->SetPadding(FMargin(14.0f, 0.0f));
-	USizeBox* DescriptionBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DescriptionBox"));
+	DescriptionBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DescriptionBox"));
 	DescriptionBox->SetWidthOverride(TextWrapWidth);
 	DescriptionBox->SetHeightOverride(66.0f);
 	DescriptionText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DescriptionText"));
@@ -90,9 +93,10 @@ void UMiniGameEntryWidget::SetDefinition(UMiniGameDefinitionDataAsset* InDefinit
 	if (!Definition) return;
 	if (CoverImage)
 	{
-		if (Definition->CoverImage)
+		UTexture2D* EffectiveCover = CoverOverrideTexture ? CoverOverrideTexture : Definition->CoverImage;
+		if (EffectiveCover)
 		{
-			CoverImage->SetBrushFromTexture(Definition->CoverImage, true);
+			CoverImage->SetBrushFromTexture(EffectiveCover, true);
 			CoverImage->SetVisibility(ESlateVisibility::Visible);
 		}
 		else
@@ -108,6 +112,30 @@ void UMiniGameEntryWidget::SetDefinition(UMiniGameDefinitionDataAsset* InDefinit
 		StateText->SetVisibility(Definition->bEnabled ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
 	}
 	if (SelectButton) SelectButton->SetIsEnabled(Definition->bEnabled);
+}
+
+void UMiniGameEntryWidget::SetCoverOverride(UTexture2D* InImage)
+{
+	CoverOverrideTexture = InImage;
+	SetDefinition(Definition);
+}
+
+void UMiniGameEntryWidget::SetTextBoxSizes(const FVector2D InTitleSize, const FVector2D InDescriptionSize)
+{
+	TitleTextBoxSize = InTitleSize;
+	DescriptionTextBoxSize = InDescriptionSize;
+	if (NameBox && InTitleSize.X > 0.0f && InTitleSize.Y > 0.0f)
+	{
+		NameBox->SetWidthOverride(InTitleSize.X);
+		NameBox->SetHeightOverride(InTitleSize.Y);
+		if (NameText) NameText->SetWrapTextAt(InTitleSize.X);
+	}
+	if (DescriptionBox && InDescriptionSize.X > 0.0f && InDescriptionSize.Y > 0.0f)
+	{
+		DescriptionBox->SetWidthOverride(InDescriptionSize.X);
+		DescriptionBox->SetHeightOverride(InDescriptionSize.Y);
+		if (DescriptionText) DescriptionText->SetWrapTextAt(InDescriptionSize.X);
+	}
 }
 
 void UMiniGameEntryWidget::SetCardFrameImage(UTexture2D* InImage)

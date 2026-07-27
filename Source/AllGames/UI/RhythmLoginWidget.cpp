@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "RhythmLoginWidget.h"
+#include "../Audio/UiSoundStyle.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/Button.h"
@@ -13,6 +14,12 @@
 
 namespace
 {
+	void ApplyButtonArtwork(UButton* Button,UTexture2D* Normal,UTexture2D* Hovered,UTexture2D* Pressed,const FVector2D Size)
+	{
+		if(!Button)return;
+		if(Normal||Hovered||Pressed){UTexture2D* Base=Normal?Normal:(Hovered?Hovered:Pressed);FButtonStyle Style=Button->GetStyle();auto Brush=[Size](UTexture2D* Texture){FSlateBrush Result;Result.SetResourceObject(Texture);Result.DrawAs=ESlateBrushDrawType::Box;Result.Margin=FMargin(.08f);Result.ImageSize=Size;Result.TintColor=FSlateColor(FLinearColor::White);return Result;};const FSlateBrush N=Brush(Base);Style.SetNormal(N).SetHovered(Brush(Hovered?Hovered:Base)).SetPressed(Brush(Pressed?Pressed:Base)).SetDisabled(N);Button->SetStyle(Style);Button->SetBackgroundColor(FLinearColor::White);}
+		if(UCanvasPanelSlot* Slot=Cast<UCanvasPanelSlot>(Button->Slot))if(Size.X>0&&Size.Y>0)Slot->SetSize(Size);
+	}
 	void ApplyBlackInputText(UEditableTextBox* Input)
 	{
 		if (!Input) return;
@@ -63,6 +70,21 @@ TSharedRef<SWidget> URhythmLoginWidget::RebuildWidget()
 void URhythmLoginWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	if (!AccountBackground && WidgetTree)
+	{
+		AccountBackground = Cast<UImage>(WidgetTree->FindWidget(TEXT("AccountBackground")));
+	}
+	if (AccountBackground && LoginBackgroundImage)
+	{
+		AccountBackground->SetBrushFromTexture(LoginBackgroundImage, true);
+		AccountBackground->SetColorAndOpacity(LoginBackgroundTint);
+	}
+	if(WidgetTree){if(!LoginButton)LoginButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("LoginButton")));if(!RegisterButton)RegisterButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("OpenRegistrationButton")));if(!CreateAccountButton)CreateAccountButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("CreateAccountButton")));if(!RegistrationBackButton)RegistrationBackButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("RegistrationBackButton")));}
+	ApplyButtonArtwork(LoginButton,LoginButtonNormalImage,LoginButtonHoveredImage,LoginButtonPressedImage,LoginButtonSize);
+	ApplyButtonArtwork(RegisterButton,RegisterButtonNormalImage,RegisterButtonHoveredImage,RegisterButtonPressedImage,RegisterButtonSize);
+	ApplyButtonArtwork(CreateAccountButton,CreateAccountButtonNormalImage,CreateAccountButtonHoveredImage,CreateAccountButtonPressedImage,CreateAccountButtonSize);
+	ApplyButtonArtwork(RegistrationBackButton,RegistrationBackButtonNormalImage,RegistrationBackButtonHoveredImage,RegistrationBackButtonPressedImage,RegistrationBackButtonSize);
+	if(RegistrationBackButton)RegistrationBackButton->OnClicked.AddUniqueDynamic(this,&ThisClass::HandleRegistrationBackClicked);
 	if (PasswordInput)
 	{
 		PasswordInput->OnTextCommitted.RemoveDynamic(this, &ThisClass::HandleLoginPasswordCommitted);
@@ -74,6 +96,7 @@ void URhythmLoginWidget::NativeConstruct()
 			this, &ThisClass::HandleAuthenticationCompleted);
 	}
 	ShowRegistrationPanel(false);
+	AllGamesUiSound::ApplyButtonClickSound(WidgetTree);
 }
 
 void URhythmLoginWidget::NativeDestruct()
@@ -90,9 +113,14 @@ void URhythmLoginWidget::BuildLayout()
 	UCanvasPanel* Root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("AccountRoot"));
 	WidgetTree->RootWidget = Root;
 
-	UImage* Background = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("AccountBackground"));
-	Background->SetColorAndOpacity(FLinearColor(0.005f, 0.01f, 0.035f, 1.0f));
-	UCanvasPanelSlot* BackgroundSlot = Root->AddChildToCanvas(Background);
+	AccountBackground = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("AccountBackground"));
+	if (LoginBackgroundImage)
+	{
+		AccountBackground->SetBrushFromTexture(LoginBackgroundImage, true);
+		AccountBackground->SetColorAndOpacity(LoginBackgroundTint);
+	}
+	else AccountBackground->SetColorAndOpacity(FLinearColor(0.005f, 0.01f, 0.035f, 1.0f));
+	UCanvasPanelSlot* BackgroundSlot = Root->AddChildToCanvas(AccountBackground);
 	BackgroundSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
 	BackgroundSlot->SetOffsets(FMargin(0.0f));
 
@@ -182,6 +210,9 @@ void URhythmLoginWidget::BuildLayout()
 	CreateAccountButton = MakeButton(RegistrationPanel, TEXT("CreateAccountButton"), TEXT("가입"),
 		0.5f, 0.66f, FVector2D(300.0f, 72.0f));
 	CreateAccountButton->OnClicked.AddDynamic(this, &ThisClass::HandleCreateAccountClicked);
+	RegistrationBackButton = MakeButton(RegistrationPanel, TEXT("RegistrationBackButton"), TEXT("로그인으로 돌아가기"),
+		0.5f, 0.88f, RegistrationBackButtonSize);
+	RegistrationBackButton->OnClicked.AddDynamic(this, &ThisClass::HandleRegistrationBackClicked);
 
 	RegistrationStatusText = MakeLoginText(WidgetTree, TEXT("RegistrationStatus"),
 		TEXT("이메일은 현재 필요하지 않지만, 비밀번호 분실 시 계정 복구가 어렵습니다."), 20);
@@ -226,6 +257,11 @@ void URhythmLoginWidget::HandleCreateAccountClicked()
 		SetRequestState(true, TEXT("계정을 생성하고 있습니다..."));
 		Accounts->Register(RegistrationUsernameInput->GetText().ToString(), Password);
 	}
+}
+
+void URhythmLoginWidget::HandleRegistrationBackClicked()
+{
+	ShowRegistrationPanel(false);
 }
 
 void URhythmLoginWidget::HandleAuthenticationCompleted(const bool bSuccess, const FString& Message)

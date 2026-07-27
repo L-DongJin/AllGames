@@ -18,6 +18,9 @@ namespace
 	const UE::Online::FSchemaAttributeId RoomNameAttribute(TEXT("RoomName"));
 	const UE::Online::FSchemaAttributeId RoomCategoryAttribute(TEXT("RoomCategory"));
 	const UE::Online::FSchemaAttributeId QuestionCountAttribute(TEXT("QuestionCount"));
+	const UE::Online::FSchemaAttributeId GameTypeAttribute(TEXT("GameType"));
+	const UE::Online::FSchemaAttributeId DrawingRoundsAttribute(TEXT("DrawingRounds"));
+	const UE::Online::FSchemaAttributeId DrawingRoundTimeAttribute(TEXT("DrawingRoundTime"));
 
 	TSharedPtr<UE::Online::FOnlineServicesEOSGS> GetEOSServices()
 	{
@@ -50,9 +53,25 @@ namespace
 		if (const UE::Online::FSchemaVariant* Value = Lobby.Attributes.Find(QuestionCountAttribute);
 			Value && Value->GetType() == UE::Online::ESchemaAttributeType::Int64)
 		{
-			return FMath::Clamp(static_cast<int32>(Value->GetInt64()), 50, 1000);
+			return FMath::Clamp(static_cast<int32>(Value->GetInt64()), 50, 300);
 		}
 		return 50;
+	}
+
+	int32 ReadIntAttribute(const UE::Online::FLobby& Lobby, const UE::Online::FSchemaAttributeId Id, const int32 DefaultValue)
+	{
+		if (const UE::Online::FSchemaVariant* Value = Lobby.Attributes.Find(Id);
+			Value && Value->GetType() == UE::Online::ESchemaAttributeType::Int64)
+		{
+			return static_cast<int32>(Value->GetInt64());
+		}
+		return DefaultValue;
+	}
+
+	EMiniGameRoomType ReadGameType(const UE::Online::FLobby& Lobby)
+	{
+		return static_cast<EMiniGameRoomType>(FMath::Clamp(
+			ReadIntAttribute(Lobby, GameTypeAttribute, 0), 0, 1));
 	}
 }
 
@@ -114,8 +133,11 @@ bool UIdolQuizSessionSubsystem::TryGetEOSAccount(UE::Online::FAccountId& OutAcco
 
 void UIdolQuizSessionSubsystem::CreateRoom(
 	const FString& RoomName,
+	const EMiniGameRoomType GameType,
 	const EIdolQuizRoomCategory Category,
-	const int32 QuestionCount)
+	const int32 QuestionCount,
+	const int32 DrawingRoundsPerPlayer,
+	const int32 DrawingRoundTime)
 {
 	PendingRoomName = RoomName.TrimStartAndEnd().Left(24);
 	if (PendingRoomName.IsEmpty())
@@ -128,6 +150,14 @@ void UIdolQuizSessionSubsystem::CreateRoom(
 		OnSessionAction.Broadcast(false, TEXT("이전 방 요청을 처리하고 있습니다."));
 		return;
 	}
+	// Reaching room creation from the browser means any previously tracked lobby
+	// is stale for this UI flow. Keep the backend membership for Restore/cleanup,
+	// but release the local guard so creation can proceed to that cleanup stage.
+	if (ActiveEOSLobby.IsValid())
+	{
+		UE_LOG(LogTemp, Log, TEXT("Replacing the currently tracked EOS lobby before room creation."));
+		ActiveEOSLobby.Reset();
+	}
 	if (ActiveEOSLobby.IsValid())
 	{
 		OnSessionAction.Broadcast(false, TEXT("현재 방에서 나간 뒤 새 방을 만들어 주세요."));
@@ -135,11 +165,43 @@ void UIdolQuizSessionSubsystem::CreateRoom(
 	}
 
 	PendingCategory = Category;
-	PendingQuestionCount = FMath::Clamp(FMath::RoundToInt(static_cast<float>(QuestionCount) / 50.0f) * 50, 50, 1000);
+	PendingQuestionCount = FMath::Clamp(FMath::RoundToInt(static_cast<float>(QuestionCount) / 50.0f) * 50, 50, 300);
+	PendingGameType = GameType;
+	PendingDrawingRoundsPerPlayer = FMath::Clamp(DrawingRoundsPerPlayer, 1, 5);
+	PendingDrawingRoundTime = FMath::Clamp(DrawingRoundTime, 30, 120);
 	CreateEOSRoom();
 }
 
 void UIdolQuizSessionSubsystem::CreateEOSRoom()
+{
+	const TSharedPtr<UE::Online::FOnlineServicesEOSGS> Services = GetEOSServices();
+	const UE::Online::ILobbiesPtr Lobbies = Services.IsValid() ? Services->GetLobbiesInterface() : nullptr;
+	UE::Online::FAccountId AccountId;
+	if (!TryGetEOSAccount(AccountId) || !Lobbies.IsValid())
+	{
+		OnSessionAction.Broadcast(false, TEXT("EOS 연결이 준비되지 않았습니다. 다시 로그인해 주세요."));
+		return;
+	}
+
+	// Rebuild EOSGS's local joined-lobby registry first. A forced PIE/app shutdown can
+	// leave backend membership that GetJoinedLobbies cannot see until it is restored.
+	bRoomOperationInProgress = true;
+	UE::Online::FRestoreLobbies::Params RestoreParams;
+	Lobbies->RestoreLobbies(MoveTemp(RestoreParams)).OnComplete(
+		this,
+		[this](const UE::Online::TOnlineResult<UE::Online::FRestoreLobbies>& RestoreResult)
+		{
+			bRoomOperationInProgress = false;
+			if (RestoreResult.IsError())
+			{
+				UE_LOG(LogTemp, Verbose, TEXT("EOS lobby restore before create returned: %s"),
+					*RestoreResult.GetErrorValue().GetLogString());
+			}
+			CleanupJoinedLobbiesAndCreate();
+		});
+}
+
+void UIdolQuizSessionSubsystem::CleanupJoinedLobbiesAndCreate()
 {
 	UE::Online::FAccountId AccountId;
 	const TSharedPtr<UE::Online::FOnlineServicesEOSGS> Services = GetEOSServices();
@@ -147,6 +209,68 @@ void UIdolQuizSessionSubsystem::CreateEOSRoom()
 	if (!TryGetEOSAccount(AccountId) || !Lobbies.IsValid())
 	{
 		OnSessionAction.Broadcast(false, TEXT("EOS 인터넷 연결이 준비되지 않았습니다. 다시 로그인해 주세요."));
+		return;
+	}
+
+	UE::Online::FGetJoinedLobbies::Params JoinedParams;
+	JoinedParams.LocalAccountId = AccountId;
+	const UE::Online::TOnlineResult<UE::Online::FGetJoinedLobbies> JoinedResult =
+		Lobbies->GetJoinedLobbies(MoveTemp(JoinedParams));
+	if (JoinedResult.IsOk() && !JoinedResult.GetOkValue().Lobbies.IsEmpty())
+	{
+		const TArray<TSharedRef<const UE::Online::FLobby>> JoinedLobbies = JoinedResult.GetOkValue().Lobbies;
+		const TSharedRef<int32> Remaining = MakeShared<int32>(JoinedLobbies.Num());
+		const TSharedRef<bool> bCleanupFailed = MakeShared<bool>(false);
+		bRoomOperationInProgress = true;
+		UE_LOG(LogTemp, Log, TEXT("Cleaning %d joined EOS lobby/lobbies before room creation."),
+			JoinedLobbies.Num());
+
+		for (const TSharedRef<const UE::Online::FLobby>& Lobby : JoinedLobbies)
+		{
+			UE::Online::FLeaveLobby::Params LeaveParams;
+			LeaveParams.LocalAccountId = AccountId;
+			LeaveParams.LobbyId = Lobby->LobbyId;
+			Lobbies->LeaveLobby(MoveTemp(LeaveParams)).OnComplete(
+				this,
+				[this, Remaining, bCleanupFailed](
+					const UE::Online::TOnlineResult<UE::Online::FLeaveLobby>& LeaveResult)
+				{
+					if (LeaveResult.IsError())
+					{
+						*bCleanupFailed = true;
+						UE_LOG(LogTemp, Warning, TEXT("EOS pre-create lobby cleanup failed: %s"),
+							*LeaveResult.GetErrorValue().GetLogString());
+					}
+
+					--(*Remaining);
+					if (*Remaining == 0)
+					{
+						bRoomOperationInProgress = false;
+						ActiveEOSLobby.Reset();
+						if (*bCleanupFailed)
+						{
+							OnSessionAction.Broadcast(false,
+								TEXT("이전 방 정리에 실패했습니다. 잠시 후 다시 시도해 주세요."));
+							return;
+						}
+						CreateEOSRoomInternal();
+					}
+				});
+		}
+		return;
+	}
+
+	CreateEOSRoomInternal();
+}
+
+void UIdolQuizSessionSubsystem::CreateEOSRoomInternal()
+{
+	UE::Online::FAccountId AccountId;
+	const TSharedPtr<UE::Online::FOnlineServicesEOSGS> Services = GetEOSServices();
+	const UE::Online::ILobbiesPtr Lobbies = Services.IsValid() ? Services->GetLobbiesInterface() : nullptr;
+	if (!TryGetEOSAccount(AccountId) || !Lobbies.IsValid())
+	{
+		OnSessionAction.Broadcast(false, TEXT("EOS 연결이 준비되지 않았습니다. 다시 로그인해 주세요."));
 		return;
 	}
 
@@ -164,6 +288,9 @@ void UIdolQuizSessionSubsystem::CreateEOSRoom()
 	Params.Attributes.Emplace(
 		QuestionCountAttribute,
 		UE::Online::FSchemaVariant(static_cast<int64>(PendingQuestionCount)));
+	Params.Attributes.Emplace(GameTypeAttribute, UE::Online::FSchemaVariant(static_cast<int64>(PendingGameType)));
+	Params.Attributes.Emplace(DrawingRoundsAttribute, UE::Online::FSchemaVariant(static_cast<int64>(PendingDrawingRoundsPerPlayer)));
+	Params.Attributes.Emplace(DrawingRoundTimeAttribute, UE::Online::FSchemaVariant(static_cast<int64>(PendingDrawingRoundTime)));
 
 	bRoomOperationInProgress = true;
 	Lobbies->CreateLobby(MoveTemp(Params)).OnComplete(
@@ -218,20 +345,56 @@ void UIdolQuizSessionSubsystem::StartEOSFindAttempt()
 	Params.MaxResults = 50;
 	Lobbies->FindLobbies(MoveTemp(Params)).OnComplete(
 		this,
-		[this](const UE::Online::TOnlineResult<UE::Online::FFindLobbies>& Result)
+		[this, Lobbies, AccountId](const UE::Online::TOnlineResult<UE::Online::FFindLobbies>& Result)
 		{
 			bFindInProgress = false;
 			EOSSearchResults.Reset();
 			TArray<FIdolQuizRoomInfo> Rooms;
 			if (Result.IsOk())
 			{
-				EOSSearchResults = Result.GetOkValue().Lobbies;
-				for (const TSharedRef<const UE::Online::FLobby>& Lobby : EOSSearchResults)
+				for (const TSharedRef<const UE::Online::FLobby>& Lobby : Result.GetOkValue().Lobbies)
 				{
+					// A PIE crash or forced shutdown can leave this local EOS account registered
+					// in a lobby even though the GameInstance no longer tracks it. Such a row
+					// cannot be joined again (EOS_Lobby_LobbyAlreadyExists), so clean it up.
+					if (!ActiveEOSLobby.IsValid() && Lobby->Members.Contains(AccountId))
+					{
+						UE::Online::FLeaveLobby::Params CleanupParams;
+						CleanupParams.LocalAccountId = AccountId;
+						CleanupParams.LobbyId = Lobby->LobbyId;
+						Lobbies->LeaveLobby(MoveTemp(CleanupParams)).OnComplete(
+							this,
+							[RoomName = ReadRoomName(*Lobby)](
+								const UE::Online::TOnlineResult<UE::Online::FLeaveLobby>& CleanupResult)
+							{
+								if (CleanupResult.IsError())
+								{
+									UE_LOG(LogTemp, Warning, TEXT("EOS orphan lobby cleanup failed for %s: %s"),
+										*RoomName, *CleanupResult.GetErrorValue().GetLogString());
+								}
+								else
+								{
+									UE_LOG(LogTemp, Log, TEXT("EOS orphan lobby cleaned up: %s"), *RoomName);
+								}
+							});
+						continue;
+					}
+					// EOS discovery can briefly return a cached lobby after its last member has left.
+					// It has no listen server and cannot be joined, so never expose it as a room row.
+					if (Lobby->Members.IsEmpty())
+					{
+						UE_LOG(LogTemp, Verbose, TEXT("Ignoring empty cached EOS lobby: %s"),
+							*ReadRoomName(*Lobby));
+						continue;
+					}
+					EOSSearchResults.Add(Lobby);
 					FIdolQuizRoomInfo& Room = Rooms.AddDefaulted_GetRef();
 					Room.RoomName = ReadRoomName(*Lobby);
 					Room.Category = ReadRoomCategory(*Lobby);
 					Room.QuestionCount = ReadQuestionCount(*Lobby);
+					Room.GameType = ReadGameType(*Lobby);
+					Room.DrawingRoundsPerPlayer = FMath::Clamp(ReadIntAttribute(*Lobby, DrawingRoundsAttribute, 2), 1, 5);
+					Room.DrawingRoundTime = FMath::Clamp(ReadIntAttribute(*Lobby, DrawingRoundTimeAttribute, 60), 30, 120);
 					Room.CurrentPlayers = Lobby->Members.Num();
 					Room.MaxPlayers = Lobby->MaxMembers;
 					Room.PingMs = 0;
@@ -357,6 +520,60 @@ void UIdolQuizSessionSubsystem::LeaveRoom(const bool bReturnToBrowser)
 		return;
 	}
 
+	// The final owner first stops advertising the lobby. EOS may retain an empty lobby
+	// snapshot briefly after LeaveLobby, but it will no longer be returned as joinable.
+	if (ActiveEOSLobby->OwnerAccountId == AccountId && ActiveEOSLobby->Members.Num() <= 1 &&
+		ActiveEOSLobby->JoinPolicy == UE::Online::ELobbyJoinPolicy::PublicAdvertised)
+	{
+		UE::Online::FModifyLobbyJoinPolicy::Params CloseParams;
+		CloseParams.LocalAccountId = AccountId;
+		CloseParams.LobbyId = ActiveEOSLobby->LobbyId;
+		CloseParams.JoinPolicy = UE::Online::ELobbyJoinPolicy::InvitationOnly;
+		bRoomOperationInProgress = true;
+		Lobbies->ModifyLobbyJoinPolicy(MoveTemp(CloseParams)).OnComplete(
+			this,
+			[this](const UE::Online::TOnlineResult<UE::Online::FModifyLobbyJoinPolicy>& Result)
+			{
+				bRoomOperationInProgress = false;
+				if (Result.IsError())
+				{
+					UE_LOG(LogTemp, Warning, TEXT("EOS empty lobby close failed before leave: %s"),
+						*Result.GetErrorValue().GetLogString());
+				}
+				LeaveEOSLobbyNow();
+			});
+		return;
+	}
+
+	LeaveEOSLobbyNow();
+}
+
+void UIdolQuizSessionSubsystem::LeaveEOSLobbyNow()
+{
+	if (!ActiveEOSLobby.IsValid())
+	{
+		if (bReturnAfterLeave)
+		{
+			bReturnAfterLeave = false;
+			ReturnToRoomBrowser();
+		}
+		return;
+	}
+
+	UE::Online::FAccountId AccountId;
+	const TSharedPtr<UE::Online::FOnlineServicesEOSGS> Services = GetEOSServices();
+	const UE::Online::ILobbiesPtr Lobbies = Services.IsValid() ? Services->GetLobbiesInterface() : nullptr;
+	if (!TryGetEOSAccount(AccountId) || !Lobbies.IsValid())
+	{
+		ActiveEOSLobby.Reset();
+		if (bReturnAfterLeave)
+		{
+			bReturnAfterLeave = false;
+			ReturnToRoomBrowser();
+		}
+		return;
+	}
+
 	UE::Online::FLeaveLobby::Params Params;
 	Params.LocalAccountId = AccountId;
 	Params.LobbyId = ActiveEOSLobby->LobbyId;
@@ -385,6 +602,11 @@ bool UIdolQuizSessionSubsystem::HasActiveSession() const
 	return ActiveEOSLobby.IsValid();
 }
 
+FString UIdolQuizSessionSubsystem::GetActiveRoomName() const
+{
+	return ActiveEOSLobby.IsValid() ? ReadRoomName(*ActiveEOSLobby) : PendingRoomName;
+}
+
 EIdolQuizRoomCategory UIdolQuizSessionSubsystem::GetActiveRoomCategory() const
 {
 	return ActiveEOSLobby.IsValid() ? ReadRoomCategory(*ActiveEOSLobby) : PendingCategory;
@@ -393,6 +615,25 @@ EIdolQuizRoomCategory UIdolQuizSessionSubsystem::GetActiveRoomCategory() const
 int32 UIdolQuizSessionSubsystem::GetActiveRoomQuestionCount() const
 {
 	return ActiveEOSLobby.IsValid() ? ReadQuestionCount(*ActiveEOSLobby) : PendingQuestionCount;
+}
+
+EMiniGameRoomType UIdolQuizSessionSubsystem::GetActiveGameType() const
+{
+	return ActiveEOSLobby.IsValid() ? ReadGameType(*ActiveEOSLobby) : PendingGameType;
+}
+
+int32 UIdolQuizSessionSubsystem::GetActiveDrawingRoundsPerPlayer() const
+{
+	return ActiveEOSLobby.IsValid()
+		? FMath::Clamp(ReadIntAttribute(*ActiveEOSLobby, DrawingRoundsAttribute, 2), 1, 5)
+		: PendingDrawingRoundsPerPlayer;
+}
+
+int32 UIdolQuizSessionSubsystem::GetActiveDrawingRoundTime() const
+{
+	return ActiveEOSLobby.IsValid()
+		? FMath::Clamp(ReadIntAttribute(*ActiveEOSLobby, DrawingRoundTimeAttribute, 60), 30, 120)
+		: PendingDrawingRoundTime;
 }
 
 FString UIdolQuizSessionSubsystem::GetCategoryLabel(const EIdolQuizRoomCategory Category)
@@ -406,6 +647,11 @@ FString UIdolQuizSessionSubsystem::GetCategoryLabel(const EIdolQuizRoomCategory 
 	default:
 		return TEXT("아이돌");
 	}
+}
+
+FString UIdolQuizSessionSubsystem::GetGameTypeLabel(const EMiniGameRoomType GameType)
+{
+	return GameType == EMiniGameRoomType::DrawingQuiz ? TEXT("그림 퀴즈") : TEXT("인물 퀴즈");
 }
 
 void UIdolQuizSessionSubsystem::ReturnToRoomBrowser()

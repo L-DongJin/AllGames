@@ -3,7 +3,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "IdolQuizGameStateBase.generated.h"
 DECLARE_MULTICAST_DELEGATE(FOnIdolQuizStateChanged);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnIdolQuizChatReceived,const FString&,const FString&);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnIdolQuizChatReceived,const FString&,const FString&,int32);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnIdolQuizFeedbackReceived,bool,const FString&,const FString&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnIdolQuizSkipReceived,const FString&);
 UCLASS()
@@ -15,7 +15,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const override;
 	FOnIdolQuizStateChanged OnQuizStateChanged; FOnIdolQuizChatReceived OnChatReceived; FOnIdolQuizFeedbackReceived OnFeedbackReceived; FOnIdolQuizSkipReceived OnSkipReceived;
 	void SetRoundState(const FSoftObjectPath& ImagePath,int32 Round,int32 Total); void SetRemainingTime(int32 Seconds); void SetHint(const FString& InHint); void SetFinished(bool bInFinished); void SetSkipProgress(int32 Votes,int32 RequiredVotes);
-	UFUNCTION(NetMulticast,Reliable)void MulticastChat(const FString& PlayerName,const FString& Message);
+	UFUNCTION(NetMulticast,Reliable)void MulticastChat(const FString& PlayerName,const FString& Message,int32 PlayerColorIndex);
 	UFUNCTION(NetMulticast,Reliable)void MulticastFeedback(bool bCorrect,const FString& PlayerName,const FString& Message);
 	UFUNCTION(NetMulticast,Reliable)void MulticastSkipFeedback(const FString& CorrectAnswer);
 	const FSoftObjectPath& GetQuestionImagePath()const{return QuestionImagePath;} int32 GetRound()const{return CurrentRound;} int32 GetTotalRounds()const{return TotalRounds;} int32 GetRemainingTime()const{return RemainingTime;} const FString& GetHint()const{return Hint;} bool IsFinished()const{return bFinished;} int32 GetSkipVotes()const{return SkipVotes;} int32 GetRequiredSkipVotes()const{return RequiredSkipVotes;}

@@ -24,7 +24,8 @@ void AMainHubPlayerController::ShowLogin()
 void AMainHubPlayerController::ShowHub()
 {
 	if(LoginWidget){LoginWidget->RemoveFromParent();LoginWidget=nullptr;}
-	UClass* HubClass=LoadClass<UMainHubWidget>(nullptr,TEXT("/Game/UI/WBP_MainHub.WBP_MainHub_C"));
+	UClass* HubClass=LoadClass<UMainHubWidget>(nullptr,TEXT("/Game/UI/WBP_GameSelect.WBP_GameSelect_C"));
+	if(!HubClass)HubClass=LoadClass<UMainHubWidget>(nullptr,TEXT("/Game/UI/WBP_MainHub.WBP_MainHub_C"));
 	HubWidget=CreateWidget<UMainHubWidget>(this,HubClass?HubClass:UMainHubWidget::StaticClass()); if(!HubWidget)return;
 	HubWidget->AddToViewport(); HubWidget->SetKeyboardFocus(); FInputModeUIOnly Mode; Mode.SetWidgetToFocus(HubWidget->TakeWidget()); SetInputMode(Mode); SetShowMouseCursor(true);
 }

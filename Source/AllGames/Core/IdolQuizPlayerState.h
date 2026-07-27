@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerState.h"
+#include "QuizPlayerStateBase.h"
 #include "IdolQuizPlayerState.generated.h"
 
 UCLASS()
-class ALLGAMES_API AIdolQuizPlayerState : public APlayerState
+class ALLGAMES_API AIdolQuizPlayerState : public AQuizPlayerStateBase
 {
 	GENERATED_BODY()
 public:

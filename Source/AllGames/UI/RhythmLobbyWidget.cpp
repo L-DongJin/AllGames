@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "RhythmLobbyWidget.h"
+#include "../Audio/UiSoundStyle.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/AudioComponent.h"
@@ -59,6 +60,7 @@ void URhythmLobbyWidget::NativeConstruct()
 		bLeaderboardDelegatesBound = true;
 		RefreshLeaderboard();
 	}
+	AllGamesUiSound::ApplyButtonClickSound(WidgetTree);
 }
 
 void URhythmLobbyWidget::BuildLayout()

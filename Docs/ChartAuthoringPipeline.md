@@ -192,19 +192,23 @@ excluded from sparse-section warnings.
 - CANON-D is intentionally exempt from this rebalance because its accompaniment-led pattern is part
   of the accepted chart identity.
 
-## Shared 1-24 chart level
+## Shared 1-20 chart level
 
 Easy, Normal, Hard, and Expert describe the chart-authoring profile, but they are not assumed to
 have equal difficulty across songs. Every production Song Data Asset therefore also stores a
-catalog-wide `ChartLevel` from 1 to 24. The automatic baseline combines:
+catalog-wide `ChartLevel` from 1 to 20. The automatic baseline combines:
 
 - average notes per second over the playable chart;
 - the highest notes-per-second density found in any two-second window;
 - long-note occupied time as an additional hand-load factor.
 
-The result is clamped to 1-24 and is shown separately in the lobby. This allows, for example, a
+The result is clamped to 1-20 and is shown separately in the lobby. This allows, for example, a
 lighter Expert chart to carry a similar numeric level to a denser Normal chart. Manual playtesting
 may later adjust an individual level without renaming or regenerating its difficulty profile.
+Within one song, adjacent Easy/Normal/Hard/Expert ratings must differ by at least two levels so
+the selection communicates a meaningful step even when the raw density formula rounds nearby
+charts to the same integer. This ladder normalization changes the displayed rating only; actual
+note density remains independently authored and validated.
 They reduce full-song manual testing to short exception review; representative release songs still
 need at least one complete human playtest.
 

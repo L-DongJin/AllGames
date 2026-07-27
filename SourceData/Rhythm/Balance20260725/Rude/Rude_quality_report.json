@@ -1,0 +1,172 @@
+{
+  "song_name": "Rude",
+  "audio_duration_seconds": 196.1795918367347,
+  "audio_analysis_source": "combined aligned vocal/drum/bass/music stems",
+  "window_seconds": 5.0,
+  "match_radius_seconds": 0.1,
+  "difficulties": {
+    "Easy": {
+      "status": "good",
+      "note_count": 535,
+      "notes_per_second": 2.727,
+      "maximum_five_second_density": 17,
+      "longest_note_gap_seconds": 2.357,
+      "audio_onset_match_percent": 100.0,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        106,
+        78,
+        156,
+        75,
+        120
+      ],
+      "lane_imbalance_percent": 45.8,
+      "long_note_count": 0,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": [
+        {
+          "start_seconds": 115.0,
+          "end_seconds": 120.0,
+          "label": "1:55-2:00",
+          "score": 2.805,
+          "note_count": 12,
+          "audio_activity": 0.2122,
+          "onset_match_percent": 100.0,
+          "median_onset_distance_ms": 0.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ]
+        },
+        {
+          "start_seconds": 155.0,
+          "end_seconds": 160.0,
+          "label": "2:35-2:40",
+          "score": 2.471,
+          "note_count": 13,
+          "audio_activity": 0.2211,
+          "onset_match_percent": 100.0,
+          "median_onset_distance_ms": 0.0,
+          "reasons": [
+            "active audio but sparse notes"
+          ]
+        }
+      ]
+    },
+    "Normal": {
+      "status": "good",
+      "note_count": 838,
+      "notes_per_second": 4.272,
+      "maximum_five_second_density": 26,
+      "longest_note_gap_seconds": 0.987,
+      "audio_onset_match_percent": 98.2,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        189,
+        132,
+        208,
+        108,
+        201
+      ],
+      "lane_imbalance_percent": 35.6,
+      "long_note_count": 1,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": []
+    },
+    "Hard": {
+      "status": "good",
+      "note_count": 1071,
+      "notes_per_second": 5.459,
+      "maximum_five_second_density": 35,
+      "longest_note_gap_seconds": 0.592,
+      "audio_onset_match_percent": 94.8,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        222,
+        160,
+        299,
+        143,
+        247
+      ],
+      "lane_imbalance_percent": 39.6,
+      "long_note_count": 0,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": [
+        {
+          "start_seconds": 10.0,
+          "end_seconds": 15.0,
+          "label": "0:10-0:15",
+          "score": 0.705,
+          "note_count": 19,
+          "audio_activity": 0.0659,
+          "onset_match_percent": 57.9,
+          "median_onset_distance_ms": 0.0,
+          "reasons": [
+            "low audio-onset match"
+          ]
+        },
+        {
+          "start_seconds": 45.0,
+          "end_seconds": 50.0,
+          "label": "0:45-0:50",
+          "score": 0.637,
+          "note_count": 27,
+          "audio_activity": 0.0964,
+          "onset_match_percent": 59.3,
+          "median_onset_distance_ms": 0.0,
+          "reasons": [
+            "low audio-onset match"
+          ]
+        }
+      ]
+    },
+    "Expert": {
+      "status": "good",
+      "note_count": 1389,
+      "notes_per_second": 7.08,
+      "maximum_five_second_density": 42,
+      "longest_note_gap_seconds": 0.522,
+      "audio_onset_match_percent": 92.8,
+      "median_onset_distance_ms": 0.0,
+      "lane_counts": [
+        274,
+        204,
+        397,
+        181,
+        333
+      ],
+      "lane_imbalance_percent": 42.9,
+      "long_note_count": 1,
+      "long_note_overlap_count": 0,
+      "recommended_listening_windows": [
+        {
+          "start_seconds": 10.0,
+          "end_seconds": 15.0,
+          "label": "0:10-0:15",
+          "score": 1.588,
+          "note_count": 24,
+          "audio_activity": 0.0659,
+          "onset_match_percent": 54.2,
+          "median_onset_distance_ms": 87.1,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ]
+        },
+        {
+          "start_seconds": 45.0,
+          "end_seconds": 50.0,
+          "label": "0:45-0:50",
+          "score": 1.548,
+          "note_count": 32,
+          "audio_activity": 0.0964,
+          "onset_match_percent": 53.1,
+          "median_onset_distance_ms": 75.5,
+          "reasons": [
+            "low audio-onset match",
+            "large median onset distance"
+          ]
+        }
+      ]
+    }
+  }
+}

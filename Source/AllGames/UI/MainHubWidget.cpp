@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MainHubWidget.h"
+#include "../Audio/UiSoundStyle.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
@@ -47,16 +48,24 @@ void UMainHubWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	GameGrid = Cast<UUniformGridPanel>(WidgetTree ? WidgetTree->FindWidget(TEXT("GameGrid")) : nullptr);
+	RhythmGameButton = Cast<UButton>(WidgetTree ? WidgetTree->FindWidget(TEXT("btn_RhythmGame")) : nullptr);
+	QuizGameButton = Cast<UButton>(WidgetTree ? WidgetTree->FindWidget(TEXT("btn_QuizGame")) : nullptr);
 	ExitBackground = Cast<UBorder>(WidgetTree ? WidgetTree->FindWidget(TEXT("ExitBackground")) : nullptr);
 	ExitConfirmButton = Cast<UButton>(WidgetTree ? WidgetTree->FindWidget(TEXT("ExitConfirmButton")) : nullptr);
+	if (!ExitConfirmButton) ExitConfirmButton = Cast<UButton>(WidgetTree ? WidgetTree->FindWidget(TEXT("ExitconfirmButton")) : nullptr);
 	ExitCancelButton = Cast<UButton>(WidgetTree ? WidgetTree->FindWidget(TEXT("ExitCancelButton")) : nullptr);
+	if (RhythmGameButton) RhythmGameButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleRhythmGameClicked);
+	if (QuizGameButton) QuizGameButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleQuizGameClicked);
 	if (ExitConfirmButton) ExitConfirmButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleExitConfirmed);
 	if (ExitCancelButton) ExitCancelButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleExitCanceled);
 	if (!IsDesignTime())
 	{
-		PopulateGames();
+		// WBP_GameSelect owns two hand-authored buttons. The native/catalog grid remains
+		// only as a safe fallback when that designer hierarchy is unavailable.
+		if (!RhythmGameButton || !QuizGameButton) PopulateGames();
 		SetExitVisible(false);
 	}
+	AllGamesUiSound::ApplyButtonClickSound(WidgetTree);
 }
 
 void UMainHubWidget::BuildLayout()
@@ -109,7 +118,12 @@ void UMainHubWidget::PopulateGames()
 		UMiniGameEntryWidget* Entry = CreateWidget<UMiniGameEntryWidget>(GetOwningPlayer(), CardClass ? CardClass : UMiniGameEntryWidget::StaticClass());
 		if (!Entry) continue;
 		if (GameCardSize.X > 0.0f && GameCardSize.Y > 0.0f) Entry->SetCardSize(GameCardSize);
-		Entry->SetCardFrameImage(GameCardFrameImage);
+		const bool bRhythmCard = Catalog->Games[Index]->GameId == TEXT("RHYTHM");
+		UTexture2D* SpecificFrame = bRhythmCard ? RhythmGameCardFrameImage.Get() : QuizGameCardFrameImage.Get();
+		Entry->SetCardFrameImage(SpecificFrame ? SpecificFrame : GameCardFrameImage.Get());
+		Entry->SetTextBoxSizes(GameCardTitleTextBoxSize, GameCardDescriptionTextBoxSize);
+		Entry->SetCoverOverride(bRhythmCard
+			? RhythmGameCardImage.Get() : QuizGameCardImage.Get());
 		Entry->SetDefinition(Catalog->Games[Index]); Entry->OnSelected.AddUObject(this, &ThisClass::HandleGameSelected);
 		if (UUniformGridSlot* GridSlot = GameGrid->AddChildToUniformGrid(Entry, Index/3, Index%3))
 		{
@@ -141,3 +155,5 @@ void UMainHubWidget::SetExitVisible(bool bVisible)
 
 void UMainHubWidget::HandleExitConfirmed(){ UKismetSystemLibrary::QuitGame(this,GetOwningPlayer(),EQuitPreference::Quit,false); }
 void UMainHubWidget::HandleExitCanceled(){ SetExitVisible(false); SetKeyboardFocus(); }
+void UMainHubWidget::HandleRhythmGameClicked(){ UGameplayStatics::OpenLevel(this,TEXT("LobbyMap")); }
+void UMainHubWidget::HandleQuizGameClicked(){ UGameplayStatics::OpenLevel(this,TEXT("IdolQuizRoomMap")); }
