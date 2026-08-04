@@ -10,7 +10,8 @@ enum class EIdolQuizRoomCategory : uint8
 {
 	Idol,
 	Actor,
-	IdolAndActor
+	IdolAndActor,
+	OnePiece
 };
 
 UENUM(BlueprintType)
@@ -41,6 +42,9 @@ struct FIdolQuizRoomInfo
 	EIdolQuizRoomCategory Category = EIdolQuizRoomCategory::Idol;
 
 	UPROPERTY(BlueprintReadOnly)
+	FString PoolTags = TEXT("Idol");
+
+	UPROPERTY(BlueprintReadOnly)
 	int32 QuestionCount = 50;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -69,7 +73,7 @@ public:
 	FOnIdolSessionAction OnSessionAction;
 
 	void CreateRoom(const FString& RoomName, EMiniGameRoomType GameType,
-		EIdolQuizRoomCategory Category, int32 QuestionCount,
+		const FString& PoolTags, int32 QuestionCount,
 		int32 DrawingRoundsPerPlayer, int32 DrawingRoundTime);
 	void FindRooms();
 	void JoinRoom(int32 VisibleRoomIndex);
@@ -78,11 +82,15 @@ public:
 	bool HasActiveSession() const;
 	FString GetActiveRoomName() const;
 	EIdolQuizRoomCategory GetActiveRoomCategory() const;
+	FString GetActiveRoomPoolTags() const;
 	int32 GetActiveRoomQuestionCount() const;
 	EMiniGameRoomType GetActiveGameType() const;
 	int32 GetActiveDrawingRoundsPerPlayer() const;
 	int32 GetActiveDrawingRoundTime() const;
 	static FString GetCategoryLabel(EIdolQuizRoomCategory Category);
+	static FString CategoryToPoolTags(EIdolQuizRoomCategory Category);
+	static FString NormalizePoolTags(const FString& PoolTags);
+	static FString GetPoolTagsLabel(const FString& PoolTags);
 	static FString GetGameTypeLabel(EMiniGameRoomType GameType);
 
 private:
@@ -102,6 +110,7 @@ private:
 
 	FString PendingRoomName;
 	EIdolQuizRoomCategory PendingCategory = EIdolQuizRoomCategory::Idol;
+	FString PendingPoolTags = TEXT("Idol");
 	int32 PendingQuestionCount = 50;
 	EMiniGameRoomType PendingGameType = EMiniGameRoomType::PersonQuiz;
 	int32 PendingDrawingRoundsPerPlayer = 2;

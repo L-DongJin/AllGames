@@ -16,9 +16,10 @@ void AIdolQuizGameModeBase::StartQuiz()
 	GetWorldTimerManager().ClearTimer(AdvanceTimer);GetWorldTimerManager().ClearTimer(RoundTimer);
 	LoadedQuestionTable=QuestionTable.LoadSynchronous();EligibleQuestions.Reset();QuestionOrder.Reset();CurrentOrderIndex=INDEX_NONE;Score=0;bRoundResolved=false;
 	if(!LoadedQuestionTable){UE_LOG(LogTemp,Error,TEXT("Idol Quiz question DataTable is missing."));return;}
-	EIdolQuizRoomCategory RoomCategory=EIdolQuizRoomCategory::Idol;int32 RequestedQuestionCount=50;if(UGameInstance* GI=GetGameInstance())if(UIdolQuizSessionSubsystem* Sessions=GI->GetSubsystem<UIdolQuizSessionSubsystem>()){RoomCategory=Sessions->GetActiveRoomCategory();RequestedQuestionCount=Sessions->GetActiveRoomQuestionCount();}
+	FString SelectedPoolTags=TEXT("Idol");int32 RequestedQuestionCount=50;if(UGameInstance* GI=GetGameInstance())if(UIdolQuizSessionSubsystem* Sessions=GI->GetSubsystem<UIdolQuizSessionSubsystem>()){SelectedPoolTags=Sessions->GetActiveRoomPoolTags();RequestedQuestionCount=Sessions->GetActiveRoomQuestionCount();}
+	TArray<FString> SelectedPools;UIdolQuizSessionSubsystem::NormalizePoolTags(SelectedPoolTags).ParseIntoArray(SelectedPools,TEXT("|"),true);
 	TArray<FIdolQuizQuestion*> Rows;LoadedQuestionTable->GetAllRows(TEXT("IdolQuiz"),Rows);
-	for(const FIdolQuizQuestion* Row:Rows)if(Row&&Row->bEnabled&&!Row->StageName.IsEmpty()&&!Row->Image.IsNull()){const bool bActor=Row->Category.Equals(TEXT("Actor"),ESearchCase::IgnoreCase);const bool bAllowed=RoomCategory==EIdolQuizRoomCategory::IdolAndActor||(RoomCategory==EIdolQuizRoomCategory::Actor?bActor:!bActor);if(bAllowed)EligibleQuestions.Add(Row);}
+	for(const FIdolQuizQuestion* Row:Rows)if(Row&&Row->bEnabled&&!Row->StageName.IsEmpty()&&!Row->Image.IsNull()){TArray<FString> RowPools;(Row->PoolTags.IsEmpty()?Row->Category:Row->PoolTags).ParseIntoArray(RowPools,TEXT("|"),true);const bool bAllowed=RowPools.ContainsByPredicate([&SelectedPools](const FString& Pool){return SelectedPools.ContainsByPredicate([&Pool](const FString& Selected){return Selected.Equals(Pool.TrimStartAndEnd(),ESearchCase::IgnoreCase);});});if(bAllowed)EligibleQuestions.Add(Row);}
 	if(EligibleQuestions.IsEmpty()){UE_LOG(LogTemp,Error,TEXT("Idol Quiz question DataTable has no enabled rows."));return;}
 	for(int32 Index=0;Index<EligibleQuestions.Num();++Index)QuestionOrder.Add(Index);
 	for(int32 Index=QuestionOrder.Num()-1;Index>0;--Index)QuestionOrder.Swap(Index,FMath::RandRange(0,Index));
@@ -39,7 +40,7 @@ FString AIdolQuizGameModeBase::NormalizeAnswer(const FString& Value)
 }
 FString AIdolQuizGameModeBase::BuildInitialHint(const FString& Value)
 {
-	static const TCHAR Initials[]=TEXT("ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ");FString Result;for(const TCHAR Character:Value){if(Character>=0xAC00&&Character<=0xD7A3)Result.AppendChar(Initials[(Character-0xAC00)/588]);else if(FChar::IsAlnum(Character))Result.AppendChar(Character);}return Result;
+	static const TCHAR Initials[]=TEXT("ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ");FString Result;for(const TCHAR Character:Value){if(Character>=0xAC00&&Character<=0xD7A3)Result.AppendChar(Initials[(Character-0xAC00)/588]);else if(FChar::IsAlnum(Character)||Character==TEXT('&'))Result.AppendChar(Character);}return Result;
 }
 void AIdolQuizGameModeBase::AppendAliases(const FString& Aliases,TArray<FString>& OutAnswers)
 {

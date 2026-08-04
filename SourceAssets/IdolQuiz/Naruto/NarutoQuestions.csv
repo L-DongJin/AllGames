@@ -1,0 +1,65 @@
+﻿---,QuestionId,Image,StageName,RealName,Aliases,GroupName,Generation,Category,PoolTags,bEnabled
+NARUTO_001,NARUTO_001,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_001.T_NARUTO_001',이타치,,,Naruto,0,Naruto,Naruto,True
+NARUTO_002,NARUTO_002,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_002.T_NARUTO_002',나루토,,,Naruto,0,Naruto,Naruto,True
+NARUTO_003,NARUTO_003,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_003.T_NARUTO_003',오오츠츠키 카구야,,,Naruto,0,Naruto,Naruto,True
+NARUTO_004,NARUTO_004,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_004.T_NARUTO_004',우치하 마다라,,,Naruto,0,Naruto,Naruto,True
+NARUTO_005,NARUTO_005,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_005.T_NARUTO_005',미나토,,,Naruto,0,Naruto,Naruto,True
+NARUTO_006,NARUTO_006,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_006.T_NARUTO_006',카카시,,,Naruto,0,Naruto,Naruto,True
+NARUTO_007,NARUTO_007,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_007.T_NARUTO_007',가이,,,Naruto,0,Naruto,Naruto,True
+NARUTO_008,NARUTO_008,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_008.T_NARUTO_008',지라이야,,,Naruto,0,Naruto,Naruto,True
+NARUTO_009,NARUTO_009,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_009.T_NARUTO_009',육도선인,,,Naruto,0,Naruto,Naruto,True
+NARUTO_010,NARUTO_010,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_010.T_NARUTO_010',사스케,,,Naruto,0,Naruto,Naruto,True
+NARUTO_011,NARUTO_011,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_011.T_NARUTO_011',오비토,,,Naruto,0,Naruto,Naruto,True
+NARUTO_012,NARUTO_012,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_012.T_NARUTO_012',센쥬 하시라마,,,Naruto,0,Naruto,Naruto,True
+NARUTO_013,NARUTO_013,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_013.T_NARUTO_013',페인,,,Naruto,0,Naruto,Naruto,True
+NARUTO_014,NARUTO_014,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_014.T_NARUTO_014',히나타,,,Naruto,0,Naruto,Naruto,True
+NARUTO_015,NARUTO_015,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_015.T_NARUTO_015',가아라,,,Naruto,0,Naruto,Naruto,True
+NARUTO_016,NARUTO_016,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_016.T_NARUTO_016',센쥬 토비라마,,,Naruto,0,Naruto,Naruto,True
+NARUTO_017,NARUTO_017,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_017.T_NARUTO_017',록 리,,,Naruto,0,Naruto,Naruto,True
+NARUTO_018,NARUTO_018,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_018.T_NARUTO_018',사소리,,,Naruto,0,Naruto,Naruto,True
+NARUTO_019,NARUTO_019,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_019.T_NARUTO_019',이루카,,,Naruto,0,Naruto,Naruto,True
+NARUTO_020,NARUTO_020,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_020.T_NARUTO_020',데이다라,,,Naruto,0,Naruto,Naruto,True
+NARUTO_021,NARUTO_021,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_021.T_NARUTO_021',쿠레나이,,,Naruto,0,Naruto,Naruto,True
+NARUTO_022,NARUTO_022,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_022.T_NARUTO_022',시카마루,,,Naruto,0,Naruto,Naruto,True
+NARUTO_023,NARUTO_023,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_023.T_NARUTO_023',네지,,,Naruto,0,Naruto,Naruto,True
+NARUTO_024,NARUTO_024,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_024.T_NARUTO_024',토비,,,Naruto,0,Naruto,Naruto,True
+NARUTO_025,NARUTO_025,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_025.T_NARUTO_025',오로치마루,,,Naruto,0,Naruto,Naruto,True
+NARUTO_026,NARUTO_026,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_026.T_NARUTO_026',쿠시나,,,Naruto,0,Naruto,Naruto,True
+NARUTO_027,NARUTO_027,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_027.T_NARUTO_027',코노하마루,,,Naruto,0,Naruto,Naruto,True
+NARUTO_028,NARUTO_028,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_028.T_NARUTO_028',츠나데,,,Naruto,0,Naruto,Naruto,True
+NARUTO_029,NARUTO_029,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_029.T_NARUTO_029',하쿠,,,Naruto,0,Naruto,Naruto,True
+NARUTO_030,NARUTO_030,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_030.T_NARUTO_030',린,,,Naruto,0,Naruto,Naruto,True
+NARUTO_031,NARUTO_031,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_031.T_NARUTO_031',사쿠라,,,Naruto,0,Naruto,Naruto,True
+NARUTO_032,NARUTO_032,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_032.T_NARUTO_032',키바,,,Naruto,0,Naruto,Naruto,True
+NARUTO_033,NARUTO_033,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_033.T_NARUTO_033',코난,,,Naruto,0,Naruto,Naruto,True
+NARUTO_034,NARUTO_034,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_034.T_NARUTO_034',사루토비 히루젠,,,Naruto,0,Naruto,Naruto,True
+NARUTO_035,NARUTO_035,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_035.T_NARUTO_035',우치하 시스이,,,Naruto,0,Naruto,Naruto,True
+NARUTO_036,NARUTO_036,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_036.T_NARUTO_036',나가토,,,Naruto,0,Naruto,Naruto,True
+NARUTO_037,NARUTO_037,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_037.T_NARUTO_037',히단,,,Naruto,0,Naruto,Naruto,True
+NARUTO_038,NARUTO_038,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_038.T_NARUTO_038',자부자,,,Naruto,0,Naruto,Naruto,True
+NARUTO_039,NARUTO_039,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_039.T_NARUTO_039',야마토,,,Naruto,0,Naruto,Naruto,True
+NARUTO_040,NARUTO_040,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_040.T_NARUTO_040',테마리,,,Naruto,0,Naruto,Naruto,True
+NARUTO_041,NARUTO_041,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_041.T_NARUTO_041',텐텐,,,Naruto,0,Naruto,Naruto,True
+NARUTO_042,NARUTO_042,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_042.T_NARUTO_042',시즈네,,,Naruto,0,Naruto,Naruto,True
+NARUTO_043,NARUTO_043,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_043.T_NARUTO_043',킬러 비,,,Naruto,0,Naruto,Naruto,True
+NARUTO_044,NARUTO_044,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_044.T_NARUTO_044',사이,,,Naruto,0,Naruto,Naruto,True
+NARUTO_045,NARUTO_045,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_045.T_NARUTO_045',이노,,,Naruto,0,Naruto,Naruto,True
+NARUTO_046,NARUTO_046,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_046.T_NARUTO_046',카부토,,,Naruto,0,Naruto,Naruto,True
+NARUTO_047,NARUTO_047,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_047.T_NARUTO_047',단조,,,Naruto,0,Naruto,Naruto,True
+NARUTO_048,NARUTO_048,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_048.T_NARUTO_048',키사메,,,Naruto,0,Naruto,Naruto,True
+NARUTO_049,NARUTO_049,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_049.T_NARUTO_049',시노,,,Naruto,0,Naruto,Naruto,True
+NARUTO_050,NARUTO_050,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_050.T_NARUTO_050',앙코,,,Naruto,0,Naruto,Naruto,True
+NARUTO_051,NARUTO_051,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_051.T_NARUTO_051',쵸지,,,Naruto,0,Naruto,Naruto,True
+NARUTO_052,NARUTO_052,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_052.T_NARUTO_052',스이게츠,,,Naruto,0,Naruto,Naruto,True
+NARUTO_053,NARUTO_053,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_053.T_NARUTO_053',라이카게,,,Naruto,0,Naruto,Naruto,True
+NARUTO_054,NARUTO_054,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_054.T_NARUTO_054',미즈카게,,,Naruto,0,Naruto,Naruto,True
+NARUTO_055,NARUTO_055,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_055.T_NARUTO_055',츠치카게,,,Naruto,0,Naruto,Naruto,True
+NARUTO_056,NARUTO_056,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_056.T_NARUTO_056',카쿠즈,,,Naruto,0,Naruto,Naruto,True
+NARUTO_057,NARUTO_057,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_057.T_NARUTO_057',키미마로,,,Naruto,0,Naruto,Naruto,True
+NARUTO_058,NARUTO_058,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_058.T_NARUTO_058',카린,,,Naruto,0,Naruto,Naruto,True
+NARUTO_059,NARUTO_059,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_059.T_NARUTO_059',제츠,,,Naruto,0,Naruto,Naruto,True
+NARUTO_060,NARUTO_060,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_060.T_NARUTO_060',치요,,,Naruto,0,Naruto,Naruto,True
+NARUTO_061,NARUTO_061,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_061.T_NARUTO_061',다루이,,,Naruto,0,Naruto,Naruto,True
+NARUTO_062,NARUTO_062,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_062.T_NARUTO_062',주고,,,Naruto,0,Naruto,Naruto,True
+NARUTO_063,NARUTO_063,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_063.T_NARUTO_063',칸쿠로,,,Naruto,0,Naruto,Naruto,True
+NARUTO_064,NARUTO_064,Texture2D'/Game/IdolQuiz/Images/Naruto/T_NARUTO_064.T_NARUTO_064',아스마,,,Naruto,0,Naruto,Naruto,True

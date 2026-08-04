@@ -17,6 +17,7 @@ namespace
 	const UE::Online::FSchemaId RoomSchemaId(TEXT("IdolQuizLobby"));
 	const UE::Online::FSchemaAttributeId RoomNameAttribute(TEXT("RoomName"));
 	const UE::Online::FSchemaAttributeId RoomCategoryAttribute(TEXT("RoomCategory"));
+	const UE::Online::FSchemaAttributeId PoolTagsAttribute(TEXT("PoolTags"));
 	const UE::Online::FSchemaAttributeId QuestionCountAttribute(TEXT("QuestionCount"));
 	const UE::Online::FSchemaAttributeId GameTypeAttribute(TEXT("GameType"));
 	const UE::Online::FSchemaAttributeId DrawingRoundsAttribute(TEXT("DrawingRounds"));
@@ -43,9 +44,20 @@ namespace
 		if (const UE::Online::FSchemaVariant* Value = Lobby.Attributes.Find(RoomCategoryAttribute);
 			Value && Value->GetType() == UE::Online::ESchemaAttributeType::Int64)
 		{
-			return static_cast<EIdolQuizRoomCategory>(FMath::Clamp<int64>(Value->GetInt64(), 0, 2));
+			return static_cast<EIdolQuizRoomCategory>(FMath::Clamp<int64>(Value->GetInt64(), 0, 3));
 		}
 		return EIdolQuizRoomCategory::Idol;
+	}
+
+	FString ReadPoolTags(const UE::Online::FLobby& Lobby)
+	{
+		if (const UE::Online::FSchemaVariant* Value = Lobby.Attributes.Find(PoolTagsAttribute);
+			Value && Value->GetType() == UE::Online::ESchemaAttributeType::String)
+		{
+			const FString Normalized = UIdolQuizSessionSubsystem::NormalizePoolTags(Value->GetString());
+			if (!Normalized.IsEmpty()) return Normalized;
+		}
+		return UIdolQuizSessionSubsystem::CategoryToPoolTags(ReadRoomCategory(Lobby));
 	}
 
 	int32 ReadQuestionCount(const UE::Online::FLobby& Lobby)
@@ -53,7 +65,7 @@ namespace
 		if (const UE::Online::FSchemaVariant* Value = Lobby.Attributes.Find(QuestionCountAttribute);
 			Value && Value->GetType() == UE::Online::ESchemaAttributeType::Int64)
 		{
-			return FMath::Clamp(static_cast<int32>(Value->GetInt64()), 50, 300);
+			return FMath::Clamp(static_cast<int32>(Value->GetInt64()), 50, 303);
 		}
 		return 50;
 	}
@@ -134,7 +146,7 @@ bool UIdolQuizSessionSubsystem::TryGetEOSAccount(UE::Online::FAccountId& OutAcco
 void UIdolQuizSessionSubsystem::CreateRoom(
 	const FString& RoomName,
 	const EMiniGameRoomType GameType,
-	const EIdolQuizRoomCategory Category,
+	const FString& PoolTags,
 	const int32 QuestionCount,
 	const int32 DrawingRoundsPerPlayer,
 	const int32 DrawingRoundTime)
@@ -164,7 +176,16 @@ void UIdolQuizSessionSubsystem::CreateRoom(
 		return;
 	}
 
-	PendingCategory = Category;
+	PendingPoolTags = NormalizePoolTags(PoolTags);
+	if (PendingPoolTags.IsEmpty())
+	{
+		OnSessionAction.Broadcast(false, TEXT("출제 범위를 하나 이상 선택해 주세요."));
+		return;
+	}
+	PendingCategory = PendingPoolTags == TEXT("Actor") ? EIdolQuizRoomCategory::Actor
+		: PendingPoolTags == TEXT("Idol|Actor") ? EIdolQuizRoomCategory::IdolAndActor
+		: PendingPoolTags == TEXT("OnePiece") ? EIdolQuizRoomCategory::OnePiece
+		: EIdolQuizRoomCategory::Idol;
 	PendingQuestionCount = FMath::Clamp(FMath::RoundToInt(static_cast<float>(QuestionCount) / 50.0f) * 50, 50, 300);
 	PendingGameType = GameType;
 	PendingDrawingRoundsPerPlayer = FMath::Clamp(DrawingRoundsPerPlayer, 1, 5);
@@ -285,6 +306,7 @@ void UIdolQuizSessionSubsystem::CreateEOSRoomInternal()
 	Params.Attributes.Emplace(
 		RoomCategoryAttribute,
 		UE::Online::FSchemaVariant(static_cast<int64>(PendingCategory)));
+	Params.Attributes.Emplace(PoolTagsAttribute, UE::Online::FSchemaVariant(PendingPoolTags));
 	Params.Attributes.Emplace(
 		QuestionCountAttribute,
 		UE::Online::FSchemaVariant(static_cast<int64>(PendingQuestionCount)));
@@ -391,6 +413,7 @@ void UIdolQuizSessionSubsystem::StartEOSFindAttempt()
 					FIdolQuizRoomInfo& Room = Rooms.AddDefaulted_GetRef();
 					Room.RoomName = ReadRoomName(*Lobby);
 					Room.Category = ReadRoomCategory(*Lobby);
+					Room.PoolTags = ReadPoolTags(*Lobby);
 					Room.QuestionCount = ReadQuestionCount(*Lobby);
 					Room.GameType = ReadGameType(*Lobby);
 					Room.DrawingRoundsPerPlayer = FMath::Clamp(ReadIntAttribute(*Lobby, DrawingRoundsAttribute, 2), 1, 5);
@@ -612,6 +635,11 @@ EIdolQuizRoomCategory UIdolQuizSessionSubsystem::GetActiveRoomCategory() const
 	return ActiveEOSLobby.IsValid() ? ReadRoomCategory(*ActiveEOSLobby) : PendingCategory;
 }
 
+FString UIdolQuizSessionSubsystem::GetActiveRoomPoolTags() const
+{
+	return ActiveEOSLobby.IsValid() ? ReadPoolTags(*ActiveEOSLobby) : PendingPoolTags;
+}
+
 int32 UIdolQuizSessionSubsystem::GetActiveRoomQuestionCount() const
 {
 	return ActiveEOSLobby.IsValid() ? ReadQuestionCount(*ActiveEOSLobby) : PendingQuestionCount;
@@ -644,9 +672,72 @@ FString UIdolQuizSessionSubsystem::GetCategoryLabel(const EIdolQuizRoomCategory 
 		return TEXT("배우");
 	case EIdolQuizRoomCategory::IdolAndActor:
 		return TEXT("아이돌 + 배우");
+	case EIdolQuizRoomCategory::OnePiece:
+		return TEXT("원피스");
 	default:
 		return TEXT("아이돌");
 	}
+}
+
+FString UIdolQuizSessionSubsystem::CategoryToPoolTags(const EIdolQuizRoomCategory Category)
+{
+	switch (Category)
+	{
+	case EIdolQuizRoomCategory::Actor: return TEXT("Actor");
+	case EIdolQuizRoomCategory::IdolAndActor: return TEXT("Idol|Actor");
+	case EIdolQuizRoomCategory::OnePiece: return TEXT("OnePiece");
+	default: return TEXT("Idol");
+	}
+}
+
+FString UIdolQuizSessionSubsystem::NormalizePoolTags(const FString& PoolTags)
+{
+	static const TArray<FString> Registry = {
+		TEXT("GirlGroup"), TEXT("BoyGroup"), TEXT("Idol"), TEXT("Actor"),
+		TEXT("Comedian"), TEXT("OnePiece"), TEXT("Naruto"), TEXT("MC"), TEXT("KBOPlayer")
+	};
+	TArray<FString> Parsed;
+	PoolTags.ParseIntoArray(Parsed, TEXT("|"), true);
+	for (const FString& Value : Parsed)
+	{
+		if (!Registry.ContainsByPredicate([&Value](const FString& Registered)
+		{
+			return Value.TrimStartAndEnd().Equals(Registered, ESearchCase::IgnoreCase);
+		}))
+		{
+			return FString();
+		}
+	}
+	TArray<FString> Normalized;
+	for (const FString& Registered : Registry)
+	{
+		if (Parsed.ContainsByPredicate([&Registered](const FString& Value)
+		{
+			return Value.TrimStartAndEnd().Equals(Registered, ESearchCase::IgnoreCase);
+		}))
+		{
+			Normalized.Add(Registered);
+		}
+	}
+	return FString::Join(Normalized, TEXT("|"));
+}
+
+FString UIdolQuizSessionSubsystem::GetPoolTagsLabel(const FString& PoolTags)
+{
+	static const TMap<FString, FString> Labels = {
+		{TEXT("GirlGroup"), TEXT("걸그룹")}, {TEXT("BoyGroup"), TEXT("남그룹")},
+		{TEXT("Idol"), TEXT("아이돌")}, {TEXT("Actor"), TEXT("배우")},
+		{TEXT("Comedian"), TEXT("개그맨")}, {TEXT("OnePiece"), TEXT("원피스")},
+		{TEXT("Naruto"), TEXT("나루토")}, {TEXT("MC"), TEXT("MC")},
+		{TEXT("KBOPlayer"), TEXT("야구선수")}
+	};
+	TArray<FString> Tags;
+	NormalizePoolTags(PoolTags).ParseIntoArray(Tags, TEXT("|"), true);
+	for (FString& Tag : Tags)
+	{
+		if (const FString* Label = Labels.Find(Tag)) Tag = *Label;
+	}
+	return FString::Join(Tags, TEXT(" + "));
 }
 
 FString UIdolQuizSessionSubsystem::GetGameTypeLabel(const EMiniGameRoomType GameType)

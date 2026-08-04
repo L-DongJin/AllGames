@@ -17,6 +17,7 @@ struct FIdolQuizQuestion : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Idol Quiz") FString GroupName;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Idol Quiz") int32 Generation = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Idol Quiz") FString Category = TEXT("Idol");
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Idol Quiz", meta=(ToolTip="Stable pool IDs separated with |")) FString PoolTags;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Idol Quiz") bool bEnabled = true;
 };
 UCLASS(BlueprintType)

@@ -79,7 +79,33 @@ void URhythmLoginWidget::NativeConstruct()
 		AccountBackground->SetBrushFromTexture(LoginBackgroundImage, true);
 		AccountBackground->SetColorAndOpacity(LoginBackgroundTint);
 	}
-	if(WidgetTree){if(!LoginButton)LoginButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("LoginButton")));if(!RegisterButton)RegisterButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("OpenRegistrationButton")));if(!CreateAccountButton)CreateAccountButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("CreateAccountButton")));if(!RegistrationBackButton)RegistrationBackButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("RegistrationBackButton")));}
+	if(WidgetTree)
+	{
+		if(!LoginPanel)LoginPanel=Cast<UCanvasPanel>(WidgetTree->FindWidget(TEXT("LoginPanel")));
+		if(!RegistrationPanel)RegistrationPanel=Cast<UCanvasPanel>(WidgetTree->FindWidget(TEXT("RegistrationPanel")));
+		if(!UsernameInput)UsernameInput=Cast<UEditableTextBox>(WidgetTree->FindWidget(TEXT("LoginUsernameInput")));
+		if(!PasswordInput)PasswordInput=Cast<UEditableTextBox>(WidgetTree->FindWidget(TEXT("LoginPasswordInput")));
+		if(!RegistrationUsernameInput)RegistrationUsernameInput=Cast<UEditableTextBox>(WidgetTree->FindWidget(TEXT("RegistrationUsernameInput")));
+		if(!RegistrationPasswordInput)RegistrationPasswordInput=Cast<UEditableTextBox>(WidgetTree->FindWidget(TEXT("RegistrationPasswordInput")));
+		if(!RegistrationPasswordConfirmInput)RegistrationPasswordConfirmInput=Cast<UEditableTextBox>(WidgetTree->FindWidget(TEXT("RegistrationPasswordConfirmInput")));
+		if(!StatusText)StatusText=Cast<UTextBlock>(WidgetTree->FindWidget(TEXT("LoginStatus")));
+		if(!RegistrationStatusText)RegistrationStatusText=Cast<UTextBlock>(WidgetTree->FindWidget(TEXT("RegistrationStatus")));
+		if(!RegistrationUsernameHelpText)RegistrationUsernameHelpText=Cast<UTextBlock>(WidgetTree->FindWidget(TEXT("RegistrationUsernameHelp")));
+		if(!LoginButton)LoginButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("LoginButton")));
+		if(!RegisterButton)RegisterButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("OpenRegistrationButton")));
+		if(!CreateAccountButton)CreateAccountButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("CreateAccountButton")));
+		if(!RegistrationBackButton)RegistrationBackButton=Cast<UButton>(WidgetTree->FindWidget(TEXT("RegistrationBackButton")));
+	}
+	if (!RegistrationUsernameHelpText && RegistrationPanel)
+	{
+		RegistrationUsernameHelpText = MakeLoginText(
+			WidgetTree, TEXT("RegistrationUsernameHelp"),
+			TEXT("아이디는 영문과 숫자만 사용할 수 있습니다."), 16);
+		RegistrationUsernameHelpText->SetColorAndOpacity(
+			FSlateColor(FLinearColor(0.55f, 0.82f, 1.0f)));
+		AddCentered(
+			RegistrationPanel, RegistrationUsernameHelpText, 0.405f, FVector2D(620.0f, 32.0f));
+	}
 	ApplyButtonArtwork(LoginButton,LoginButtonNormalImage,LoginButtonHoveredImage,LoginButtonPressedImage,LoginButtonSize);
 	ApplyButtonArtwork(RegisterButton,RegisterButtonNormalImage,RegisterButtonHoveredImage,RegisterButtonPressedImage,RegisterButtonSize);
 	ApplyButtonArtwork(CreateAccountButton,CreateAccountButtonNormalImage,CreateAccountButtonHoveredImage,CreateAccountButtonPressedImage,CreateAccountButtonSize);
@@ -192,6 +218,13 @@ void URhythmLoginWidget::BuildLayout()
 	RegistrationUsernameInput->SetHintText(FText::FromString(TEXT("사용할 아이디 (3~20자)")));
 	ApplyBlackInputText(RegistrationUsernameInput);
 	AddCentered(RegistrationPanel, RegistrationUsernameInput, 0.36f, FVector2D(520.0f, 64.0f));
+	RegistrationUsernameHelpText = MakeLoginText(
+		WidgetTree, TEXT("RegistrationUsernameHelp"),
+		TEXT("아이디는 영문과 숫자만 사용할 수 있습니다."), 16);
+	RegistrationUsernameHelpText->SetColorAndOpacity(
+		FSlateColor(FLinearColor(0.55f, 0.82f, 1.0f)));
+	AddCentered(
+		RegistrationPanel, RegistrationUsernameHelpText, 0.405f, FVector2D(620.0f, 32.0f));
 
 	RegistrationPasswordInput = WidgetTree->ConstructWidget<UEditableTextBox>(
 		UEditableTextBox::StaticClass(), TEXT("RegistrationPasswordInput"));

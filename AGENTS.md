@@ -54,6 +54,23 @@ Before handing off a completed change:
 - Confirm newly created Unreal assets have the expected LFS attributes.
 - Perform the relevant TestMap runtime check and report any manual PIE check still required.
 
+## Web image and dataset collection safety
+
+- Do not use the Codex in-app browser to bulk-download images or to emit full DOM snapshots, full inline scripts, page HTML, base64 data, or image bytes into the conversation.
+- Use the browser only when a bounded metadata check cannot be completed with a small direct HTTP response. Prefer a local resumable script for collection and conversion.
+- Discover a new source in stages:
+  1. Make one bounded metadata request with a 15-second timeout and a 1-2 MB response limit.
+  2. Confirm the expected item count and inspect no more than two names and image URLs.
+  3. Download and validate one image before starting the full collection.
+- For the full collection, default to one concurrent download, at least 750 ms between requests, a 60-second per-file timeout, and a 10 MB per-file limit. Do not exceed concurrency 2 without explicit user approval.
+- Save at most 10 items per batch and atomically update a manifest and progress checkpoint after every batch. On restart, skip files whose existence, decode, dimensions, and SHA-256 already match the manifest.
+- Validate every completed image: nonempty file, successful decode, positive width and height, intended output format, and SHA-256. Record failures without infinite retries.
+- Stop the collection and report to the user on HTTP 429, access blocking, repeated network errors, unexpected response size or type, decoder failure, memory/tool errors, or a missing browser context. Do not bypass site protections or repeatedly restore a broken browser context.
+- Keep original display names in the manifest. When filenames should use those names, remove only instructed annotations, replace Windows-invalid characters safely, detect collisions before renaming, and update manifest references atomically.
+- Do not render or preview an entire collected dataset in the Codex conversation. Report counts, sizes, validation results, and a small sample only.
+- For PIKU specifically, use the small server-side ranking JSON endpoint when available and keep image downloads outside the browser. Reuse the checkpointed local collection pattern demonstrated by `Scripts/CollectNarutoQuiz.ps1`.
+- These rules reduce crash risk but do not guarantee that the Codex app or a third-party site will never fail. Preserve resumability so an app crash never requires restarting a completed batch.
+
 ## Documentation maintenance
 
 - `Docs/DevelopmentPlan.md` is the project source of truth for progress and design decisions.

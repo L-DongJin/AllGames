@@ -183,7 +183,7 @@ void UIdolQuizLobbyWidget::RefreshPlayers()
 					? FString::Printf(TEXT("인당 %d회 · 제한시간 %d초"),
 						Sessions->GetActiveDrawingRoundsPerPlayer(), Sessions->GetActiveDrawingRoundTime())
 					: FString::Printf(TEXT("%s · %d문제"),
-						*UIdolQuizSessionSubsystem::GetCategoryLabel(Sessions->GetActiveRoomCategory()),
+						*UIdolQuizSessionSubsystem::GetPoolTagsLabel(Sessions->GetActiveRoomPoolTags()),
 						Sessions->GetActiveRoomQuestionCount());
 				GameInfoText->SetText(FText::FromString(FString::Printf(
 					TEXT("%s  |  %s"), *UIdolQuizSessionSubsystem::GetGameTypeLabel(Type), *Settings)));

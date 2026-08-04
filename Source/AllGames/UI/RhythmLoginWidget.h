@@ -104,6 +104,9 @@ private:
 	TObjectPtr<UEditableTextBox> RegistrationUsernameInput;
 
 	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> RegistrationUsernameHelpText;
+
+	UPROPERTY(Transient)
 	TObjectPtr<UEditableTextBox> RegistrationPasswordInput;
 
 	UPROPERTY(Transient)

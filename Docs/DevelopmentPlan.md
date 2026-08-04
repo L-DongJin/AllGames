@@ -1,6 +1,6 @@
 # AllGames Rhythm Game Development Plan
 
-Last updated: 2026-07-25
+Last updated: 2026-07-29
 
 ## Goal
 
@@ -10,18 +10,20 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 
 - Prototype progress: stages 1-10 complete; stage 11 implemented and awaiting full-song PIE verification.
 - AllGames platform progress: the shared MainHub launches Rhythm Game, Person Quiz, and the new real-time Drawing Quiz prototype.
-- Idol Quiz content: 589 unique idol/actor questions. EOS rooms support host-selected 50-question increments and server-authoritative chat answers and skip voting.
-- Idol Quiz data source: `SourceAssets/IdolQuiz/IdolQuizQuestions.csv` is the editable source of truth and `/Game/IdolQuiz/Data/DT_IdolQuizQuestions` is its runtime DataTable. Rows support stage name, real name, pipe-separated aliases, group, generation, category, image, and enabled state.
+- Person Quiz content: 1,252 questions across Idol (258), Actor (331), One Piece (303), Naruto (64), MC (40), and KBO Player (256) pools. Room creation uses independent multi-select pool checkboxes and 50-question increments up to 300.
+- Person Quiz data sources: `/Game/IdolQuiz/Data/DT_IdolQuizQuestionsExpanded` contains all 1,252 runtime rows. Reviewable manifests and generated CSVs remain under `SourceAssets/IdolQuiz/OnePiece`, `Naruto`, `MC`, and `KBO2025`; rows retain canonical answer, pipe-separated aliases, pool tags, image references, and enabled state. The MC exclusion list is stored in `SourceAssets/IdolQuiz/MC/excluded_names.json` so removed entries are not re-downloaded or re-imported.
+- Naruto, MC, and KBO 2025 source datasets are imported as 384 Git LFS textures and connected to `Naruto`, `MC`, and `KBOPlayer` runtime pools; multi-select room creation and gameplay require manual PIE verification.
+
 - Current stage: sixteen-song, sixty-four-chart catalog rebalanced to a shared Lv1-20 ceiling with at least two displayed levels between adjacent difficulties. Four previously Lv21-22 Expert charts were rebuilt and await focused PIE playtesting.
 - Current online stage: PlayFab account login and score submission are PIE-verified; result/lobby leaderboard presentation is implemented and awaiting PIE verification.
 - EOS nationwide multiplayer setup: the Developer Portal product, Live sandbox/deployment, Peer-to-Peer client policy, and game client have been created. The project intentionally remains on `OnlineSubsystemNull` until EOS Connect authentication is implemented, so the existing LAN room flow is not broken mid-migration.
 - Next online stage after verification: assign permanent SongIds to production chart assets, confirm maximum-score aggregation, then prepare server-validated submission before public distribution.
 - Default map: `/Game/Maps/MainHubMap`; it authenticates once, launches the selected mini-game entry map, and the Rhythm entry continues through `/Game/Maps/LobbyMap` to `/Game/Maps/FiveKeyMap`.
 - Preserved 9-key test map: `/Game/Maps/TestMap`.
-- Playable catalog: Choom, Lemonade, It'sMe, CHASE-ME, CANON-D, Drama, 만찬가, LoveAttack, 갑자기, HeavySerenade, RUDE!, SHEESH, DRIP, BANG BANG, 404 (New Era), and 캐치캐치; every song has Easy/Normal/Hard/Expert 5-key charts.
+- Playable catalog: Choom, Lemonade, It'sMe, CHASE-ME, CANON-D, Drama, 筌띾슣媛붷첎?, LoveAttack, 揶쏅쵐?꾣묾? HeavySerenade, RUDE!, SHEESH, DRIP, BANG BANG, 404 (New Era), and 筌?Ŋ?귨㏄癒?뒄; every song has Easy/Normal/Hard/Expert 5-key charts.
 - Test song format: stereo, 48 kHz, 16-bit PCM WAV, approximately 176.054 seconds.
 - Default input mode follows SongData; FiveKeyMap selects 5-key.
-- Latest successful full build: `AllGamesEditor Win64 Development` on 2026-07-25.
+- Latest successful full build: `AllGamesEditor Win64 Development` on 2026-07-28.
 - Repository scope now includes the lobby, complete 5-key gameplay loop, MIDI authoring tools, and the three-song production catalog.
 - Detailed chart-authoring history and the reusable current workflow are documented in `Docs/ChartAuthoringPipeline.md`.
 - Current Drawing Quiz stage: 2-6 player network prototype is connected to the shared EOS room browser and waiting room; manual two-client create/join/start/play verification is next.
@@ -123,15 +125,15 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 
 ## Stage roadmap
 
-1. **Test map and GameMode — complete**
+1. **Test map and GameMode ??complete**
    - Created TestMap, C++/Blueprint GameMode, minimal actors, and default-map configuration.
-2. **Enhanced Input — complete**
+2. **Enhanced Input ??complete**
    - Implemented lane input and later expanded it into selectable 5-key and 9-key layouts.
-3. **Play one song — complete**
+3. **Play one song ??complete**
    - Imported Choom and implemented automatic playback through RhythmConductor.
-4. **Read music time — complete**
+4. **Read music time ??complete**
    - Added the audio-derived playback timeline and Blueprint-accessible queries.
-5. **Create temporary notes — complete**
+5. **Create temporary notes ??complete**
    - Add a temporary note data structure, several hard-coded notes, a note actor, and time-aware spawning.
    - Success means notes appear in the correct lanes before their target times; no judgement yet.
 6. **Move notes to the judgement line**
@@ -253,7 +255,7 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Connected the AllGames client to PlayFab Title ID `1BD611` through `DefaultEngine.ini`. The public Title ID is packaged with the client as intended, while `DeveloperSecretKey` remains explicitly empty and must never be added to the game project.
 - Added the first persistent-account implementation. `URhythmAccountSubsystem` owns PlayFab username/password registration and login across map travel without storing passwords; the LobbyMap controller now gates the song lobby behind a minimal ID/password screen and opens the existing lobby only after successful authentication. Registration uses the ID as the initial display name and does not require email yet.
 - Localized the entire account entry flow to Korean and separated registration into its own full-screen panel. The registration panel explains cross-PC use, requests ID/password/password confirmation, validates matching passwords before PlayFab submission, warns about the current lack of email recovery, and provides a clear return path to the login panel.
-- Simplified registration to a single centered `가입` button with no manual back button. Successful registration now returns to the login panel, pre-fills the new ID, and requires an explicit login; all account text-entry foreground colors are black for readability. Made `URhythmLoginWidget` focusable to remove the PIE `does not support focus` warning.
+- Simplified registration to a single centered `揶쎛?? button with no manual back button. Successful registration now returns to the login panel, pre-fills the new ID, and requires an explicit login; all account text-entry foreground colors are black for readability. Made `URhythmLoginWidget` focusable to remove the PIE `does not support focus` warning.
 - Added the first online leaderboard service layer. Song charts now expose a stable `SongId` and `ChartVersion`; `URhythmLeaderboardSubsystem` generates independent PlayFab statistic keys for song/key-mode/difficulty/version, submits completed-song scores, and can retrieve both the global top list and the logged-in player's surrounding ranks. Existing assets without an assigned SongId temporarily fall back to a sanitized song title so PIE integration can be tested before bulk Data Asset editing.
 - Completed scores are submitted once from the song-finished flow. PlayFab's signed 32-bit statistic range, active login session, null charts, duplicate in-flight requests, result conversion, one-based ranks, and network failures are handled in the subsystem; leaderboard UI and permanent SongId assignment remain the next ranking-stage work.
 - User verified a successful live score write for `RUDE_5K_HARD_V1`. Connected the result screen to show submission progress followed by the logged-in player's online rank and personal best, and added a selection-aware online top-10 panel to the lobby. Stale asynchronous responses are discarded and the latest song/difficulty is retried after an in-flight request completes.
@@ -267,9 +269,9 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Packaged gameplay input reached the judgement manager, but the presentation did not react because the gameplay widget could initialize before the runtime judgement and score managers. The widget now retries those bindings during tick and uses unique delegates once the managers appear, restoring judged-note removal, judgement feedback, and score display in packaged builds.
 - Removed the redundant `RHYTHM SELECT`, subtitle, and `SONG` lobby headings, then rebalanced the artwork, settings, controls, ranking area, start button, and help row for the 16:10 packaged layout.
 - Fixed leaderboard best-score regression: because the PlayFab statistic was configured with `Last` aggregation, every completed run previously overwrote the stored score. Submission now reads the player's current statistic first and only sends an update when the completed run is a new personal best; lookup failure safely leaves the existing record untouched.
-- Added a lobby Escape confirmation overlay with mouse-driven `게임 종료` and `취소` actions. Escape toggles the overlay instead of requiring Alt+F4, and lobby selection input is suppressed while the confirmation is visible.
+- Added a lobby Escape confirmation overlay with mouse-driven `野껊슣???ル굝利? and `?띯뫁?? actions. Escape toggles the overlay instead of requiring Alt+F4, and lobby selection input is suppressed while the confirmation is visible.
 - Reduced the gameplay Perfect/Great/Good/Miss feedback and HIT counter to 86% scale and moved the group slightly upward. The new scale, normalized vertical offset, and HIT font size remain editable in `WBP_RhythmGameplay` Class Defaults under `Rhythm|Appearance|Judgement`.
-- Added SHEESH and DRIP from four aligned WAV stems each, plus BANG BANG, 404 (New Era), and 캐치캐치 from four-role MIDI stems aligned against their master WAVs. Generated and cataloged twenty difficulty assets with increasing Easy-to-Expert density, stable online SongIds, shared 1-24 chart levels, and automatic onset-quality reports.
+- Added SHEESH and DRIP from four aligned WAV stems each, plus BANG BANG, 404 (New Era), and 筌?Ŋ?귨㏄癒?뒄 from four-role MIDI stems aligned against their master WAVs. Generated and cataloged twenty difficulty assets with increasing Easy-to-Expert density, stable online SongIds, shared 1-24 chart levels, and automatic onset-quality reports.
 - Added `/Game/Maps/LobbyTestMap` as an editor-only rapid-testing entry point. `ARhythmLobbyPlayerController` bypasses PlayFab login only when this map is running in an editor build; normal LobbyMap and packaged builds continue to require authentication.
 - Began the AllGames multi-game platform layer. Added `MainHubMap`, shared account gating, catalog-driven mini-game definition assets, reusable game-entry cards, and an Escape exit confirmation. The default startup now enters MainHub; Rhythm launches the existing LobbyMap, while Idol Quiz is visible as a disabled coming-soon entry. Adding future games requires a definition asset and catalog entry rather than another hardcoded hub branch.
 - Added an `ALL GAMES` action to the rhythm lobby so players can return to MainHub without restarting. Packaging configuration now cooks MainHubMap alongside the existing rhythm maps; no package was generated during this stage.
@@ -279,12 +281,12 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Added CANON-D from separated 120 BPM Vocal/Drums/Bass/Other MIDI sources and the existing 198.856-second master SoundWave. The reusable multitrack alignment/motif pipeline generated Easy/Normal/Hard/Expert 5-key charts with 403/495/927/1182 notes, 2/3/7/15 long notes, and coverage through 196.925 seconds.
 - Created `DA_CanonD_{Easy,Normal,Hard,Expert}_5Key`, configured a 55-second lobby preview, expanded the catalog to five songs and twenty charts, and added dedicated plus full-catalog validators. Existing songs and comparison assets remain intact.
 - Relaxed long-note release timing after playtesting: releasing up to 180 ms before the tail now completes the hold instead of the previous 80 ms. Earlier releases still break the note, and the shared `LongNoteReleaseGraceSeconds` remains editor-adjustable up to 350 ms.
-- Added Drama and 만찬가 as complete four-difficulty 5-key song groups. Drama uses aligned Vocal/Drums/Bass/FX WAV authoring stems and generates 543/864/1246/1834 notes through 213.3 seconds; 만찬가 uses Vocal/Drums/Bass/Other MIDI aligned to its master WAV and generates 565/655/1040/1253 notes through 216.6 seconds.
-- Created `DA_Drama_{Easy,Normal,Hard,Expert}_5Key` and `DA_Bansanka_{Easy,Normal,Hard,Expert}_5Key`, linked the existing `에스파-Drama` and `tuki-만찬가` SoundWaves, configured lobby previews, and expanded `DA_RhythmSongCatalog` to seven songs and twenty-eight charts.
-- Added dedicated Drama/만찬가 validation and expanded full lobby validation. Both Unreal commandlets completed with zero errors and warnings; all new Data Assets and the catalog resolve to Git LFS. Manual PIE listening verification remains for musical feel, sync, previews, and late-song coverage.
-- Added LoveAttack and 갑자기 as complete four-difficulty 5-key song groups. LoveAttack uses aligned Vocal/Drums/Bass/FX WAV stems and generates 594/786/1095/1457 notes through 179.4 seconds; 갑자기 uses Vocal/Drums/Bass/Other MIDI aligned to its master WAV and generates 523/592/857/1052 notes through 193.6 seconds.
-- Created `DA_LoveAttack_{Easy,Normal,Hard,Expert}_5Key` and `DA_Suddenly_{Easy,Normal,Hard,Expert}_5Key`, linked the existing `리센느-LoveAttack` and `아이오아이-갑자기` SoundWaves, configured lobby previews, and expanded the catalog to nine songs and thirty-six charts.
-- Added dedicated LoveAttack/갑자기 validation and expanded the full lobby validator. Both Unreal commandlets completed with zero errors and warnings, and all eight new Data Assets resolve to Git LFS. Manual PIE listening verification remains.
+- Added Drama and 筌띾슣媛붷첎? as complete four-difficulty 5-key song groups. Drama uses aligned Vocal/Drums/Bass/FX WAV authoring stems and generates 543/864/1246/1834 notes through 213.3 seconds; 筌띾슣媛붷첎? uses Vocal/Drums/Bass/Other MIDI aligned to its master WAV and generates 565/655/1040/1253 notes through 216.6 seconds.
+- Created `DA_Drama_{Easy,Normal,Hard,Expert}_5Key` and `DA_Bansanka_{Easy,Normal,Hard,Expert}_5Key`, linked the existing `?癒?뮞??Drama` and `tuki-筌띾슣媛붷첎?` SoundWaves, configured lobby previews, and expanded `DA_RhythmSongCatalog` to seven songs and twenty-eight charts.
+- Added dedicated Drama/筌띾슣媛붷첎? validation and expanded full lobby validation. Both Unreal commandlets completed with zero errors and warnings; all new Data Assets and the catalog resolve to Git LFS. Manual PIE listening verification remains for musical feel, sync, previews, and late-song coverage.
+- Added LoveAttack and 揶쏅쵐?꾣묾?as complete four-difficulty 5-key song groups. LoveAttack uses aligned Vocal/Drums/Bass/FX WAV stems and generates 594/786/1095/1457 notes through 179.4 seconds; 揶쏅쵐?꾣묾?uses Vocal/Drums/Bass/Other MIDI aligned to its master WAV and generates 523/592/857/1052 notes through 193.6 seconds.
+- Created `DA_LoveAttack_{Easy,Normal,Hard,Expert}_5Key` and `DA_Suddenly_{Easy,Normal,Hard,Expert}_5Key`, linked the existing `?귐딄쉽??LoveAttack` and `?袁⑹뵠??쇰툡??揶쏅쵐?꾣묾? SoundWaves, configured lobby previews, and expanded the catalog to nine songs and thirty-six charts.
+- Added dedicated LoveAttack/揶쏅쵐?꾣묾?validation and expanded the full lobby validator. Both Unreal commandlets completed with zero errors and warnings, and all eight new Data Assets resolve to Git LFS. Manual PIE listening verification remains.
 - Added a reusable automatic chart quality analyzer to both WAV-stem and multitrack-MIDI generation. Each generation now emits JSON and Markdown reports covering audio-onset match, median timing distance, density outliers, active-but-sparse windows, longest gaps, lane balance, long-note overlap, and prioritized five-second listening windows while excluding the intentional opening preparation region.
 - Added HeavySerenade and RUDE! from aligned Vocal/Drums/Bass/FX WAV stems. HeavySerenade generates 471/752/1063/1539 notes through 178.1 seconds; RUDE! generates 524/858/1177/1731 notes through 195.5 seconds.
 - Created `DA_HeavySerenade_{Easy,Normal,Hard,Expert}_5Key` and `DA_Rude_{Easy,Normal,Hard,Expert}_5Key`, linked their existing SoundWaves, configured lobby previews, and expanded the catalog to eleven songs and forty-four charts.
@@ -358,7 +360,7 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Added restart and `ALL GAMES` navigation. The prototype intentionally remains single-player; multiplayer rooms, a round timer, and server-authoritative first-correct-answer ownership are future work.
 - Imported 83 third-generation idol images from 13 group folders into `/Game/IdolQuiz/Images/Generation3`, built `/Game/IdolQuiz/Data/DA_IdolQuiz_3rdGeneration`, created `/Game/Maps/IdolQuizMap`, and enabled the Idol Quiz card in the shared MainHub.
 - Preserved the user's source folder convention: immediate folder name becomes group metadata and the image filename without extension becomes the correct answer. Future bulk additions can use the same convention and import script.
-- Found one mislabeled source file: `레드벨벳/예리.jpg` contained WEBP data. The original download was left untouched; a project-side PNG repair copy is used by the repeatable import workflow.
+- Found one mislabeled source file: `??덈굡甕겸뫀猿???댿봺.jpg` contained WEBP data. The original download was left untouched; a project-side PNG repair copy is used by the repeatable import workflow.
 - UE 5.7's headless Interchange import crashed while notifying Content Browser because Slate was unavailable. The import was completed safely through a full Editor process with rendering disabled; this engine automation limitation is recorded in the workflow.
 - Automated content validation passed: 83 questions, 83 image references, unique question IDs, nonempty answers/groups, generation metadata, 13 groups, IdolQuizMap, and enabled MainHub entry.
 - Manual PIE verification still required: launch Idol Quiz from MainHub, confirm images display, correct/wrong answers behave as expected, 10 questions finish, restart works, and `ALL GAMES` returns to MainHub.
@@ -368,15 +370,15 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Added repeatable DataTable creation and validation scripts. The Editor target build succeeded, and automated validation passed for 83 matching CSV/DataTable rows, nonempty stage and real names, unique IDs, all image references, 13 groups, enabled state, map, and MainHub entry.
 - Multiplayer remains deliberately out of this completed data-migration stage. The next requested stage will introduce an Idol Quiz lobby and room/session model, then server-authoritative shared questions, chat ordering, timers, and scores.
 - After the DataTable migration, PIE reported that typed Korean answers no longer advanced the round. Hardened normalization to explicitly preserve Hangul syllables and jamo, and added diagnostic logs containing the submitted value plus the active row's stage/real names when a comparison fails. Editor target build succeeded; manual PIE confirmation remains before marking the regression resolved.
-- Added a 30-second per-question authoritative GameMode timer. At 15 elapsed seconds the UI reveals the activity name's Korean initial-consonant hint (for example `아이린 -> ㅇㅇㄹ`); at zero it reveals the correct stage name and advances after two seconds without awarding points.
+- Added a 30-second per-question authoritative GameMode timer. At 15 elapsed seconds the UI reveals the activity name's Korean initial-consonant hint (for example `?袁⑹뵠??-> ??롫??); at zero it reveals the correct stage name and advances after two seconds without awarding points.
 - Added centered timer and hint UI, red final-five-second timer feedback, delegate cleanup, and round/reset handling. Timing and hint generation remain in GameMode so the same rules can later be replicated by the multiplayer room host/server.
-- Follow-up PIE logs proved submission and DataTable lookup were correct (`설아/설아`, `김소혜/김소혜`, `휘인/휘인`) while the filter-based Unicode normalization still returned a mismatch. Exact trimmed case-insensitive equality now runs first, and fallback normalization preserves all Unicode while removing only known whitespace/separators. Rebuilt successfully; manual PIE confirmation remains.
+- Follow-up PIE logs proved submission and DataTable lookup were correct (`??쇰툡/??쇰툡`, `繹먃??곗굺/繹먃??곗굺`, `??륁뵥/??륁뵥`) while the filter-based Unicode normalization still returned a mismatch. Exact trimmed case-insensitive equality now runs first, and fallback normalization preserves all Unicode while removing only known whitespace/separators. Rebuilt successfully; manual PIE confirmation remains.
 - Changed the timer's normal color to cyan while preserving red for the final five seconds, and explicitly set the answer `EditableTextBox` foreground to black for readable Korean input.
 - Identified the actual answer regression from PIE logs: `AppendAliases()` passed the existing accepted-answer array directly to `FString::ParseIntoArray`, which resets its output before parsing and erased the previously added stage and real names. It now parses into a temporary array and appends aliases, preserving all three answer sources. Manual PIE confirmation remains.
 - The answer box now sets normal, focused, read-only, and nested `TextStyle` foreground colors to black; the earlier single foreground setter affected the hint while the focused typed text retained its default color.
 - Added 13 fourth-generation questions: six IVE members and seven BABYMONSTER members. Imported JPG files directly, converted six WEBP sources to project-side PNG import copies without modifying downloads, populated stage/real/alias metadata, and expanded the shared DataTable to 96 rows.
 - Automated validation passed for 96 CSV/DataTable rows, 83 generation-3 and 13 generation-4 questions, 15 groups, all images, unique IDs, enabled state, map, and MainHub entry. Editor target build also succeeded.
-- Imported title artwork for the five 2026-07-19 rhythm additions: SHEESH, DRIP, BANG BANG, 404 (New Era), and 캐치캐치. `BangBang.webp` is preserved in Downloads while a PNG import copy is versioned for Unreal compatibility.
+- Imported title artwork for the five 2026-07-19 rhythm additions: SHEESH, DRIP, BANG BANG, 404 (New Era), and 筌?Ŋ?귨㏄癒?뒄. `BangBang.webp` is preserved in Downloads while a PNG import copy is versioned for Unreal compatibility.
 - Assigned each new title texture to all four Easy/Normal/Hard/Expert Song Data Assets (20 chart assignments total). The five-song validator now requires a non-null `TitleImage`; all 20 charts passed catalog, density, lane, level, timing, and artwork validation.
 - Reworked the Idol Quiz gameplay layout around the planned multiplayer presentation: small vertically stackable player name/correct-count area at upper left, authoritative timer centered at the top, a substantially larger chat panel on the left, the portrait shifted to the right, and the initial-consonant hint below the portrait. Removed the visible SCORE label and other redundant section headings.
 - Unified chat and answer submission in the UI. The local account username prefixes every submitted message, the same message is sent to GameMode for answer evaluation, and correct results update the displayed correct-count rather than a score label.
@@ -398,10 +400,10 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Current transport scope is LAN and multi-client PIE. Playing over the public internet still requires replacing `OnlineSubsystemNull` with an internet-capable transport/session provider such as EOS or PlayFab Multiplayer/Party; PlayFab login alone does not provide peer connectivity.
 - Manual verification remains: run 2-player PIE in separate processes, create and join a room, confirm both usernames in the lobby, start as host, then verify identical portrait/timer/hint/chat, first-correct ownership, per-player counts, and return/leave behavior.
 - Stabilized LAN discovery by preventing overlapping searches, shortening each discovery pass to 1.5 seconds, and automatically retrying an empty/failed search up to three times with a short delay. Manual refresh now starts one controlled retry sequence instead of stacking delegates.
-- Room creation now requires an explicit room title and quiz pool selection: `아이돌`, `배우`, or `아이돌 + 배우`. The title and pool are advertised in the session and shown in room search results.
+- Room creation now requires an explicit room title and quiz pool selection: `?袁⑹뵠??, `獄쏄퀣??, or `?袁⑹뵠??+ 獄쏄퀣??. The title and pool are advertised in the session and shown in room search results.
 - Connected the selected room pool to authoritative question filtering through the existing DataTable `Category` field. Existing rows remain Idol content; future actor rows should use `Actor`, after which actor-only and mixed rooms work without another rules change.
 - Rebuilt `AllGamesEditor` successfully after the room discovery and room-settings changes. Manual multi-process PIE verification remains required because LAN broadcast discovery cannot be fully exercised by an unattended editor build.
-- Refined room creation into a modal workflow. The room browser itself now shows only `방 만들기` and `새로고침`; pressing `방 만들기` opens a centered dialog containing the room-title field and an `아이돌 / 배우 / 아이돌 + 배우` dropdown, plus confirm/cancel controls and inline validation.
+- Refined room creation into a modal workflow. The room browser itself now shows only `獄?筌띾슢諭얏묾? and `??덉쨮?⑥쥙臾?; pressing `獄?筌띾슢諭얏묾? opens a centered dialog containing the room-title field and an `?袁⑹뵠??/ 獄쏄퀣??/ ?袁⑹뵠??+ 獄쏄퀣?? dropdown, plus confirm/cancel controls and inline validation.
 - Added client-side network-failure recovery for Listen Server shutdown. If the room owner leaves or loses connection, connected clients destroy their stale local session and return safely to `IdolQuizRoomMap` instead of remaining on a dead gameplay/lobby screen.
 - True host migration is not yet implemented: because the room owner is the Listen Server, their departure still ends that session. Preserving the room would require electing a replacement host, creating a new advertised session, and reconnecting every remaining client, or moving to a dedicated server.
 - Rebuilt `AllGamesEditor` successfully after the modal and disconnect-recovery changes. Manual PIE verification remains for modal focus/dropdown behavior and client return when the host exits.
@@ -433,7 +435,7 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Cross-PC verification remains: copy the entire packaged `Windows` directory to each PC, allow the executable through Windows Firewall, sign in with separate accounts, and confirm EOS room create/search/join plus lobby/game travel over different internet connections.
 - Enabled Windows app-local prerequisites for future packages using UE 5.7's `$(EngineDir)/Binaries/ThirdParty/AppLocalDependencies` runtime set. AutomationTool selects the `Win64/x64` subset and stages the VC++ 2015-2022 and legacy DirectX runtime DLLs beside the packaged executable so clean Windows test PCs do not receive the Visual C++ Redistributable installation prompt.
 - Repackaged the Windows Development build with app-local prerequisites and verified the packaged MainHub loads without UI, asset, or EOS local-credential errors. The archive contains the launcher, EOS runtime config, and app-local VC++ runtime DLLs (`vcruntime140`, `msvcp140`, and UCRT) and no smoke-test logs.
-- Package delivery now targets Google Drive Desktop instead of the desktop. After a requested package succeeds, replace `G:/내 드라이브/AllGames_EOS_Multiplayer_20260720.zip` using a temporary copy plus size/SHA-256 verification; do not create a desktop ZIP unless explicitly requested.
+- Package delivery now targets Google Drive Desktop instead of the desktop. After a requested package succeeds, replace `G:/????뺤뵬????AllGames_EOS_Multiplayer_20260720.zip` using a temporary copy plus size/SHA-256 verification; do not create a desktop ZIP unless explicitly requested.
 - Cross-PC logs exposed UE 5.7's EOSGS P2P travel parsing mismatch: lobby join succeeded and returned `EOS:PUID`, but `FURL` interpreted the single-colon address as a map URL, causing `InvalidURL`; retries then failed with `EOS_Lobby_LobbyAlreadyExists`. Client travel now uses bracketed-host form `[EOS:PUID]` so `NetDriverEOS` receives the intact address. See `Docs/Bugs/BUG-002-EOSP2PTravelInvalidURL.md`; packaged two-PC verification remains pending.
 - Exposed editor-tunable image slots for the shared account background and Login/Register/Create Account button, the rhythm lobby's shared song/difficulty/speed selector arrow button, and the main hub's reusable four-sided mini-game card frame. Assigned textures are applied at runtime while existing color/text fallbacks remain available when a slot is empty.
 - Fixed an editor crash when opening a `MainHubWidget` child WBP. The card-frame texture is now stored before Slate construction and applied only after `UMiniGameEntryWidget` finishes building its button, avoiding the `SetCardFrameImage` access violation in the UMG designer. `AllGamesEditor` build succeeded after the fix.
@@ -442,21 +444,21 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Replaced `ALL GAMES` text back buttons with image-only controls in the rhythm selection lobby, Idol Quiz gameplay, and Idol Quiz room browser. Added `Back To Hub Button Image` slots to their WBP Class Defaults; created and wired `WBP_IdolQuiz` and `WBP_IdolQuizRoom` so those properties are editable without code. Full Editor build succeeded.
 - Exposed editor-tunable layout sizes for account Login/Register/Create Account/registration-back buttons, rhythm song/difficulty/speed selector buttons, all image-only back-to-hub buttons, and main-hub game cards. Their `FVector2D` size fields appear alongside the image slots in WBP Class Defaults.
 - Removed the default login note stating that passwords are not stored on the PC, added an image-capable registration-to-login back button, and bound Enter in the login password field to submit the login request.
-- Renamed the mini-game catalog entry from `아이돌 얼굴 맞히기` to `인물 퀴즈` and set its description to `친구들과 채팅으로 가장 먼저 인물 이름을 맞히는 게임입니다.` The quiz now shuffles and uses every enabled question in the selected Idol/Actor/Mixed pool rather than truncating matches to ten questions. Full Editor build succeeded.
+- Renamed the mini-game catalog entry from `?袁⑹뵠????⑤렗 筌띿쉹?녔묾? to `?紐꺪???곸グ` and set its description to `燁살뮄???븍궢 筌?쑵???곗쨮 揶쎛???믪눘? ?紐꺪???已??筌띿쉹???野껊슣???낅빍??` The quiz now shuffles and uses every enabled question in the selected Idol/Actor/Mixed pool rather than truncating matches to ten questions. Full Editor build succeeded.
 - Fixed main-hub card presentation: missing cover art now collapses instead of rendering UMG's default white image bar, and title/description are placed in fixed-width, fixed-height containers with wrapping. Added visible Hover (brighter) and Pressed (darker blue) brush states to game cards and the current image-driven account, selector, and back-to-hub controls. Full Editor build succeeded.
 - Repackaged the bracketed EOS P2P travel fix as a Windows Development build with app-local VC++/DirectX prerequisites. A packaged smoke test loaded `/Game/Maps/MainHubMap` without missing UI/assets or EOS credential errors; the archive was verified to contain the launcher, game PAK, private runtime EOS config, and `vcruntime140.dll`.
-- Replaced `G:/내 드라이브/AllGames_EOS_Multiplayer_20260720.zip` through a temporary upload and SHA-256 comparison. The delivered archive is 728,370,627 bytes with SHA-256 `33F66D77B66565BC055AF0EDE7F0CDA023322E23DEC2530B509A30602F5471A0`. Both test PCs must discard the prior extracted build and use this same archive for the pending internet room join verification.
+- Replaced `G:/????뺤뵬????AllGames_EOS_Multiplayer_20260720.zip` through a temporary upload and SHA-256 comparison. The delivered archive is 728,370,627 bytes with SHA-256 `33F66D77B66565BC055AF0EDE7F0CDA023322E23DEC2530B509A30602F5471A0`. Both test PCs must discard the prior extracted build and use this same archive for the pending internet room join verification.
 - Began the UMG designer migration for the main hub. `UMainHubWidget` now supports a bound `GameGrid` and loads `WBP_GameCard` when available; `UMiniGameEntryWidget` supports bound card image/text/size widgets. Native C++ layout remains as a fallback, while the actual editable Widget Blueprint hierarchies still need to be created in the Unreal Editor because UE 5.7 command-line Python does not expose `WidgetBlueprint.WidgetTree` for safe asset editing.
 - Added per-state button artwork slots (`Normal`, `Hovered`, `Pressed`) throughout account login, rhythm selection, the main hub/game cards, Idol Quiz, and the Idol Quiz room browser. Empty state slots safely fall back to the normal image. The room browser now also exposes its full-screen background and separate image sets for Create Room, Refresh, room entries, and create-dialog confirmation/cancel buttons. Full `AllGamesEditor` build succeeded.
 - Expanded the Idol Quiz source pool from the download library into 589 unique question rows. New textures use stable numeric names only: `T_IDOL2_*`, generation 3 continuing at `T_IDOL3_084`, generation 4 continuing at `T_IDOL4_014`, and `T_ACTOR_*`; Korean activity names remain DataTable answer metadata rather than asset filenames. Exact image hashes and category/group/name keys prevent duplicate questions inside the expanded pool.
 - Added `/Game/IdolQuiz/Data/DT_IdolQuizQuestionsExpanded` and changed the authoritative GameMode to use it. Twenty-five WEBP files and two JPEG files that Unreal could not decode directly were converted to PNG import sources without modifying the originals, allowing all 589 supplied people to remain in the pool.
 - Added host-selected match length in 50-question increments from 50 through 1000 for future pool growth. The value is stored as the public EOS lobby `QuestionCount` attribute, displayed in room search results, inherited by joining clients, and enforced by the server GameMode after category filtering and shuffling. If a category contains fewer entries than requested, the match safely uses every available entry.
 - Fixed stale timeout feedback in multiplayer: the quiz widget now detects replicated round changes and clears the previous answer/timeout message before presenting the next portrait.
-- Normalized imported Idol answer metadata by removing a leading group name only when it exactly matches the source group folder. For example, `엔믹스 해원` is stored as stage answer `해원` with `GroupName=엔믹스`; the 589-row manifest now contains no remaining group-prefixed stage answers.
-- Added server-authoritative K-key skip voting. Each player can vote once per round; required votes are 1/1, 2/2, 2/3, 3/4, 3/5, and 4/6. Vote progress is replicated to every client and displayed as `스킵 : K (현재/필요)`. Reaching the threshold cancels the round timer and advances without awarding a correct answer.
+- Normalized imported Idol answer metadata by removing a leading group name only when it exactly matches the source group folder. For example, `?遺?????곸뜚` is stored as stage answer `??곸뜚` with `GroupName=?遺???; the 589-row manifest now contains no remaining group-prefixed stage answers.
+- Added server-authoritative K-key skip voting. Each player can vote once per round; required votes are 1/1, 2/2, 2/3, 3/4, 3/5, and 4/6. Vote progress is replicated to every client and displayed as `??쎄땁 : K (?袁⑹삺/?袁⑹뒄)`. Reaching the threshold cancels the round timer and advances without awarding a correct answer.
 - Password-field Enter now invokes the same guarded login request as clicking the Login button, so keyboard login no longer requires returning to the mouse.
-- Skip completion now multicasts `스킵! 정답: 이름` to every client and waits two seconds before advancing, matching the existing timeout answer-reveal duration.
-- Corrected the remaining display-name/group-folder mismatches in the expanded quiz table: `TripleS` sources strip the `트리플에스` prefix and `키오프` sources strip `키스오브라이프`. A full 589-row manifest check reports zero Idol stage answers that still contain a group prefix or whitespace.
+- Skip completion now multicasts `??쎄땁! ?類ｋ뼗: ??已? to every client and waits two seconds before advancing, matching the existing timeout answer-reveal duration.
+- Corrected the remaining display-name/group-folder mismatches in the expanded quiz table: `TripleS` sources strip the `?紐꺿봺???퓠?? prefix and `??쇱궎?? sources strip `??쇰뮞??삵닏??깆뵠??. A full 589-row manifest check reports zero Idol stage answers that still contain a group prefix or whitespace.
 
 ### 2026-07-21 - Real-time Drawing Quiz prototype
 
@@ -468,13 +470,13 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - `AllGamesEditor Win64 Development` builds successfully. Manual verification remains: use multi-client PIE with a Listen Server and at least two players, confirm that only the drawer can draw, every client sees identical strokes/chat, the first correct answer scores, roles rotate, and a completed game stops cleanly.
 - The Drawing Quiz direct gameplay prototype is now routed through the shared EOS room browser and waiting room rather than launched as an isolated local session.
 - Generalized the existing EOS room flow into the shared AllGames multiplayer entry without duplicating a second session stack. Both Person Quiz and Drawing Quiz definitions now open the same advertised room browser and use the same six-player waiting room.
-- Added a room game type and per-game advertised settings. Creating a room first selects `인물 퀴즈` or `그림 퀴즈`; Person Quiz exposes category and 50-question increments, while Drawing Quiz exposes 1-5 drawing turns per player and a 30-120 second round timer.
+- Added a room game type and per-game advertised settings. Creating a room first selects `?紐꺪???곸グ` or `域밸챶????곸グ`; Person Quiz exposes category and 50-question increments, while Drawing Quiz exposes 1-5 drawing turns per player and a 30-120 second round timer.
 - Room search rows and the waiting room show the selected game and its settings. Existing EOS rooms without the new game attribute remain compatible and are interpreted as Person Quiz rooms.
 - The host's shared waiting-room Start command now performs authoritative server travel to `IdolQuizMap` or `DrawingQuizMap` according to the room metadata. Drawing Quiz reads its advertised round count and timer from the session subsystem on match start.
 - Extended the EOSGS lobby schema with public `GameType`, `DrawingRounds`, and `DrawingRoundTime` attributes. The full Editor target builds successfully and both mini-game Data Assets now enter the shared room browser.
 - Manual verification remains mandatory: use two distinct EOS accounts/PCs, create each game type, find/join the room, compare waiting-room settings, start as host, and confirm all clients travel into the same selected gameplay map.
-- Simplified the MainHub catalog to two top-level choices: `리듬게임` and `퀴즈게임`. The former Drawing Quiz definition asset remains preserved for data reuse, but it is no longer a third MainHub card because Person/Drawing selection now belongs to shared room creation.
-- Renamed the former Person Quiz catalog entry to `퀴즈게임`, updated its description for both quiz modes, and kept its entry map on the shared EOS room browser.
+- Simplified the MainHub catalog to two top-level choices: `?귐됰쾳野껊슣?? and `??곸グ野껊슣??. The former Drawing Quiz definition asset remains preserved for data reuse, but it is no longer a third MainHub card because Person/Drawing selection now belongs to shared room creation.
+- Renamed the former Person Quiz catalog entry to `??곸グ野껊슣??, updated its description for both quiz modes, and kept its entry map on the shared EOS room browser.
 - Exposed `Login Background Image` and tint in `WBP_RhythmLogin` Class Defaults and bound the property to the optional `AccountBackground` designer widget, so the image works in both native fallback and Blueprint-authored hierarchies.
 - Exposed separate Rhythm/Quiz card cover images and per-card frame-image overrides on `WBP_MainHub`, with the existing shared frame retained as a fallback. Also exposed title and description TextBlock-container dimensions independently from font size; the runtime card applies those dimensions to optional `NameBox` and `DescriptionBox` widgets.
 - Rebuilt `AllGamesEditor Win64 Development` successfully after the reflected UI-property additions. Manual editor verification remains for background assignment, two-card catalog presentation, per-card artwork, and title/description box resizing.
@@ -554,6 +556,64 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Added Drawing Quiz Enter-key handling: when the chat field is not focused, Enter focuses and opens it for immediate typing; Enter while editing continues to submit through the existing authoritative chat/answer RPC.
 - Full `AllGamesEditor Win64 Development` build succeeded. Manual PIE verification remains for perceived click volume, every major screen's buttons, and Enter-to-focus/Enter-to-submit in Drawing Quiz.
 
+### 2026-07-28 - Tag-based Person Quiz pool foundation
+
+- Replaced authoritative single-category filtering with stable pipe-separated `PoolTags`. Problem rows and EOS rooms can now carry multiple pool IDs such as `GirlGroup|Actor|OnePiece`, and gameplay draws a question when any selected pool intersects its row tags.
+- Added a central registered pool list and display-name mapping for `GirlGroup`, `BoyGroup`, `Idol`, `Actor`, `Comedian`, `OnePiece`, and `Naruto`. Storage/EOS IDs remain language-independent while UI labels remain Korean.
+- Retained the old numeric `RoomCategory` EOS attribute and enum only as a backward-compatibility adapter. New rooms advertise the string `PoolTags` attribute; older rooms without it are translated to equivalent tags when read.
+- Migrated all 892 expanded DataTable rows to a nonempty `PoolTags` value without guessing girl-group versus boy-group membership: current rows remain accurately tagged `Idol`, `Actor`, or `OnePiece` until curated source metadata supports a safe split.
+- Existing dropdown choices now emit the same tag strings that a later checkbox UI will produce. Room search, waiting-room settings, and authoritative gameplay filtering already consume tags, so replacing the dropdown will not require another EOS or game-rule rewrite.
+- Empty selections and unknown pool IDs now reject room creation instead of silently falling back to Idol. This prevents typoed or stale checkbox IDs from opening the wrong question pool.
+- Updated the EOSGS `IdolQuizLobby` schema with the public string `PoolTags` attribute and rebuilt `AllGamesEditor Win64 Development` successfully.
+- Fixed a room-creation regression found during PIE: UE 5.7 rejects variable-length schema attributes without a valid maximum size, so the initially added `PoolTags` string prevented the entire lobby schema registry from initializing. `PoolTags` now declares `MaxSize=128`; the Editor target rebuild succeeds, and room creation requires a fresh PIE verification after restarting the Editor.
+- Manual PIE verification remains required for old-category fallback, new room create/search/join display, and unchanged Idol/Actor/OnePiece filtering before this foundation is marked user-verified complete.
+
+### 2026-07-28 - Person Quiz chat expiry consistency
+
+- Changed Person Quiz answer/chat rows to expire individually after three seconds.
+- Replaced message-count-derived widget names with a monotonically increasing message ID, preventing a new row from reusing the name of a still-visible row after an earlier message expires.
+- Full `AllGamesEditor Win64 Development` build succeeded. Manual PIE verification remains for several rapidly submitted messages disappearing independently three seconds after each arrival.
+
+### 2026-07-28 - One Piece Person Quiz pool
+
+- Added `OnePiece` as an independent Person Quiz room category and preserved the existing Idol, Actor, and Idol + Actor filtering behavior.
+- Imported 303 verified PNG character images as `/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_001` through `T_ONEPIECE_303` and appended 303 `Category=OnePiece` rows to `DT_IdolQuizQuestionsExpanded`, producing 892 total rows.
+- Added an exact `303?얜챷?? room-length option and preserved that value through EOS lobby serialization instead of rounding it back to 300.
+- Generated per-question aliases for `D/??, `Dr/?館苑?, optional leading `S`, `T/??, `X/?臾믩뮞`, and `&/????; existing whitespace-insensitive comparison remains active.
+- Initial-consonant hints now preserve `&` literally. ASCII letters and digits were already preserved, so `D`, `Dr`, `S`, `T`, `X`, `V`, and `2` remain visible instead of converting to Korean initials.
+- Automated verification passed: 303 unique One Piece IDs and image references, representative aliases, 303 imported textures with Git LFS attributes, 892 expanded DataTable rows, and a successful UE 5.7 `AllGamesEditor Win64 Development` build.
+- User PIE verification completed: the One Piece room category, imported portraits, hints, and requested answer behavior work as expected. This One Piece Person Quiz stage is complete.
+### 2026-07-29 - Person Quiz multi-pool checkboxes and additional runtime pools
+
+- Replaced the single Person Quiz category dropdown with independent checkboxes for Idol, Actor, One Piece, Naruto, MC, and KBO Player while preserving the existing `PoolTags` OR-filtering architecture.
+- Replaced the legacy question-count dropdown with 50, 100, 150, 200, 250, and 300 buttons. Values above the combined selected-pool capacity are disabled immediately; empty pool selection and invalid counts are also rejected before room creation.
+- Registered stable `MC` and `KBOPlayer` pool IDs and labels. EOS continues to advertise normalized pipe-separated `PoolTags`, and room-browser/waiting-room labels display every selected pool.
+- Imported 64 Naruto, 64 MC, and 256 KBO 2025 portraits as 384 Git LFS textures under `/Game/IdolQuiz/Images/Naruto`, `/MC`, and `/KBO2025`.
+- Expanded `DT_IdolQuizQuestionsExpanded` from 892 to 1,276 rows: Idol 258, Actor 331, One Piece 303, Naruto 64, MC 64, and KBO Player 256.
+- KBO source labels retain the team in aliases, but canonical `StageName` answers remove the trailing team parentheses. For example, `김도영 (KIA 타이거즈)` accepts the canonical answer `김도영`; duplicate player names remain separate question IDs.
+- Naruto source descriptions after ` | ` are removed from canonical answers, so `미나토 | 4대 호카게` uses `미나토` as the answer.
+- Added resumable batch import and Unreal-side validation scripts. Automated verification passed for 1,276 rows, exact pool counts, nonempty answers/images, 256 KBO answers without parentheses, 384 texture LFS attributes, `git diff --check`, and a successful `AllGamesEditor Win64 Development` build.
+
+### 2026-08-04 - MC pool cleanup
+
+- Excluded 24 user-selected MC entries, reducing the active MC pool from 64 to 40 and the expanded Person Quiz table from 1,276 to 1,252 rows.
+- Deleted the matching 24 source PNG files while preserving their existing Unreal texture assets for rollback. Added a persistent exclusion list so the collector does not download those PNGs again and the importer keeps stable IDs for the remaining entries.
+- Updated the room capacity metadata to 40 for the MC pool. Unreal-side validation passed with exactly 40 MC rows and 1,252 total rows, and the `AllGamesEditor Win64 Development` build succeeded. Manual PIE verification remains pending.
+- Manual PIE verification remains required for checkbox layout, multi-selection, count-button disabling, EOS room create/search/join labels, each new pool's images, and canonical answer behavior before this stage is complete.
+### 2026-07-29 - KBO 2025 source dataset collection
+
+- Collected all 256 candidates from PIKU game `73uvgh` without using the in-app browser or emitting page DOM/script payloads into the Codex conversation.
+- Stored portraits as name-keyed PNG files under `SourceAssets/IdolQuiz/KBO2025/Images`; the two candidates sharing `이승현 (삼성 라이온즈)` use `_001` and `_002` filename suffixes while retaining the same answer text.
+- Used one concurrent download, a 750 ms inter-request delay, bounded response/file sizes and timeouts, a hidden background collector, and atomic progress checkpoints after every 10 images.
+- Verification passed: 256 manifest records, 256 PNG files, zero failures, zero missing references, zero decode failures, zero hash mismatches, and zero duplicate-image hash groups.
+- This stage only prepares reviewable source assets. Unreal texture import, DataTable rows, pool registration, UI exposure, builds, and PIE testing remain a separate future stage.
+### 2026-07-29 - MC source dataset collection
+
+- Collected all 64 candidates from PIKU game `9nhamV` without using the in-app browser or emitting page DOM/script payloads into the Codex conversation.
+- Stored each portrait as a PNG named after the displayed person under `SourceAssets/IdolQuiz/MC/Images`, with the original name, answer, image URL, dimensions, byte size, SHA-256, and status retained in `collection_manifest.json`.
+- Used one concurrent download, a 750 ms inter-request delay, bounded response/file sizes and timeouts, and atomic progress checkpoints after every 10 images.
+- Verification passed: 64 manifest records, 64 PNG files, zero failures, zero missing references, zero decode failures, zero hash mismatches, and zero duplicate-image hash groups.
+- This stage only prepares reviewable source assets. Unreal texture import, DataTable rows, pool registration, UI exposure, builds, and PIE testing remain a separate future stage.
 ### 2026-07-27 - Shared multiplayer player colors in quiz chat
 
 - Defined one shared six-player color palette in slot order: Player1 red, Player2 blue, Player3 green, Player4 yellow, Player5 purple, and Player6 orange.
@@ -562,6 +622,13 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Extended both Person Quiz and Drawing Quiz authoritative chat multicasts with the player's color index. Player names now use their shared slot color while message bodies remain white.
 - Replaced each quiz's single combined chat TextBlock with individual name/message rows, allowing per-player name colors without rich-text string parsing. Person Quiz retains its six-second expiry and 12-row cap; Drawing Quiz now also expires rows after six seconds with a 10-row cap.
 - Full `AllGamesEditor Win64 Development` build succeeded, including UnrealHeaderTool validation for the new reflected base PlayerState and updated replicated RPC signatures. Manual multi-client verification remains for colors across waiting-room-to-game travel, chat on every client, leave/rejoin slot reuse, and six-second row expiry.
+
+### 2026-07-27 - Registration username guidance
+
+- Added a persistent small registration hint stating `?袁⑹뵠?遺얜뮉 ?怨론????ъ쁽筌??????????됰뮸??덈뼄.` directly below the username field.
+- The native fallback creates the hint automatically; a designer-authored `RegistrationUsernameHelp` TextBlock is discovered and reused when present in `WBP_RhythmLogin`.
+- Added client-side registration validation for ASCII English letters and digits before sending a PlayFab request, returning the same Korean guidance immediately for Hangul, spaces, punctuation, or other characters. Existing login behavior remains unchanged for account compatibility.
+- Full `AllGamesEditor Win64 Development` build succeeded. Manual UI verification remains for hint placement and invalid/valid registration feedback.
 
 ### 2026-07-15
 

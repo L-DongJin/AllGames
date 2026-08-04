@@ -27,5 +27,5 @@ private:
 	UPROPERTY(Transient)TObjectPtr<UTextBlock>SkipText;
 	UPROPERTY(Transient)TObjectPtr<UTextBlock>FeedbackText; UPROPERTY(Transient)TObjectPtr<UEditableTextBox>AnswerInput;
 	UPROPERTY(Transient)TObjectPtr<UButton>SubmitButton; UPROPERTY(Transient)TObjectPtr<UButton>RestartButton;
-	UPROPERTY(Transient)TObjectPtr<AIdolQuizGameStateBase>QuizGameState; TArray<FVisibleChatMessage>ChatMessages; FString LocalPlayerName=TEXT("Player"); bool bChatInputOpen=false; int32 LastDisplayedRound=INDEX_NONE;
+	UPROPERTY(Transient)TObjectPtr<AIdolQuizGameStateBase>QuizGameState; TArray<FVisibleChatMessage>ChatMessages; FString LocalPlayerName=TEXT("Player"); bool bChatInputOpen=false; int32 LastDisplayedRound=INDEX_NONE; int32 NextChatMessageId=0;
 };

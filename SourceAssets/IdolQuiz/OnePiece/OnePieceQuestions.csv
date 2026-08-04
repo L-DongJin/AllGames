@@ -1,0 +1,304 @@
+﻿---,QuestionId,Image,StageName,RealName,Aliases,GroupName,Generation,Category,PoolTags,bEnabled
+ONEPIECE_001,ONEPIECE_001,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_001.T_ONEPIECE_001',카이도,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_002,ONEPIECE_002,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_002.T_ONEPIECE_002',벨로 베티,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_003,ONEPIECE_003,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_003.T_ONEPIECE_003',맥가이,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_004,ONEPIECE_004,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_004.T_ONEPIECE_004',알라딘,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_005,ONEPIECE_005,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_005.T_ONEPIECE_005',S스네이크,,스네이크,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_006,ONEPIECE_006,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_006.T_ONEPIECE_006',홀덤,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_007,ONEPIECE_007,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_007.T_ONEPIECE_007',블렌하임,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_008,ONEPIECE_008,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_008.T_ONEPIECE_008',몰리,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_009,ONEPIECE_009,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_009.T_ONEPIECE_009',블루그래스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_010,ONEPIECE_010,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_010.T_ONEPIECE_010',제오,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_011,ONEPIECE_011,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_011.T_ONEPIECE_011',한냐발,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_012,ONEPIECE_012,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_012.T_ONEPIECE_012',앤,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_013,ONEPIECE_013,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_013.T_ONEPIECE_013',트라팔가 D 워텔 로우,,트라팔가 디 워텔 로우,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_014,ONEPIECE_014,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_014.T_ONEPIECE_014',야솝,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_015,ONEPIECE_015,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_015.T_ONEPIECE_015',프랑키,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_016,ONEPIECE_016,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_016.T_ONEPIECE_016',샬롯 링링,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_017,ONEPIECE_017,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_017.T_ONEPIECE_017',쿠잔,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_018,ONEPIECE_018,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_018.T_ONEPIECE_018',킨에몬,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_019,ONEPIECE_019,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_019.T_ONEPIECE_019',셰퍼드 주 피터 성,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_020,ONEPIECE_020,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_020.T_ONEPIECE_020',우루지,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_021,ONEPIECE_021,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_021.T_ONEPIECE_021',마리안느,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_022,ONEPIECE_022,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_022.T_ONEPIECE_022',Dr 인디고,,닥터 인디고,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_023,ONEPIECE_023,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_023.T_ONEPIECE_023',갤디노,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_024,ONEPIECE_024,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_024.T_ONEPIECE_024',자라,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_025,ONEPIECE_025,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_025.T_ONEPIECE_025',몽키 D 드래곤,,몽키 디 드래곤,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_026,ONEPIECE_026,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_026.T_ONEPIECE_026',하이루딘,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_027,ONEPIECE_027,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_027.T_ONEPIECE_027',버기,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_028,ONEPIECE_028,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_028.T_ONEPIECE_028',라오 G,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_029,ONEPIECE_029,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_029.T_ONEPIECE_029',퀸,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_030,ONEPIECE_030,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_030.T_ONEPIECE_030',오이모,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_031,ONEPIECE_031,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_031.T_ONEPIECE_031',스코퍼 가반,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_032,ONEPIECE_032,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_032.T_ONEPIECE_032',사이,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_033,ONEPIECE_033,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_033.T_ONEPIECE_033',몽키 D 루피,,몽키 디 루피,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_034,ONEPIECE_034,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_034.T_ONEPIECE_034',에넬,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_035,ONEPIECE_035,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_035.T_ONEPIECE_035',S샤크,,샤크,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_036,ONEPIECE_036,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_036.T_ONEPIECE_036',보아 썬더소니아,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_037,ONEPIECE_037,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_037.T_ONEPIECE_037',글라디우스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_038,ONEPIECE_038,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_038.T_ONEPIECE_038',반 오거,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_039,ONEPIECE_039,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_039.T_ONEPIECE_039',네코마무시,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_040,ONEPIECE_040,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_040.T_ONEPIECE_040',제파,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_041,ONEPIECE_041,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_041.T_ONEPIECE_041',브로기,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_042,ONEPIECE_042,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_042.T_ONEPIECE_042',디아만테,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_043,ONEPIECE_043,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_043.T_ONEPIECE_043',바스티유,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_044,ONEPIECE_044,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_044.T_ONEPIECE_044',블랙 마리아,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_045,ONEPIECE_045,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_045.T_ONEPIECE_045',스튜시,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_046,ONEPIECE_046,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_046.T_ONEPIECE_046',돌,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_047,ONEPIECE_047,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_047.T_ONEPIECE_047',잇쇼,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_048,ONEPIECE_048,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_048.T_ONEPIECE_048',도마,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_049,ONEPIECE_049,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_049.T_ONEPIECE_049',핵,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_050,ONEPIECE_050,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_050.T_ONEPIECE_050',바르톨로메오,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_051,ONEPIECE_051,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_051.T_ONEPIECE_051',캐번디시,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_052,ONEPIECE_052,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_052.T_ONEPIECE_052',호디 존스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_053,ONEPIECE_053,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_053.T_ONEPIECE_053',토프먼 워큐리 성,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_054,ONEPIECE_054,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_054.T_ONEPIECE_054',다즈 보네스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_055,ONEPIECE_055,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_055.T_ONEPIECE_055',샬롯 아망드,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_056,ONEPIECE_056,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_056.T_ONEPIECE_056',샬롯 브륄레,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_057,ONEPIECE_057,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_057.T_ONEPIECE_057',다이스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_058,ONEPIECE_058,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_058.T_ONEPIECE_058',반디 월드,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_059,ONEPIECE_059,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_059.T_ONEPIECE_059',빈스모크 이치디,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_060,ONEPIECE_060,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_060.T_ONEPIECE_060',블루 길리,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_061,ONEPIECE_061,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_061.T_ONEPIECE_061',마샬 D 티치,,마샬 디 티치,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_062,ONEPIECE_062,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_062.T_ONEPIECE_062',하루타,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_063,ONEPIECE_063,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_063.T_ONEPIECE_063',론즈,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_064,ONEPIECE_064,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_064.T_ONEPIECE_064',드로피,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_065,ONEPIECE_065,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_065.T_ONEPIECE_065',에드워드 위블,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_066,ONEPIECE_066,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_066.T_ONEPIECE_066',슈,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_067,ONEPIECE_067,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_067.T_ONEPIECE_067',로브 루치,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_068,ONEPIECE_068,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_068.T_ONEPIECE_068',코즈키 모모노스케,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_069,ONEPIECE_069,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_069.T_ONEPIECE_069',카쿠,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_070,ONEPIECE_070,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_070.T_ONEPIECE_070',샬롯 플랑페,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_071,ONEPIECE_071,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_071.T_ONEPIECE_071',바질 호킨스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_072,ONEPIECE_072,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_072.T_ONEPIECE_072',베이비 5,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_073,ONEPIECE_073,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_073.T_ONEPIECE_073',압둘라 & 제트,,압둘라 앤 제트|압둘라 엔 제트,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_074,ONEPIECE_074,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_074.T_ONEPIECE_074',칭자오,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_075,ONEPIECE_075,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_075.T_ONEPIECE_075',보빈,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_076,ONEPIECE_076,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_076.T_ONEPIECE_076',비올라,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_077,ONEPIECE_077,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_077.T_ONEPIECE_077',야마카지,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_078,ONEPIECE_078,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_078.T_ONEPIECE_078',Dr 베가펑크,,닥터 베가펑크,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_079,ONEPIECE_079,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_079.T_ONEPIECE_079',젬,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_080,ONEPIECE_080,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_080.T_ONEPIECE_080',도베르만,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_081,ONEPIECE_081,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_081.T_ONEPIECE_081',완다,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_082,ONEPIECE_082,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_082.T_ONEPIECE_082',에단바론 V 나스쥬로 성,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_083,ONEPIECE_083,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_083.T_ONEPIECE_083',이조,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_084,ONEPIECE_084,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_084.T_ONEPIECE_084',포트거스 D 에이스,,포트거스 디 에이스,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_085,ONEPIECE_085,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_085.T_ONEPIECE_085',크로커다일,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_086,ONEPIECE_086,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_086.T_ONEPIECE_086',스쿼드,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_087,ONEPIECE_087,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_087.T_ONEPIECE_087',달마시안,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_088,ONEPIECE_088,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_088.T_ONEPIECE_088',페콤즈,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_089,ONEPIECE_089,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_089.T_ONEPIECE_089',타시기,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_090,ONEPIECE_090,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_090.T_ONEPIECE_090',술레이만,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_091,ONEPIECE_091,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_091.T_ONEPIECE_091',코즈키 히요리,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_092,ONEPIECE_092,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_092.T_ONEPIECE_092',쿠로즈미 칸주로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_093,ONEPIECE_093,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_093.T_ONEPIECE_093',엘리자벨로 2세,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_094,ONEPIECE_094,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_094.T_ONEPIECE_094',니코 로빈,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_095,ONEPIECE_095,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_095.T_ONEPIECE_095',버팔로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_096,ONEPIECE_096,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_096.T_ONEPIECE_096',모몬가,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_097,ONEPIECE_097,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_097.T_ONEPIECE_097',킹듀,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_098,ONEPIECE_098,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_098.T_ONEPIECE_098',다가마,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_099,ONEPIECE_099,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_099.T_ONEPIECE_099',오즈,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_100,ONEPIECE_100,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_100.T_ONEPIECE_100',나미,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_101,ONEPIECE_101,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_101.T_ONEPIECE_101',화이티 베이,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_102,ONEPIECE_102,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_102.T_ONEPIECE_102',페로나,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_103,ONEPIECE_103,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_103.T_ONEPIECE_103',존 자이언트,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_104,ONEPIECE_104,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_104.T_ONEPIECE_104',센고쿠,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_105,ONEPIECE_105,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_105.T_ONEPIECE_105',카리나,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_106,ONEPIECE_106,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_106.T_ONEPIECE_106',마하바이스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_107,ONEPIECE_107,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_107.T_ONEPIECE_107',롤로노아 조로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_108,ONEPIECE_108,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_108.T_ONEPIECE_108',압살롬,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_109,ONEPIECE_109,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_109.T_ONEPIECE_109',코알라,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_110,ONEPIECE_110,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_110.T_ONEPIECE_110',알파,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_111,ONEPIECE_111,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_111.T_ONEPIECE_111',아슈라 동자,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_112,ONEPIECE_112,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_112.T_ONEPIECE_112',오니구모,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_113,ONEPIECE_113,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_113.T_ONEPIECE_113',라이조,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_114,ONEPIECE_114,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_114.T_ONEPIECE_114',반더 덱켄 9세,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_115,ONEPIECE_115,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_115.T_ONEPIECE_115',겟코 모리아,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_116,ONEPIECE_116,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_116.T_ONEPIECE_116',칼리파,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_117,ONEPIECE_117,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_117.T_ONEPIECE_117',네펠타리 D 비비,,네펠타리 디 비비,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_118,ONEPIECE_118,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_118.T_ONEPIECE_118',샬롯 다이후쿠,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_119,ONEPIECE_119,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_119.T_ONEPIECE_119',요크,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_120,ONEPIECE_120,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_120.T_ONEPIECE_120',쿠리엘,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_121,ONEPIECE_121,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_121.T_ONEPIECE_121',울티,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_122,ONEPIECE_122,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_122.T_ONEPIECE_122',마르코,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_123,ONEPIECE_123,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_123.T_ONEPIECE_123',몽키 D 거프,,몽키 디 거프,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_124,ONEPIECE_124,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_124.T_ONEPIECE_124',조즈,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_125,ONEPIECE_125,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_125.T_ONEPIECE_125',야마토,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_126,ONEPIECE_126,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_126.T_ONEPIECE_126',레오,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_127,ONEPIECE_127,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_127.T_ONEPIECE_127',폭시,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_128,ONEPIECE_128,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_128.T_ONEPIECE_128',이누아라시,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_129,ONEPIECE_129,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_129.T_ONEPIECE_129',스피드 질,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_130,ONEPIECE_130,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_130.T_ONEPIECE_130',델린저,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_131,ONEPIECE_131,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_131.T_ONEPIECE_131',베라미,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_132,ONEPIECE_132,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_132.T_ONEPIECE_132',릴리스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_133,ONEPIECE_133,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_133.T_ONEPIECE_133',잭,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_134,ONEPIECE_134,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_134.T_ONEPIECE_134',샬롯 바바루아,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_135,ONEPIECE_135,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_135.T_ONEPIECE_135',유스타스 키드,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_136,ONEPIECE_136,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_136.T_ONEPIECE_136',헤르메포,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_137,ONEPIECE_137,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_137.T_ONEPIECE_137',키쿠노죠,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_138,ONEPIECE_138,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_138.T_ONEPIECE_138',카시,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_139,ONEPIECE_139,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_139.T_ONEPIECE_139',포사,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_140,ONEPIECE_140,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_140.T_ONEPIECE_140',스모커,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_141,ONEPIECE_141,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_141.T_ONEPIECE_141',히나,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_142,ONEPIECE_142,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_142.T_ONEPIECE_142',호그백,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_143,ONEPIECE_143,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_143.T_ONEPIECE_143',봉크 펀치 & 몬스터,,봉크 펀치 앤 몬스터|봉크 펀치 엔 몬스터,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_144,ONEPIECE_144,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_144.T_ONEPIECE_144',브룩,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_145,ONEPIECE_145,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_145.T_ONEPIECE_145',베리 굿,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_146,ONEPIECE_146,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_146.T_ONEPIECE_146',쿠마도리,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_147,ONEPIECE_147,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_147.T_ONEPIECE_147',바비 펑크 / 켈리 펑크,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_148,ONEPIECE_148,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_148.T_ONEPIECE_148',와포루,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_149,ONEPIECE_149,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_149.T_ONEPIECE_149',베포,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_150,ONEPIECE_150,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_150.T_ONEPIECE_150',오니마루,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_151,ONEPIECE_151,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_151.T_ONEPIECE_151',빈스모크 저지,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_152,ONEPIECE_152,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_152.T_ONEPIECE_152',빈스모크 레이쥬,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_153,ONEPIECE_153,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_153.T_ONEPIECE_153',돈키호테 로시난테,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_154,ONEPIECE_154,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_154.T_ONEPIECE_154',X 드레이크,,엑스 드레이크,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_155,ONEPIECE_155,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_155.T_ONEPIECE_155',덴지로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_156,ONEPIECE_156,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_156.T_ONEPIECE_156',디칼반 형제,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_157,ONEPIECE_157,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_157.T_ONEPIECE_157',도크 Q,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_158,ONEPIECE_158,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_158.T_ONEPIECE_158',S베어,,베어,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_159,ONEPIECE_159,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_159.T_ONEPIECE_159',벤담,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_160,ONEPIECE_160,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_160.T_ONEPIECE_160',빈즈,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_161,ONEPIECE_161,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_161.T_ONEPIECE_161',산 후안 울프,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_162,ONEPIECE_162,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_162.T_ONEPIECE_162',마커스 마즈 성,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_163,ONEPIECE_163,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_163.T_ONEPIECE_163',이나즈마,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_164,ONEPIECE_164,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_164.T_ONEPIECE_164',쥬얼리 보니,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_165,ONEPIECE_165,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_165.T_ONEPIECE_165',아발로 피사로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_166,ONEPIECE_166,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_166.T_ONEPIECE_166',브루노,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_167,ONEPIECE_167,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_167.T_ONEPIECE_167',돈키호테 도플라밍고,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_168,ONEPIECE_168,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_168.T_ONEPIECE_168',센토마루,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_169,ONEPIECE_169,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_169.T_ONEPIECE_169',모네,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_170,ONEPIECE_170,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_170.T_ONEPIECE_170',샬롯 페로스페로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_171,ONEPIECE_171,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_171.T_ONEPIECE_171',시류,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_172,ONEPIECE_172,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_172.T_ONEPIECE_172',스칼렛,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_173,ONEPIECE_173,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_173.T_ONEPIECE_173',아라마키,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_174,ONEPIECE_174,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_174.T_ONEPIECE_174',카라스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_175,ONEPIECE_175,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_175.T_ONEPIECE_175',블라멩코,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_176,ONEPIECE_176,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_176.T_ONEPIECE_176',후즈 후,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_177,ONEPIECE_177,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_177.T_ONEPIECE_177',알베르,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_178,ONEPIECE_178,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_178.T_ONEPIECE_178',시저 크라운,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_179,ONEPIECE_179,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_179.T_ONEPIECE_179',맨셸리,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_180,ONEPIECE_180,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_180.T_ONEPIECE_180',보아 마리골드,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_181,ONEPIECE_181,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_181.T_ONEPIECE_181',샤카,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_182,ONEPIECE_182,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_182.T_ONEPIECE_182',바스코 샷,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_183,ONEPIECE_183,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_183.T_ONEPIECE_183',실버즈 레일리,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_184,ONEPIECE_184,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_184.T_ONEPIECE_184',보아 행콕,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_185,ONEPIECE_185,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_185.T_ONEPIECE_185',캐럿,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_186,ONEPIECE_186,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_186.T_ONEPIECE_186',스트로베리,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_187,ONEPIECE_187,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_187.T_ONEPIECE_187',샹크스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_188,ONEPIECE_188,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_188.T_ONEPIECE_188',페드로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_189,ONEPIECE_189,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_189.T_ONEPIECE_189',사카즈키,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_190,ONEPIECE_190,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_190.T_ONEPIECE_190',메이너드,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_191,ONEPIECE_191,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_191.T_ONEPIECE_191',쿠로즈미 오로치,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_192,ONEPIECE_192,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_192.T_ONEPIECE_192',다나카씨,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_193,ONEPIECE_193,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_193.T_ONEPIECE_193',베이브,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_194,ONEPIECE_194,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_194.T_ONEPIECE_194',우타,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_195,ONEPIECE_195,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_195.T_ONEPIECE_195',카리브,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_196,ONEPIECE_196,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_196.T_ONEPIECE_196',에드워드 뉴게이트,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_197,ONEPIECE_197,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_197.T_ONEPIECE_197',고티,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_198,ONEPIECE_198,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_198.T_ONEPIECE_198',샬롯 푸딩,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_199,ONEPIECE_199,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_199.T_ONEPIECE_199',완제,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_200,ONEPIECE_200,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_200.T_ONEPIECE_200',시키,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_201,ONEPIECE_201,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_201.T_ONEPIECE_201',징베,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_202,ONEPIECE_202,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_202.T_ONEPIECE_202',더글라스 불릿,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_203,ONEPIECE_203,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_203.T_ONEPIECE_203',재브라,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_204,ONEPIECE_204,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_204.T_ONEPIECE_204',오타마,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_205,ONEPIECE_205,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_205.T_ONEPIECE_205',알비다,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_206,ONEPIECE_206,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_206.T_ONEPIECE_206',스테인리스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_207,ONEPIECE_207,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_207.T_ONEPIECE_207',챠카,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_208,ONEPIECE_208,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_208.T_ONEPIECE_208',킬러,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_209,ONEPIECE_209,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_209.T_ONEPIECE_209',샬롯 크래커,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_210,ONEPIECE_210,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_210.T_ONEPIECE_210',라임주스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_211,ONEPIECE_211,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_211.T_ONEPIECE_211',카포네 벳지,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_212,ONEPIECE_212,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_212.T_ONEPIECE_212',퀴로스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_213,ONEPIECE_213,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_213.T_ONEPIECE_213',시노부,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_214,ONEPIECE_214,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_214.T_ONEPIECE_214',슈트로이젠,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_215,ONEPIECE_215,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_215.T_ONEPIECE_215',바솔로뮤 쿠마,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_216,ONEPIECE_216,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_216.T_ONEPIECE_216',크로커스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_217,ONEPIECE_217,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_217.T_ONEPIECE_217',지니,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_218,ONEPIECE_218,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_218.T_ONEPIECE_218',타마고,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_219,ONEPIECE_219,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_219.T_ONEPIECE_219',넵튠,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_220,ONEPIECE_220,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_220.T_ONEPIECE_220',시라호시,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_221,ONEPIECE_221,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_221.T_ONEPIECE_221',하찌,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_222,ONEPIECE_222,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_222.T_ONEPIECE_222',코즈키 토키,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_223,ONEPIECE_223,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_223.T_ONEPIECE_223',벤 베크맨,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_224,ONEPIECE_224,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_224.T_ONEPIECE_224',S호크,,호크,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_225,ONEPIECE_225,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_225.T_ONEPIECE_225',빈스모크 욘디,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_226,ONEPIECE_226,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_226.T_ONEPIECE_226',샬롯 오페라,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_227,ONEPIECE_227,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_227.T_ONEPIECE_227',후쿠로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_228,ONEPIECE_228,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_228.T_ONEPIECE_228',빈스모크 상디,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_229,ONEPIECE_229,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_229.T_ONEPIECE_229',쥬라큘 미호크,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_230,ONEPIECE_230,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_230.T_ONEPIECE_230',사보,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_231,ONEPIECE_231,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_231.T_ONEPIECE_231',록스타,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_232,ONEPIECE_232,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_232.T_ONEPIECE_232',바카라,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_233,ONEPIECE_233,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_233.T_ONEPIECE_233',비토,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_234,ONEPIECE_234,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_234.T_ONEPIECE_234',올럼버스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_235,ONEPIECE_235,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_235.T_ONEPIECE_235',후쿠로쿠쥬,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_236,ONEPIECE_236,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_236.T_ONEPIECE_236',스피드,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_237,ONEPIECE_237,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_237.T_ONEPIECE_237',코즈키 스키야키,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_238,ONEPIECE_238,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_238.T_ONEPIECE_238',와다츠미,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_239,ONEPIECE_239,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_239.T_ONEPIECE_239',토니토니 쵸파,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_240,ONEPIECE_240,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_240.T_ONEPIECE_240',샬롯 프랄리네,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_241,ONEPIECE_241,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_241.T_ONEPIECE_241',다루마,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_242,ONEPIECE_242,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_242.T_ONEPIECE_242',버킹엄 스튜시,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_243,ONEPIECE_243,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_243.T_ONEPIECE_243',페이지 원,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_244,ONEPIECE_244,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_244.T_ONEPIECE_244',아틀라스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_245,ONEPIECE_245,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_245.T_ONEPIECE_245',럭키 루,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_246,ONEPIECE_246,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_246.T_ONEPIECE_246',효고로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_247,ONEPIECE_247,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_247.T_ONEPIECE_247',아푸,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_248,ONEPIECE_248,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_248.T_ONEPIECE_248',샬롯 몽도르,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_249,ONEPIECE_249,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_249.T_ONEPIECE_249',이데오,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_250,ONEPIECE_250,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_250.T_ONEPIECE_250',후카보시,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_251,ONEPIECE_251,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_251.T_ONEPIECE_251',세뇨르 핑크,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_252,ONEPIECE_252,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_252.T_ONEPIECE_252',효조,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_253,ONEPIECE_253,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_253.T_ONEPIECE_253',린드 버그,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_254,ONEPIECE_254,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_254.T_ONEPIECE_254',베르고,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_255,ONEPIECE_255,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_255.T_ONEPIECE_255',마젤란,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_256,ONEPIECE_256,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_256.T_ONEPIECE_256',라쿠요,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_257,ONEPIECE_257,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_257.T_ONEPIECE_257',엠포리오 이완코브,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_258,ONEPIECE_258,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_258.T_ONEPIECE_258',혼고,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_259,ONEPIECE_259,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_259.T_ONEPIECE_259',라피트,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_260,ONEPIECE_260,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_260.T_ONEPIECE_260',츠루,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_261,ONEPIECE_261,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_261.T_ONEPIECE_261',샬롯 스무디,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_262,ONEPIECE_262,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_262.T_ONEPIECE_262',도슨,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_263,ONEPIECE_263,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_263.T_ONEPIECE_263',이카로스 뭇히,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_264,ONEPIECE_264,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_264.T_ONEPIECE_264',제프,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_265,ONEPIECE_265,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_265.T_ONEPIECE_265',보르살리노,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_266,ONEPIECE_266,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_266.T_ONEPIECE_266',페루,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_267,ONEPIECE_267,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_267.T_ONEPIECE_267',아인,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_268,ONEPIECE_268,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_268.T_ONEPIECE_268',트레볼,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_269,ONEPIECE_269,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_269.T_ONEPIECE_269',코즈키 오뎅,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_270,ONEPIECE_270,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_270.T_ONEPIECE_270',T본,,티본,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_271,ONEPIECE_271,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_271.T_ONEPIECE_271',빈스모크 니디,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_272,ONEPIECE_272,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_272.T_ONEPIECE_272',우솝,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_273,ONEPIECE_273,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_273.T_ONEPIECE_273',조라,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_274,ONEPIECE_274,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_274.T_ONEPIECE_274',모르건즈,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_275,ONEPIECE_275,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_275.T_ONEPIECE_275',잠발,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_276,ONEPIECE_276,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_276.T_ONEPIECE_276',레베카,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_277,ONEPIECE_277,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_277.T_ONEPIECE_277',제이가르시아 새턴 성,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_278,ONEPIECE_278,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_278.T_ONEPIECE_278',리틀 오즈 Jr,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_279,ONEPIECE_279,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_279.T_ONEPIECE_279',도리,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_280,ONEPIECE_280,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_280.T_ONEPIECE_280',코비,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_281,ONEPIECE_281,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_281.T_ONEPIECE_281',슈거,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_282,ONEPIECE_282,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_282.T_ONEPIECE_282',샬롯 시폰,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_283,ONEPIECE_283,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_283.T_ONEPIECE_283',카타리나 데본,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_284,ONEPIECE_284,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_284.T_ONEPIECE_284',아론,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_285,ONEPIECE_285,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_285.T_ONEPIECE_285',피거랜드 갈링 성,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_286,ONEPIECE_286,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_286.T_ONEPIECE_286',샬롯 오븐,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_287,ONEPIECE_287,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_287.T_ONEPIECE_287',피카,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_288,ONEPIECE_288,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_288.T_ONEPIECE_288',글로리오사,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_289,ONEPIECE_289,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_289.T_ONEPIECE_289',길드 테소로,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_290,ONEPIECE_290,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_290.T_ONEPIECE_290',사사키,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_291,ONEPIECE_291,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_291.T_ONEPIECE_291',샬롯 갈렛,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_292,ONEPIECE_292,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_292.T_ONEPIECE_292',사디,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_293,ONEPIECE_293,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_293.T_ONEPIECE_293',나무르,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_294,ONEPIECE_294,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_294.T_ONEPIECE_294',마하,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_295,ONEPIECE_295,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_295.T_ONEPIECE_295',카와마츠,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_296,ONEPIECE_296,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_296.T_ONEPIECE_296',시모츠키 류마,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_297,ONEPIECE_297,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_297.T_ONEPIECE_297',지저스 바제스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_298,ONEPIECE_298,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_298.T_ONEPIECE_298',미키타,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_299,ONEPIECE_299,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_299.T_ONEPIECE_299',도미노,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_300,ONEPIECE_300,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_300.T_ONEPIECE_300',아트모스,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_301,ONEPIECE_301,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_301.T_ONEPIECE_301',샬롯 카타쿠리,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_302,ONEPIECE_302,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_302.T_ONEPIECE_302',시실리안,,,OnePiece,0,OnePiece,OnePiece,True
+ONEPIECE_303,ONEPIECE_303,Texture2D'/Game/IdolQuiz/Images/OnePiece/T_ONEPIECE_303.T_ONEPIECE_303',비스타,,,OnePiece,0,OnePiece,OnePiece,True

@@ -48,6 +48,23 @@ void URhythmAccountSubsystem::Register(const FString& InUsername, const FString&
 	}
 
 	const FString CleanUsername = InUsername.TrimStartAndEnd();
+	bool bUsesOnlyEnglishLettersAndNumbers = true;
+	for (const TCHAR Character : CleanUsername)
+	{
+		if (!((Character >= TEXT('A') && Character <= TEXT('Z'))
+			|| (Character >= TEXT('a') && Character <= TEXT('z'))
+			|| (Character >= TEXT('0') && Character <= TEXT('9'))))
+		{
+			bUsesOnlyEnglishLettersAndNumbers = false;
+			break;
+		}
+	}
+	if (!bUsesOnlyEnglishLettersAndNumbers)
+	{
+		CompleteAuthentication(false, TEXT("아이디는 영문과 숫자만 사용할 수 있습니다."));
+		return;
+	}
+
 	PlayFab::ClientModels::FRegisterPlayFabUserRequest Request;
 	Request.TitleId = GetDefault<UPlayFabRuntimeSettings>()->TitleId;
 	Request.Username = CleanUsername;
