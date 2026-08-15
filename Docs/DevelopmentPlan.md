@@ -1,6 +1,6 @@
 # AllGames Rhythm Game Development Plan
 
-Last updated: 2026-07-29
+Last updated: 2026-08-16
 
 ## Goal
 
@@ -10,9 +10,10 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 
 - Prototype progress: stages 1-10 complete; stage 11 implemented and awaiting full-song PIE verification.
 - AllGames platform progress: the shared MainHub launches Rhythm Game, Person Quiz, and the new real-time Drawing Quiz prototype.
-- Person Quiz content: 1,252 questions across Idol (258), Actor (331), One Piece (303), Naruto (64), MC (40), and KBO Player (256) pools. Room creation uses independent multi-select pool checkboxes and 50-question increments up to 300.
-- Person Quiz data sources: `/Game/IdolQuiz/Data/DT_IdolQuizQuestionsExpanded` contains all 1,252 runtime rows. Reviewable manifests and generated CSVs remain under `SourceAssets/IdolQuiz/OnePiece`, `Naruto`, `MC`, and `KBO2025`; rows retain canonical answer, pipe-separated aliases, pool tags, image references, and enabled state. The MC exclusion list is stored in `SourceAssets/IdolQuiz/MC/excluded_names.json` so removed entries are not re-downloaded or re-imported.
-- Naruto, MC, and KBO 2025 source datasets are imported as 384 Git LFS textures and connected to `Naruto`, `MC`, and `KBOPlayer` runtime pools; multi-select room creation and gameplay require manual PIE verification.
+- Person Quiz content: 1,364 questions across Idol (258), Actor (331), One Piece (303), Naruto (64), MC (40), KBO Player (256), and BJ (112) pools. Room creation uses independent multi-select pool checkboxes and 50-question increments up to 300.
+- Person Quiz data sources: `/Game/IdolQuiz/Data/DT_IdolQuizQuestionsExpanded` contains all 1,364 runtime rows. The BJ pool uses the current PNG files under `SourceAssets/IdolQuiz/AfreecaBJ/Images` and `SourceAssets/IdolQuiz/AfreecaMaleBJ_6SVxLb/Images`; `SourceAssets/IdolQuiz/BJ` stores the generated review manifest and CSV. Every BJ filename without `.png` is the canonical answer.
+- Naruto, MC, KBO 2025, and BJ source datasets are imported as 496 Git LFS textures and connected to their runtime pools; multi-select room creation and gameplay require manual PIE verification.
+- Person Quiz Na PD relay mode: design rules are agreed and documented below; implementation has not started. The next requested stage is the host-only setup phase and its replicated server-authoritative state.
 
 - Current stage: sixteen-song, sixty-four-chart catalog rebalanced to a shared Lv1-20 ceiling with at least two displayed levels between adjacent difficulties. Four previously Lv21-22 Expert charts were rebuilt and await focused PIE playtesting.
 - Current online stage: PlayFab account login and score submission are PIE-verified; result/lobby leaderboard presentation is implemented and awaiting PIE verification.
@@ -23,7 +24,7 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Playable catalog: Choom, Lemonade, It'sMe, CHASE-ME, CANON-D, Drama, 筌띾슣媛붷첎?, LoveAttack, 揶쏅쵐?꾣묾? HeavySerenade, RUDE!, SHEESH, DRIP, BANG BANG, 404 (New Era), and 筌?Ŋ?귨㏄癒?뒄; every song has Easy/Normal/Hard/Expert 5-key charts.
 - Test song format: stereo, 48 kHz, 16-bit PCM WAV, approximately 176.054 seconds.
 - Default input mode follows SongData; FiveKeyMap selects 5-key.
-- Latest successful full build: `AllGamesEditor Win64 Development` on 2026-07-28.
+- Latest successful full build: `AllGamesEditor Win64 Development` on 2026-08-05.
 - Repository scope now includes the lobby, complete 5-key gameplay loop, MIDI authoring tools, and the three-song production catalog.
 - Detailed chart-authoring history and the reusable current workflow are documented in `Docs/ChartAuthoringPipeline.md`.
 - Current Drawing Quiz stage: 2-6 player network prototype is connected to the shared EOS room browser and waiting room; manual two-client create/join/start/play verification is next.
@@ -123,6 +124,61 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - Runtime note thinning is disabled. Normal/Hard/Expert share the same judgement windows so chart density and pattern complexity define difficulty; Easy alone keeps a modest 15% wider timing window.
 - The catalog groups charts by their shared Music asset. SONG cycles unique music tracks, while DIFFICULTY selects the matching chart within that song group.
 
+## Person Quiz - Na PD relay mode specification
+
+### Mode boundary and authority
+
+- Add this as a separate Person Quiz rule mode. Preserve the existing Person Quiz mode and its behavior.
+- The server is authoritative for player order, selected questions, current turn, countdown/deadline, answer judgement, cycle number, and success/failure state.
+- Clients only present replicated state and send requests. A client cannot advance a turn, change setup, or decide a result locally.
+- Only the player assigned to the current turn may submit an answer. Late, duplicate, stale-turn, and non-active-player submissions must be rejected by the server.
+- Host-only controls must also be authorized by the server; hiding a button on non-host clients is not sufficient protection.
+
+### Host setup phase
+
+- Starting this mode enters a setup phase before the first question appears.
+- The host assigns every participating player a unique numbered play order.
+- The host chooses exactly which Person Quiz images/questions are included or excluded for this match.
+- Non-host players cannot change the order or question selection. They remain in a waiting state and must not be shown answer metadata while the host configures the match.
+- The currently agreed turn patterns cover three, four, and five participating players:
+  - 3 players: `1 -> 2 -> 3 -> 2 -> 1`
+  - 4 players: `1 -> 2 -> 3 -> 4 -> 3 -> 2 -> 1`
+  - 5 players: `1 -> 2 -> 3 -> 4 -> 5 -> 4 -> 3 -> 2 -> 1`
+- Rules for two-player or six-player matches have not yet been agreed and must not be inferred during this stage.
+
+### Cycle and turn flow
+
+- A match contains at most three separately confirmed cycles.
+- Each new cycle starts again at player 1; cycles are not joined into one uninterrupted ping-pong sequence.
+- At the beginning of each cycle, show a visible `3 -> 2 -> 1` countdown to every player before player 1's first question.
+- The three-second countdown applies only before the first player of that cycle. Do not repeat it between later turns in the same cycle.
+- Each active turn has a five-second server deadline.
+- A correct answer immediately advances to the next player and next image. Do not wait for the unused portion of the five-second timer.
+- A wrong answer or five-second timeout immediately fails the current attempt.
+- A cycle succeeds only when every turn in that cycle's configured sequence succeeds.
+
+### Cycle success state
+
+- Show the cycle-success UI to every player.
+- Only the host sees and can use the `Next Cycle` button. All other players see the result but remain in a non-interactive waiting state.
+- Pressing `Next Cycle` starts the next cycle at player 1 and runs the first-player three-second countdown again.
+- After the third successful cycle, show a final-success state instead of offering a fourth cycle.
+
+### Failure state
+
+- Show the failure UI to every player.
+- Only the host sees and can use these three actions; all other players remain in a non-interactive waiting state:
+  - `Retry`: retain the existing player order and included/excluded question setup, then restart from cycle 1.
+  - `Reconfigure`: return everyone to the setup/waiting phase so the host can change player order and included/excluded images.
+  - `Exit`: end this mode for everyone and return them to the room flow.
+- The server broadcasts the host's accepted result action so every client changes state together.
+
+### Implementation staging and unresolved policies
+
+- First implementation stage: host-only player-order and image-selection setup, non-host waiting presentation, validation, and replicated server-authoritative setup state.
+- Later stages require explicit user approval: turn/cycle state machine, timer and answer handling, then success/failure UI and host result actions.
+- Disconnect handling, host departure/host migration, and the exact final-success buttons remain undecided. They must be resolved before this mode is declared multiplayer-complete.
+
 ## Stage roadmap
 
 1. **Test map and GameMode ??complete**
@@ -187,6 +243,15 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - `BUG-002` tracks CHASE-ME's initial 49-second timeline jump. The first audio-percent callback could report a stale non-zero position while audible playback started at zero, advancing the HUD/chart and causing an apparent 3:07 cutoff; the fix rejects implausible initial callbacks and awaits manual PIE verification.
 
 ## Work log
+
+### 2026-08-16 - Na PD relay Person Quiz rules agreed
+
+- Specified a separate cooperative relay mode without replacing the existing Person Quiz rules.
+- Fixed the agreed three-, four-, and five-player ping-pong order patterns and limited a match to three separately confirmed cycles, each restarting at player 1.
+- Fixed the timing rules: one visible three-second countdown before the first player of each cycle, a five-second server deadline per turn, and immediate advancement after a correct answer.
+- Defined the host-only setup responsibilities for player order and per-image inclusion/exclusion while non-host players wait without access to answer metadata.
+- Defined synchronized result presentation: success and failure UI is visible to everyone, while only the host receives progression controls. Failure offers Retry with retained settings, Reconfigure, and Exit.
+- Recorded server-authoritative security and synchronization requirements. This entry documents design only; no runtime implementation or completion claim was made.
 
 ### 2026-07-16
 
@@ -593,6 +658,14 @@ Build a small Unreal Engine 5.7 rhythm-game prototype in which one song can be p
 - KBO source labels retain the team in aliases, but canonical `StageName` answers remove the trailing team parentheses. For example, `김도영 (KIA 타이거즈)` accepts the canonical answer `김도영`; duplicate player names remain separate question IDs.
 - Naruto source descriptions after ` | ` are removed from canonical answers, so `미나토 | 4대 호카게` uses `미나토` as the answer.
 - Added resumable batch import and Unreal-side validation scripts. Automated verification passed for 1,276 rows, exact pool counts, nonempty answers/images, 256 KBO answers without parentheses, 384 texture LFS attributes, `git diff --check`, and a successful `AllGamesEditor Win64 Development` build.
+
+### 2026-08-05 - BJ Person Quiz runtime pool
+
+- Added the stable `BJ` pool ID and label to room metadata normalization, room-browser/waiting-room labels, and the Person Quiz multi-select checkbox list. The BJ checkbox capacity is 112, and the question-count controls still disable values above the combined selected capacity.
+- Imported the 42 current PNG files from `SourceAssets/IdolQuiz/AfreecaBJ/Images` and the 70 current PNG files from `SourceAssets/IdolQuiz/AfreecaMaleBJ_6SVxLb/Images` as 112 Git LFS textures under `/Game/IdolQuiz/Images/BJ`.
+- Added 112 `PoolTags=BJ` rows to `DT_IdolQuizQuestionsExpanded`, increasing the runtime table from 1,252 to 1,364 rows. Each source filename without `.png` is used unchanged as `StageName`, so the displayed filename is the canonical answer.
+- Added resumable one-image import and dedicated BJ validation scripts. Automated validation passed for 112 unique BJ answers, 112 valid texture references, exact pool counts, and all 112 texture LFS attributes. The full `AllGamesEditor Win64 Development` build succeeded.
+- Manual PIE verification remains required for the seven-checkbox layout, BJ room creation/labels, portrait display, filename-based answers, and 50/100 question capacity behavior before this stage is marked complete.
 
 ### 2026-08-04 - MC pool cleanup
 

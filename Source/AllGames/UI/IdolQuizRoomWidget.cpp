@@ -31,7 +31,8 @@ namespace
 			{TEXT("OnePiece"), TEXT("원피스"), 303},
 			{TEXT("Naruto"), TEXT("나루토"), 64},
 			{TEXT("MC"), TEXT("MC"), 40},
-			{TEXT("KBOPlayer"), TEXT("야구선수"), 256}
+			{TEXT("KBOPlayer"), TEXT("야구선수"), 256},
+			{TEXT("BJ"), TEXT("BJ"), 112}
 		};
 		return Pools;
 	}
@@ -261,6 +262,7 @@ void UIdolQuizRoomWidget::BuildPersonQuizSelectionControls()
 	PoolCheckBoxes[3]->OnCheckStateChanged.AddDynamic(this, &ThisClass::HandleNarutoChecked);
 	PoolCheckBoxes[4]->OnCheckStateChanged.AddDynamic(this, &ThisClass::HandleMcChecked);
 	PoolCheckBoxes[5]->OnCheckStateChanged.AddDynamic(this, &ThisClass::HandleKboChecked);
+	PoolCheckBoxes[6]->OnCheckStateChanged.AddDynamic(this, &ThisClass::HandleBjChecked);
 	PoolCheckBoxes[0]->SetIsChecked(true);
 
 	for (int32 Index = 0; Index < 6; ++Index)
@@ -269,7 +271,7 @@ void UIdolQuizRoomWidget::BuildPersonQuizSelectionControls()
 		UButton* Button = MakeButton(WidgetTree, *FString::Printf(TEXT("QuestionCount%d"), Count),
 			FString::Printf(TEXT("%d"), Count), 16);
 		UCanvasPanelSlot* CountButtonSlot = CreateDialog->AddChildToCanvas(Button);
-		CountButtonSlot->SetPosition(FVector2D(165.0f + Index * 72.0f, 290.0f));
+		CountButtonSlot->SetPosition(FVector2D(165.0f + Index * 72.0f, 330.0f));
 		CountButtonSlot->SetSize(FVector2D(66.0f, 40.0f));
 		QuestionCountButtons.Add(Button);
 	}
@@ -282,7 +284,21 @@ void UIdolQuizRoomWidget::BuildPersonQuizSelectionControls()
 
 	if (UCanvasPanelSlot* ErrorSlot = DialogErrorText ? Cast<UCanvasPanelSlot>(DialogErrorText->Slot) : nullptr)
 	{
-		ErrorSlot->SetPosition(FVector2D(75.0f, 340.0f));
+		ErrorSlot->SetPosition(FVector2D(75.0f, 375.0f));
+	}
+	if (UWidget* ConfirmWidget = WidgetTree->FindWidget(TEXT("ConfirmCreate")); ConfirmWidget)
+	{
+		if (UCanvasPanelSlot* ConfirmSlot = Cast<UCanvasPanelSlot>(ConfirmWidget->Slot))
+		{
+			ConfirmSlot->SetPosition(FVector2D(335.0f, 420.0f));
+		}
+	}
+	if (UWidget* CancelWidget = WidgetTree->FindWidget(TEXT("CancelCreate")); CancelWidget)
+	{
+		if (UCanvasPanelSlot* CancelSlot = Cast<UCanvasPanelSlot>(CancelWidget->Slot))
+		{
+			CancelSlot->SetPosition(FVector2D(95.0f, 420.0f));
+		}
 	}
 	SelectedQuestionCount = 50;
 	RefreshQuestionCountButtons();
@@ -355,6 +371,7 @@ void UIdolQuizRoomWidget::HandleOnePieceChecked(bool bChecked) { HandlePoolCheck
 void UIdolQuizRoomWidget::HandleNarutoChecked(bool bChecked) { HandlePoolCheckChanged(3, bChecked); }
 void UIdolQuizRoomWidget::HandleMcChecked(bool bChecked) { HandlePoolCheckChanged(4, bChecked); }
 void UIdolQuizRoomWidget::HandleKboChecked(bool bChecked) { HandlePoolCheckChanged(5, bChecked); }
+void UIdolQuizRoomWidget::HandleBjChecked(bool bChecked) { HandlePoolCheckChanged(6, bChecked); }
 void UIdolQuizRoomWidget::Select50Questions() { SelectQuestionCount(50); }
 void UIdolQuizRoomWidget::Select100Questions() { SelectQuestionCount(100); }
 void UIdolQuizRoomWidget::Select150Questions() { SelectQuestionCount(150); }

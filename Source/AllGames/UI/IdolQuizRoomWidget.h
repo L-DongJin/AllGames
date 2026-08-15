@@ -70,6 +70,7 @@ private:
 	UFUNCTION() void HandleNarutoChecked(bool bChecked);
 	UFUNCTION() void HandleMcChecked(bool bChecked);
 	UFUNCTION() void HandleKboChecked(bool bChecked);
+	UFUNCTION() void HandleBjChecked(bool bChecked);
 	UFUNCTION() void Select50Questions();
 	UFUNCTION() void Select100Questions();
 	UFUNCTION() void Select150Questions();

@@ -694,7 +694,7 @@ FString UIdolQuizSessionSubsystem::NormalizePoolTags(const FString& PoolTags)
 {
 	static const TArray<FString> Registry = {
 		TEXT("GirlGroup"), TEXT("BoyGroup"), TEXT("Idol"), TEXT("Actor"),
-		TEXT("Comedian"), TEXT("OnePiece"), TEXT("Naruto"), TEXT("MC"), TEXT("KBOPlayer")
+		TEXT("Comedian"), TEXT("OnePiece"), TEXT("Naruto"), TEXT("MC"), TEXT("KBOPlayer"), TEXT("BJ")
 	};
 	TArray<FString> Parsed;
 	PoolTags.ParseIntoArray(Parsed, TEXT("|"), true);
@@ -729,7 +729,7 @@ FString UIdolQuizSessionSubsystem::GetPoolTagsLabel(const FString& PoolTags)
 		{TEXT("Idol"), TEXT("아이돌")}, {TEXT("Actor"), TEXT("배우")},
 		{TEXT("Comedian"), TEXT("개그맨")}, {TEXT("OnePiece"), TEXT("원피스")},
 		{TEXT("Naruto"), TEXT("나루토")}, {TEXT("MC"), TEXT("MC")},
-		{TEXT("KBOPlayer"), TEXT("야구선수")}
+		{TEXT("KBOPlayer"), TEXT("야구선수")}, {TEXT("BJ"), TEXT("BJ")}
 	};
 	TArray<FString> Tags;
 	NormalizePoolTags(PoolTags).ParseIntoArray(Tags, TEXT("|"), true);

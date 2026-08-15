@@ -1,0 +1,682 @@
+{
+  "pool_tag": "BJ",
+  "source_folders": [
+    "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images",
+    "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images"
+  ],
+  "question_count": 112,
+  "records": [
+    {
+      "question_id": "BJ_001",
+      "answer": "감스트",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\감스트.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_001"
+    },
+    {
+      "question_id": "BJ_002",
+      "answer": "강만식",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\강만식.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_002"
+    },
+    {
+      "question_id": "BJ_003",
+      "answer": "걸뽀",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\걸뽀.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_003"
+    },
+    {
+      "question_id": "BJ_004",
+      "answer": "고라니율",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\고라니율.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_004"
+    },
+    {
+      "question_id": "BJ_005",
+      "answer": "공혁준",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\공혁준.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_005"
+    },
+    {
+      "question_id": "BJ_006",
+      "answer": "과로사",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\과로사.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_006"
+    },
+    {
+      "question_id": "BJ_007",
+      "answer": "괴물쥐",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\괴물쥐.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_007"
+    },
+    {
+      "question_id": "BJ_008",
+      "answer": "기뉴다",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\기뉴다.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_008"
+    },
+    {
+      "question_id": "BJ_009",
+      "answer": "기룡이",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\기룡이.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_009"
+    },
+    {
+      "question_id": "BJ_010",
+      "answer": "김레인",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\김레인.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_010"
+    },
+    {
+      "question_id": "BJ_011",
+      "answer": "김민교",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\김민교.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_011"
+    },
+    {
+      "question_id": "BJ_012",
+      "answer": "김봉준",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\김봉준.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_012"
+    },
+    {
+      "question_id": "BJ_013",
+      "answer": "김윤환",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\김윤환.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_013"
+    },
+    {
+      "question_id": "BJ_014",
+      "answer": "김인호",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\김인호.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_014"
+    },
+    {
+      "question_id": "BJ_015",
+      "answer": "김택용",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\김택용.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_015"
+    },
+    {
+      "question_id": "BJ_016",
+      "answer": "깨박이",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\깨박이.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_016"
+    },
+    {
+      "question_id": "BJ_017",
+      "answer": "꾸티뉴",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\꾸티뉴.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_017"
+    },
+    {
+      "question_id": "BJ_018",
+      "answer": "꿀탱탱",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\꿀탱탱.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_018"
+    },
+    {
+      "question_id": "BJ_019",
+      "answer": "나는상윤",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\나는상윤.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_019"
+    },
+    {
+      "question_id": "BJ_020",
+      "answer": "나무늘봉순",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\나무늘봉순.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_020"
+    },
+    {
+      "question_id": "BJ_021",
+      "answer": "남순",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\남순.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_021"
+    },
+    {
+      "question_id": "BJ_022",
+      "answer": "다누리",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\다누리.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_022"
+    },
+    {
+      "question_id": "BJ_023",
+      "answer": "다쁘",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\다쁘.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_023"
+    },
+    {
+      "question_id": "BJ_024",
+      "answer": "단아냥",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\단아냥.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_024"
+    },
+    {
+      "question_id": "BJ_025",
+      "answer": "도파",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\도파.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_025"
+    },
+    {
+      "question_id": "BJ_026",
+      "answer": "두니주니",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\두니주니.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_026"
+    },
+    {
+      "question_id": "BJ_027",
+      "answer": "두치와뿌꾸",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\두치와뿌꾸.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_027"
+    },
+    {
+      "question_id": "BJ_028",
+      "answer": "듀단",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\듀단.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_028"
+    },
+    {
+      "question_id": "BJ_029",
+      "answer": "땡지",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\땡지.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_029"
+    },
+    {
+      "question_id": "BJ_030",
+      "answer": "뚜밥",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\뚜밥.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_030"
+    },
+    {
+      "question_id": "BJ_031",
+      "answer": "뜨뜨뜨뜨",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\뜨뜨뜨뜨.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_031"
+    },
+    {
+      "question_id": "BJ_032",
+      "answer": "랄로",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\랄로.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_032"
+    },
+    {
+      "question_id": "BJ_033",
+      "answer": "러아",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\러아.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_033"
+    },
+    {
+      "question_id": "BJ_034",
+      "answer": "로렌",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\로렌.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_034"
+    },
+    {
+      "question_id": "BJ_035",
+      "answer": "롤선생",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\롤선생.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_035"
+    },
+    {
+      "question_id": "BJ_036",
+      "answer": "룩삼",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\룩삼.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_036"
+    },
+    {
+      "question_id": "BJ_037",
+      "answer": "릴카",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\릴카.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_037"
+    },
+    {
+      "question_id": "BJ_038",
+      "answer": "마이민",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\마이민.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_038"
+    },
+    {
+      "question_id": "BJ_039",
+      "answer": "만기퇴소",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\만기퇴소.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_039"
+    },
+    {
+      "question_id": "BJ_040",
+      "answer": "매드라이프",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\매드라이프.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_040"
+    },
+    {
+      "question_id": "BJ_041",
+      "answer": "문월",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\문월.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_041"
+    },
+    {
+      "question_id": "BJ_042",
+      "answer": "미래",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\미래.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_042"
+    },
+    {
+      "question_id": "BJ_043",
+      "answer": "미스틱",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\미스틱.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_043"
+    },
+    {
+      "question_id": "BJ_044",
+      "answer": "민찬기",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\민찬기.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_044"
+    },
+    {
+      "question_id": "BJ_045",
+      "answer": "박삐삐",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\박삐삐.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_045"
+    },
+    {
+      "question_id": "BJ_046",
+      "answer": "박사장",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\박사장.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_046"
+    },
+    {
+      "question_id": "BJ_047",
+      "answer": "박하악",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\박하악.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_047"
+    },
+    {
+      "question_id": "BJ_048",
+      "answer": "백크",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\백크.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_048"
+    },
+    {
+      "question_id": "BJ_049",
+      "answer": "블랙워크",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\블랙워크.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_049"
+    },
+    {
+      "question_id": "BJ_050",
+      "answer": "뿌리",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\뿌리.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_050"
+    },
+    {
+      "question_id": "BJ_051",
+      "answer": "서윤",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\서윤.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_051"
+    },
+    {
+      "question_id": "BJ_052",
+      "answer": "세야",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\세야.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_052"
+    },
+    {
+      "question_id": "BJ_053",
+      "answer": "수피",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\수피.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_053"
+    },
+    {
+      "question_id": "BJ_054",
+      "answer": "수힛",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\수힛.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_054"
+    },
+    {
+      "question_id": "BJ_055",
+      "answer": "스맵",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\스맵.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_055"
+    },
+    {
+      "question_id": "BJ_056",
+      "answer": "시조새",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\시조새.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_056"
+    },
+    {
+      "question_id": "BJ_057",
+      "answer": "쏘대장",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\쏘대장.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_057"
+    },
+    {
+      "question_id": "BJ_058",
+      "answer": "안녕수야",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\안녕수야.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_058"
+    },
+    {
+      "question_id": "BJ_059",
+      "answer": "애교용",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\애교용.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_059"
+    },
+    {
+      "question_id": "BJ_060",
+      "answer": "앵지",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\앵지.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_060"
+    },
+    {
+      "question_id": "BJ_061",
+      "answer": "에스카",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\에스카.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_061"
+    },
+    {
+      "question_id": "BJ_062",
+      "answer": "여우비",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\여우비.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_062"
+    },
+    {
+      "question_id": "BJ_063",
+      "answer": "염보성",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\염보성.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_063"
+    },
+    {
+      "question_id": "BJ_064",
+      "answer": "오뀨",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\오뀨.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_064"
+    },
+    {
+      "question_id": "BJ_065",
+      "answer": "오메킴승현",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\오메킴승현.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_065"
+    },
+    {
+      "question_id": "BJ_066",
+      "answer": "오세블리",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\오세블리.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_066"
+    },
+    {
+      "question_id": "BJ_067",
+      "answer": "오아",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\오아.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_067"
+    },
+    {
+      "question_id": "BJ_068",
+      "answer": "와치",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\와치.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_068"
+    },
+    {
+      "question_id": "BJ_069",
+      "answer": "우정잉",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\우정잉.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_069"
+    },
+    {
+      "question_id": "BJ_070",
+      "answer": "운타라",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\운타라.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_070"
+    },
+    {
+      "question_id": "BJ_071",
+      "answer": "유소나",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\유소나.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_071"
+    },
+    {
+      "question_id": "BJ_072",
+      "answer": "유혜디",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\유혜디.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_072"
+    },
+    {
+      "question_id": "BJ_073",
+      "answer": "이경민",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\이경민.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_073"
+    },
+    {
+      "question_id": "BJ_074",
+      "answer": "이상호",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\이상호.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_074"
+    },
+    {
+      "question_id": "BJ_075",
+      "answer": "이아린",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\이아린.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_075"
+    },
+    {
+      "question_id": "BJ_076",
+      "answer": "임선비",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\임선비.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_076"
+    },
+    {
+      "question_id": "BJ_077",
+      "answer": "임아니",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\임아니.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_077"
+    },
+    {
+      "question_id": "BJ_078",
+      "answer": "저라뎃",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\저라뎃.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_078"
+    },
+    {
+      "question_id": "BJ_079",
+      "answer": "전수찬",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\전수찬.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_079"
+    },
+    {
+      "question_id": "BJ_080",
+      "answer": "정윤종",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\정윤종.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_080"
+    },
+    {
+      "question_id": "BJ_081",
+      "answer": "조경훈",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\조경훈.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_081"
+    },
+    {
+      "question_id": "BJ_082",
+      "answer": "주둥이",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\주둥이.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_082"
+    },
+    {
+      "question_id": "BJ_083",
+      "answer": "주보리",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\주보리.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_083"
+    },
+    {
+      "question_id": "BJ_084",
+      "answer": "주서리",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\주서리.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_084"
+    },
+    {
+      "question_id": "BJ_085",
+      "answer": "준밧드",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\준밧드.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_085"
+    },
+    {
+      "question_id": "BJ_086",
+      "answer": "지피티",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\지피티.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_086"
+    },
+    {
+      "question_id": "BJ_087",
+      "answer": "쩡혁",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\쩡혁.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_087"
+    },
+    {
+      "question_id": "BJ_088",
+      "answer": "창현",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\창현.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_088"
+    },
+    {
+      "question_id": "BJ_089",
+      "answer": "철구",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\철구.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_089"
+    },
+    {
+      "question_id": "BJ_090",
+      "answer": "철면수심",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\철면수심.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_090"
+    },
+    {
+      "question_id": "BJ_091",
+      "answer": "최군",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\최군.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_091"
+    },
+    {
+      "question_id": "BJ_092",
+      "answer": "최기명",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\최기명.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_092"
+    },
+    {
+      "question_id": "BJ_093",
+      "answer": "침착맨",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\침착맨.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_093"
+    },
+    {
+      "question_id": "BJ_094",
+      "answer": "칸",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\칸.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_094"
+    },
+    {
+      "question_id": "BJ_095",
+      "answer": "캬하하",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\캬하하.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_095"
+    },
+    {
+      "question_id": "BJ_096",
+      "answer": "커맨더지코",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\커맨더지코.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_096"
+    },
+    {
+      "question_id": "BJ_097",
+      "answer": "케이",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\케이.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_097"
+    },
+    {
+      "question_id": "BJ_098",
+      "answer": "코뚱잉",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\코뚱잉.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_098"
+    },
+    {
+      "question_id": "BJ_099",
+      "answer": "쿼드",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\쿼드.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_099"
+    },
+    {
+      "question_id": "BJ_100",
+      "answer": "클템",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\클템.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_100"
+    },
+    {
+      "question_id": "BJ_101",
+      "answer": "킴성태",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\킴성태.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_101"
+    },
+    {
+      "question_id": "BJ_102",
+      "answer": "타요",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\타요.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_102"
+    },
+    {
+      "question_id": "BJ_103",
+      "answer": "탱글다희",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\탱글다희.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_103"
+    },
+    {
+      "question_id": "BJ_104",
+      "answer": "토끼예나",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\토끼예나.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_104"
+    },
+    {
+      "question_id": "BJ_105",
+      "answer": "토마토",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\토마토.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_105"
+    },
+    {
+      "question_id": "BJ_106",
+      "answer": "트할",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\트할.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_106"
+    },
+    {
+      "question_id": "BJ_107",
+      "answer": "팡이요",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\팡이요.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_107"
+    },
+    {
+      "question_id": "BJ_108",
+      "answer": "프레이",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\프레이.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_108"
+    },
+    {
+      "question_id": "BJ_109",
+      "answer": "향이",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\향이.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_109"
+    },
+    {
+      "question_id": "BJ_110",
+      "answer": "홍구",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaMaleBJ_6SVxLb\\Images\\홍구.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_110"
+    },
+    {
+      "question_id": "BJ_111",
+      "answer": "화정",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\화정.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_111"
+    },
+    {
+      "question_id": "BJ_112",
+      "answer": "효딤",
+      "source_path": "SourceAssets\\IdolQuiz\\AfreecaBJ\\Images\\효딤.png",
+      "asset_path": "/Game/IdolQuiz/Images/BJ/T_BJ_112"
+    }
+  ]
+}

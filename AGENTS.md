@@ -69,6 +69,10 @@ Before handing off a completed change:
 - Keep original display names in the manifest. When filenames should use those names, remove only instructed annotations, replace Windows-invalid characters safely, detect collisions before renaming, and update manifest references atomically.
 - Do not render or preview an entire collected dataset in the Codex conversation. Report counts, sizes, validation results, and a small sample only.
 - For PIKU specifically, use the small server-side ranking JSON endpoint when available and keep image downloads outside the browser. Reuse the checkpointed local collection pattern demonstrated by `Scripts/CollectNarutoQuiz.ps1`.
+- When the Chrome page-assets fallback is required, match every exported asset back to its ranking row by the exact image URL. Never pair names and exported files by array position because page-assets bundle order is not stable.
+- If the PIKU ranking JSON endpoint is unavailable but the public ranking table renders normally in a user-connected Chrome session, use that visible table as the second-choice metadata source. Read only the expected row count plus the candidate names and image links; do not export full DOM, scripts, cookies, or session data.
+- For the Chrome fallback, verify exactly two name/link pairs, then export and validate one observed image through the browser page-assets capability before continuing. Acquire images sequentially, never more than 10 per checkpoint batch, and immediately convert and record each image in the resumable manifest. Do not imitate browser headers, replay cookies, solve challenges, or call a blocked JSON endpoint again.
+- If the connected Chrome page shows a CAPTCHA, Cloudflare challenge, missing rows, unexpected candidate count, or any asset export failure, stop and report it. A successful user-visible ranking table is required for this fallback; it is not permission to bypass access controls.
 - These rules reduce crash risk but do not guarantee that the Codex app or a third-party site will never fail. Preserve resumability so an app crash never requires restarting a completed batch.
 
 ## Documentation maintenance

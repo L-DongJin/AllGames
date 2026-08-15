@@ -11,7 +11,7 @@ PROJECT_ROOT = Path(unreal.Paths.project_dir())
 SOURCE_BASE = PROJECT_ROOT / "SourceAssets" / "IdolQuiz"
 TABLE_PATH = "/Game/IdolQuiz/Data/DT_IdolQuizQuestionsExpanded"
 IMPORT_BATCH_SIZE = 32
-EXPECTED_EXISTING_ROWS = 892
+EXPECTED_EXISTING_ROWS = 1004
 
 DATASETS = (
     {
@@ -194,7 +194,7 @@ def update_data_table(dataset_records):
 
     if len(existing_rows) != EXPECTED_EXISTING_ROWS:
         raise RuntimeError(
-            f"Expected {EXPECTED_EXISTING_ROWS} existing Idol/Actor/OnePiece rows, "
+            f"Expected {EXPECTED_EXISTING_ROWS} existing Idol/Actor/OnePiece/BJ rows, "
             f"found {len(existing_rows)}"
         )
 

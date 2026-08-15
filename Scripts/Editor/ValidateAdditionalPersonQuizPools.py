@@ -14,6 +14,7 @@ EXPECTED = {
     "Naruto": 64,
     "MC": 40,
     "KBOPlayer": 256,
+    "BJ": 112,
 }
 
 table = unreal.load_asset(TABLE_PATH)
@@ -22,8 +23,8 @@ if table is None:
 reader = csv.DictReader(StringIO(unreal.DataTableFunctionLibrary.export_data_table_to_csv_string(table)))
 rows = list(reader)
 counts = Counter(row.get("PoolTags", "") for row in rows)
-if len(rows) != 1252:
-    raise RuntimeError(f"Expected 1252 rows, found {len(rows)}")
+if len(rows) != 1364:
+    raise RuntimeError(f"Expected 1364 rows, found {len(rows)}")
 for pool_tag, expected_count in EXPECTED.items():
     actual = counts.get(pool_tag, 0)
     if actual != expected_count:
